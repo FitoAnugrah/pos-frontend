@@ -1,7 +1,7 @@
-import Frame01LupaKataSandiPosAi from './features/login/frames/frame-01-lupa-kata-sandi-pos-ai/Frame01LupaKataSandiPosAi'
+import Dashboard from './features/dashboard';
 
 function App() {
-  return <Frame01LupaKataSandiPosAi />
+  return <Dashboard />
 }
 
 export default App
