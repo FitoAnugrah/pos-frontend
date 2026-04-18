@@ -33,7 +33,7 @@ const Icon = ({ name }) => {
   }
 }
 
-export default function QuickAccess() {
+export default function QuickAccess({ onItemClick }) {
   return (
     <div className="px-6 py-4">
       <p className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-3 px-1">{dashboardText.quickAccess.title}</p>
@@ -41,6 +41,8 @@ export default function QuickAccess() {
         {dashboardText.quickAccess.items.map((item) => (
           <button 
             key={item.id} 
+            type="button"
+            onClick={() => onItemClick?.(item.id)}
             className="flex items-center gap-3 bg-white p-4 rounded-[20px] shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-[#F0F4F8] hover:bg-blue-50/50 transition-colors duration-200 active:scale-95"
           >
             <div className="bg-blue-50/50 p-2.5 rounded-xl">

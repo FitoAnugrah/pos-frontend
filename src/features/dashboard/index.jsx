@@ -6,7 +6,7 @@ import QuickAccess from './components/QuickAccess';
 import ActivityFeed from './components/ActivityFeed';
 import BottomNav from './components/BottomNav';
 
-export default function Dashboard() {
+export default function Dashboard({ activeTab = 'terminal', onTabChange, onQuickAccess }) {
   return (
     <div className="min-h-screen bg-[#1A1D20] flex justify-center w-full font-sans">
       {/* Mobile App Container matching the design dimensions */}
@@ -16,11 +16,11 @@ export default function Dashboard() {
         <div className="pb-4">
           <TerminalCard />
           <StatsRow />
-          <QuickAccess />
+          <QuickAccess onItemClick={onQuickAccess} />
           <ActivityFeed />
         </div>
         
-        <BottomNav />
+        <BottomNav activeTab={activeTab} onTabChange={onTabChange} />
       </div>
     </div>
   );

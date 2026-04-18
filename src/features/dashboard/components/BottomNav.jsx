@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import dashboardText from '../text';
 
 // Helper component for nav icons
@@ -34,9 +34,7 @@ const NavIcon = ({ name, active }) => {
   }
 }
 
-export default function BottomNav() {
-  const [activeTab, setActiveTab] = useState('terminal');
-
+export default function BottomNav({ activeTab = 'terminal', onTabChange }) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
       <div className="w-full max-w-[440px] bg-white border-t border-[#f0f4f8] py-3 px-6 pb-6 shadow-[0_-10px_20px_rgba(0,0,0,0.02)] rounded-t-[20px]">
@@ -46,7 +44,8 @@ export default function BottomNav() {
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                type="button"
+                onClick={() => onTabChange?.(item.id)}
                 className="flex flex-col items-center gap-1.5 min-w-[64px]"
               >
                 <div className={`p-1.5 rounded-xl transition-all duration-300 ${isActive ? 'bg-blue-50' : 'bg-transparent'}`}>
