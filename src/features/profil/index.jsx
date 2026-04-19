@@ -1,8 +1,57 @@
 import React, { useState } from 'react';
 import profilText from './text';
+import EditInformasiAkun from './components/EditInformasiAkun';
+import AturKeamanan from './components/AturKeamanan';
+import Bahasa from './components/Bahasa';
 
 const Profil = ({ activeTab, onTabChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSecurityOpen, setIsSecurityOpen] = useState(false);
+  const [isBahasaOpen, setIsBahasaOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState('id');
+  
+  const [profileData, setProfileData] = useState({
+    namaLengkap: profilText.sections.informasiAkun.items.namaLengkap.value,
+    email: profilText.sections.informasiAkun.items.email.value,
+    noTelepon: profilText.sections.informasiAkun.items.noTelepon.value,
+    avatarUrl: profilText.profile.avatarUrl,
+    role: profilText.profile.role,
+  });
+
+  const handleSaveProfile = (newData) => {
+    setProfileData(newData);
+    setIsEditing(false);
+  };
+
+  if (isBahasaOpen) {
+    return (
+      <Bahasa 
+        currentLang={currentLang}
+        onBack={() => setIsBahasaOpen(false)}
+        onSave={(lang) => {
+          setCurrentLang(lang);
+          setIsBahasaOpen(false);
+        }}
+      />
+    );
+  }
+
+  if (isSecurityOpen) {
+    return <AturKeamanan onBack={() => setIsSecurityOpen(false)} />;
+  }
+
+  if (isEditing) {
+    return (
+      <EditInformasiAkun 
+        initialData={profileData}
+        onBack={() => setIsEditing(false)}
+        onSave={handleSaveProfile}
+        onOpenSecurity={() => setIsSecurityOpen(true)}
+        onOpenResetPassword={() => alert('Halaman Reset Password belum tersedia')}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#1A1D20] flex justify-center w-full font-sans">
@@ -29,16 +78,16 @@ const Profil = ({ activeTab, onTabChange }) => {
       <div className="flex flex-col items-center mt-2">
         <div className="relative">
           <div className="w-24 h-24 rounded-full bg-slate-200 border-4 border-white shadow-sm overflow-hidden">
-            <img src={profilText.profile.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+            <img src={profileData.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
           </div>
-          <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full border-2 border-white shadow-sm hover:bg-blue-700 transition-colors">
+          <button onClick={() => setIsEditing(true)} className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full border-2 border-white shadow-sm hover:bg-blue-700 transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
           </button>
         </div>
-        <h2 className="text-xl font-bold mt-3 text-slate-800">{profilText.profile.name}</h2>
-        <p className="text-sm text-slate-500">{profilText.profile.role}</p>
+        <h2 className="text-xl font-bold mt-3 text-slate-800">{profileData.namaLengkap}</h2>
+        <p className="text-sm text-slate-500">{profileData.role}</p>
       </div>
 
       {/* Stats Cards */}
@@ -63,8 +112,12 @@ const Profil = ({ activeTab, onTabChange }) => {
         
         {/* Informasi Akun */}
         <section className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="bg-[#eef5fc] px-4 py-3">
+          <div className="bg-[#eef5fc] px-4 py-3 flex justify-between items-center">
             <h3 className="text-[11px] font-semibold text-blue-500">{profilText.sections.informasiAkun.title}</h3>
+            <button onClick={() => setIsEditing(true)} className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+              Edit
+            </button>
           </div>
           <div className="divide-y divide-slate-100">
             {/* Item */}
@@ -76,7 +129,7 @@ const Profil = ({ activeTab, onTabChange }) => {
               </div>
               <div className="flex-1">
                 <p className="text-[10px] text-slate-400 mb-0.5">{profilText.sections.informasiAkun.items.namaLengkap.label}</p>
-                <p className="text-[13px] font-medium text-slate-700">{profilText.sections.informasiAkun.items.namaLengkap.value}</p>
+                <p className="text-[13px] font-medium text-slate-700">{profileData.namaLengkap}</p>
               </div>
             </div>
             {/* Item */}
@@ -88,7 +141,7 @@ const Profil = ({ activeTab, onTabChange }) => {
               </div>
               <div className="flex-1">
                 <p className="text-[10px] text-slate-400 mb-0.5">{profilText.sections.informasiAkun.items.email.label}</p>
-                <p className="text-[13px] font-medium text-slate-700">{profilText.sections.informasiAkun.items.email.value}</p>
+                <p className="text-[13px] font-medium text-slate-700">{profileData.email}</p>
               </div>
               <div className="text-green-500 bg-green-100 rounded-full p-0.5">
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
@@ -103,7 +156,7 @@ const Profil = ({ activeTab, onTabChange }) => {
               </div>
               <div className="flex-1">
                 <p className="text-[10px] text-slate-400 mb-0.5">{profilText.sections.informasiAkun.items.noTelepon.label}</p>
-                <p className="text-[13px] font-medium text-slate-700">{profilText.sections.informasiAkun.items.noTelepon.value}</p>
+                <p className="text-[13px] font-medium text-slate-700">{profileData.noTelepon}</p>
               </div>
             </div>
           </div>
@@ -126,7 +179,10 @@ const Profil = ({ activeTab, onTabChange }) => {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </div>
             </button>
-            <button className="w-full flex items-center p-4 hover:bg-slate-50 transition-colors">
+            <button 
+              onClick={() => setIsSecurityOpen(true)}
+              className="w-full flex items-center p-4 hover:bg-slate-50 transition-colors"
+            >
               <div className="text-slate-500 mr-4">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
               </div>
@@ -146,7 +202,10 @@ const Profil = ({ activeTab, onTabChange }) => {
             <h3 className="text-[11px] font-semibold text-blue-500">{profilText.sections.pengaturanAplikasi.title}</h3>
           </div>
           <div className="divide-y divide-slate-100">
-            <button className="w-full flex items-center p-4 hover:bg-slate-50 transition-colors">
+            <button 
+              onClick={() => setIsBahasaOpen(true)}
+              className="w-full flex items-center p-4 hover:bg-slate-50 transition-colors"
+            >
               <div className="text-slate-500 mr-4">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
               </div>
@@ -154,7 +213,7 @@ const Profil = ({ activeTab, onTabChange }) => {
                 <p className="text-[13px] font-medium text-slate-700">{profilText.sections.pengaturanAplikasi.items.bahasa.label}</p>
               </div>
               <div className="text-blue-600 text-[13px] font-bold flex items-center">
-                {profilText.sections.pengaturanAplikasi.items.bahasa.value}
+                {currentLang === 'id' ? 'Indonesia' : currentLang === 'en' ? 'English' : currentLang === 'ms' ? 'Malay' : 'Chinese'}
               </div>
             </button>
             <div className="w-full flex items-center p-4">

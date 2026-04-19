@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 const pinIndicators = Array.from({ length: 6 }, (_, index) => index)
 const keypadRows = [
   ['1', '2', '3'],
@@ -6,20 +8,20 @@ const keypadRows = [
 ]
 
 function PinDot({ active }) {
-  return <span className={`h-3 w-3 rounded-full ${active ? 'bg-[#0E7BD3]' : 'bg-[#C7E3F5]'}`} />
+  return <span className={`h-3 w-3 rounded-full ${active ? 'bg-[#0E7BD3]' : 'bg-[#C7E3F5]'} transition-colors duration-200`} />
 }
 
 function KeyButton({ label, tone = 'default', onClick, children }) {
   const toneClass =
     tone === 'danger'
-      ? 'bg-[#F4EDE6] text-[#B86A13]'
-      : 'bg-white text-[#17324D] shadow-[0_12px_20px_rgba(150,182,208,0.12)]'
+      ? 'bg-[#E5D8CF] text-[#8C4A0F] active:bg-[#D5C8BF]'
+      : 'bg-white text-[#17324D] shadow-[0_12px_20px_rgba(150,182,208,0.12)] active:bg-slate-50'
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-[56px] items-center justify-center rounded-[14px] text-[24px] font-black tracking-tight ${toneClass}`}
+      className={`flex h-[56px] items-center justify-center rounded-[14px] text-[24px] font-black tracking-tight transition-colors ${toneClass}`}
     >
       {children ?? label}
     </button>
@@ -27,6 +29,25 @@ function KeyButton({ label, tone = 'default', onClick, children }) {
 }
 
 export default function AturKeamanan({ onBack }) {
+  const [pin, setPin] = useState('');
+
+  const handleKeyPress = (key) => {
+    if (pin.length < 6) {
+      const newPin = pin + key;
+      setPin(newPin);
+      if (newPin.length === 6) {
+        setTimeout(() => {
+          alert('PIN berhasil diatur!');
+          if (onBack) onBack();
+        }, 300);
+      }
+    }
+  };
+
+  const handleDelete = () => {
+    setPin((prev) => prev.slice(0, -1));
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#1A1D20] font-sans flex justify-center">
       <div className="min-h-screen w-full max-w-[440px] bg-[linear-gradient(180deg,#E9F4FB_0%,#F5FBFE_100%)] shadow-2xl">
@@ -68,19 +89,19 @@ export default function AturKeamanan({ onBack }) {
             </p>
 
             <div className="mt-8 flex items-center gap-3">
-              {pinIndicators.map((item) => (
-                <PinDot key={item} active={item === 0} />
+              {pinIndicators.map((index) => (
+                <PinDot key={index} active={index < pin.length} />
               ))}
             </div>
           </div>
 
           <div className="mt-14 grid grid-cols-3 gap-3">
             {keypadRows.flat().map((key) => (
-              <KeyButton key={key} label={key} />
+              <KeyButton key={key} label={key} onClick={() => handleKeyPress(key)} />
             ))}
             <div />
-            <KeyButton label="0" />
-            <KeyButton tone="danger">
+            <KeyButton label="0" onClick={() => handleKeyPress('0')} />
+            <KeyButton tone="danger" onClick={handleDelete}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M20 5H9L4 12L9 19H20C21.1 19 22 18.1 22 17V7C22 5.9 21.1 5 20 5ZM17.59 15L16.17 16.41L13 13.24L9.83 16.41L8.41 15L11.59 11.83L8.41 8.66L9.83 7.24L13 10.41L16.17 7.24L17.59 8.66L14.41 11.83L17.59 15Z"
