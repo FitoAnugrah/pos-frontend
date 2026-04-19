@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import BottomNav from './features/dashboard/components/BottomNav'
 import Dashboard from './features/dashboard'
+import ProfilFeature from './features/profil'
 import StokFeature from './features/stok'
 
 function PlaceholderPage({ activeTab, title, description, onTabChange }) {
@@ -60,14 +61,7 @@ function App() {
   }
 
   if (activeTab === 'pengaturan') {
-    return (
-      <PlaceholderPage
-        activeTab={activeTab}
-        title="Pengaturan"
-        description="Halaman konfigurasi toko, kasir, dan preferensi aplikasi akan ditaruh di tab ini."
-        onTabChange={handleNavigation}
-      />
-    )
+    return <ProfilFeature activeTab={activeTab} onTabChange={handleNavigation} />
   }
 
   return <Dashboard activeTab={activeTab} onTabChange={handleNavigation} onQuickAccess={handleQuickAccess} />
