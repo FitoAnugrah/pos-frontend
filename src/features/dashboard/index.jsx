@@ -11,7 +11,7 @@ export default function Dashboard({ activeTab = 'terminal', onTabChange, onQuick
     <div className="min-h-screen bg-[#1A1D20] flex justify-center w-full font-sans">
       {/* Mobile App Container matching the design dimensions */}
       <div className="w-full max-w-[440px] bg-[#F4F8FA] min-h-screen relative shadow-2xl overflow-x-hidden">
-        <Header />
+        <Header onProfileClick={() => onTabChange && onTabChange('profil')} />
         
         <div className="pb-4">
           <TerminalCard />

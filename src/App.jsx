@@ -60,8 +60,12 @@ function App() {
     return <StokFeature onMainTabChange={handleNavigation} />
   }
 
-  if (activeTab === 'pengaturan') {
+  if (activeTab === 'profil') {
     return <ProfilFeature activeTab={activeTab} onTabChange={handleNavigation} />
+  }
+
+  if (activeTab === 'pengaturan') {
+    return <PlaceholderPage activeTab={activeTab} title="Pengaturan" description="Halaman pengaturan belum tersedia." onTabChange={handleNavigation} />
   }
 
   return <Dashboard activeTab={activeTab} onTabChange={handleNavigation} onQuickAccess={handleQuickAccess} />

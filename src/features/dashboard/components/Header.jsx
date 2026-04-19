@@ -1,10 +1,12 @@
 import React from 'react';
 import dashboardText from '../text';
 
-export default function Header() {
+export default function Header({ onProfileClick }) {
   return (
     <div className="flex items-center justify-between px-6 pt-8 pb-4 bg-white">
-      <button className="flex items-center gap-3 text-left transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
+      <button 
+        onClick={onProfileClick}
+        className="flex items-center gap-3 text-left transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
         <div className="relative">
           <div className="h-10 w-10 bg-[#0A2A3D] rounded-full flex items-center justify-center">
             {/* Simple User Icon SVG */}
