@@ -1,8 +1,11 @@
-import { useState } from 'react'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import BottomNav from './features/dashboard/components/BottomNav'
 import Dashboard from './features/dashboard'
+import LaporanPenjualan from './features/laporan'
 import ProfilFeature from './features/profil'
+import ProdukTerlaris from './features/produk-terlaris'
 import StokFeature from './features/stok'
+import ManualEntry from './features/stok/pages/ManualEntry'
 
 function PlaceholderPage({ activeTab, title, description, onTabChange }) {
   return (
@@ -17,9 +20,7 @@ function PlaceholderPage({ activeTab, title, description, onTabChange }) {
 
           <div className="mt-5 rounded-[24px] border border-[#edf4fa] bg-white px-5 py-5 shadow-[0_10px_30px_rgba(111,152,193,0.1)]">
             <p className="text-[12px] font-extrabold uppercase tracking-[0.2em] text-[#6f8daa]">Status Halaman</p>
-            <p className="mt-3 text-[15px] font-semibold text-[#17324d]">
-              Tab ini sudah tersambung ke navbar, tapi konten lengkapnya belum kita buat.
-            </p>
+            <p className="mt-3 text-[15px] font-semibold text-[#17324d]">{description}</p>
           </div>
         </div>
 
@@ -29,46 +30,84 @@ function PlaceholderPage({ activeTab, title, description, onTabChange }) {
   )
 }
 
-function App() {
-  const [activeTab, setActiveTab] = useState('terminal')
+function tabToPath(tab) {
+  switch (tab) {
+    case 'stok':
+      return '/stok'
+    case 'pengaturan':
+      return '/pengaturan'
+    case 'profil':
+      return '/profil'
+    case 'terminal':
+    default:
+      return '/'
+  }
+}
+
+function getActiveTab(pathname) {
+  if (pathname.startsWith('/stok')) return 'stok'
+  if (pathname.startsWith('/profil')) return 'profil'
+  if (pathname.startsWith('/pengaturan')) return 'pengaturan'
+  return 'terminal'
+}
+
+function AppShell() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const activeTab = getActiveTab(location.pathname)
 
   function handleNavigation(nextTab) {
     if (nextTab === 'riwayat') {
       return
     }
 
-    setActiveTab(nextTab)
+    navigate(tabToPath(nextTab))
   }
 
   function handleQuickAccess(itemId) {
     if (itemId === 'stok') {
-      setActiveTab('stok')
-      return
-    }
-
-    if (itemId === 'panel') {
-      setActiveTab('pengaturan')
+      navigate('/stok')
       return
     }
 
     if (itemId === 'laporan') {
+      navigate('/laporan')
+      return
+    }
+
+    if (itemId === 'panel') {
+      navigate('/pengaturan')
       return
     }
   }
 
-  if (activeTab === 'stok') {
-    return <StokFeature onMainTabChange={handleNavigation} />
-  }
-
-  if (activeTab === 'profil') {
-    return <ProfilFeature activeTab={activeTab} onTabChange={handleNavigation} />
-  }
-
-  if (activeTab === 'pengaturan') {
-    return <PlaceholderPage activeTab={activeTab} title="Pengaturan" description="Halaman pengaturan belum tersedia." onTabChange={handleNavigation} />
-  }
-
-  return <Dashboard activeTab={activeTab} onTabChange={handleNavigation} onQuickAccess={handleQuickAccess} />
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={<Dashboard activeTab={activeTab} onTabChange={handleNavigation} onQuickAccess={handleQuickAccess} />}
+      />
+      <Route path="/stok" element={<StokFeature onMainTabChange={handleNavigation} />} />
+      <Route path="/stok/manual-entry" element={<ManualEntry />} />
+      <Route path="/laporan" element={<LaporanPenjualan />} />
+      <Route path="/produk-terlaris" element={<ProdukTerlaris />} />
+      <Route path="/profil" element={<ProfilFeature activeTab={activeTab} onTabChange={handleNavigation} />} />
+      <Route
+        path="/pengaturan"
+        element={
+          <PlaceholderPage
+            activeTab="pengaturan"
+            title="Pengaturan"
+            description="Halaman pengaturan belum tersedia."
+            onTabChange={handleNavigation}
+          />
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
 }
 
-export default App
+export default function App() {
+  return <AppShell />
+}

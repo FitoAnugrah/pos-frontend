@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { initialProducts } from './data'
 import DetailProdukPage from './pages/DetailProdukPage'
 import EditProdukPage from './pages/EditProdukPage'
@@ -31,33 +32,175 @@ function buildEditForm(product) {
   }
 }
 
+const routeThumbMap = {
+  Sembako: 'rice',
+  Minuman: 'drink',
+  Snack: 'chips',
+  'Kebutuhan Rumah': 'candy',
+}
+
+const routeAccentMap = {
+  rice: {
+    shell: 'from-[#5b2f74] via-[#61307a] to-[#4c2866]',
+    glow: 'rgba(105,55,142,0.45)',
+  },
+  drink: {
+    shell: 'from-[#2f3441] via-[#20262f] to-[#141a22]',
+    glow: 'rgba(70,83,105,0.45)',
+  },
+  chips: {
+    shell: 'from-[#47240d] via-[#72350f] to-[#231107]',
+    glow: 'rgba(130,79,35,0.45)',
+  },
+  candy: {
+    shell: 'from-[#181818] via-[#101010] to-[#050505]',
+    glow: 'rgba(73,73,73,0.45)',
+  },
+}
+
+function formatCompactRevenue(value) {
+  if (value >= 1000000) {
+    return `Rp ${(value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1)}M`
+  }
+
+  if (value >= 1000) {
+    return `Rp ${(value / 1000).toFixed(value % 1000 === 0 ? 0 : 1)}K`
+  }
+
+  return `Rp ${value}`
+}
+
+function buildRoutedProduct(routeProduct) {
+  const sold = Math.max(Number(routeProduct?.sold ?? 0), 0)
+  const revenueValue = Math.max(Number(routeProduct?.revenue ?? 0), 0)
+  const derivedPrice = Math.max(Math.round(revenueValue / Math.max(sold, 1)), 0)
+  const price = Math.max(Number(routeProduct?.price ?? derivedPrice), 0)
+  const capitalPrice = Math.max(Number(routeProduct?.capitalPrice ?? Math.round(price * 0.82)), 0)
+  const stock = Math.max(Number(routeProduct?.stock ?? Math.ceil(sold / 10)), 0)
+  const minStock = Math.max(Number(routeProduct?.minStock ?? Math.max(Math.ceil(stock * 0.4), 5)), 0)
+  const trendValue = Number(String(routeProduct?.trend ?? '0').replace(/[^\d.]/g, '')) || 0
+  const category = routeProduct?.category ?? 'Sembako'
+  const thumb = routeProduct?.thumb ?? routeThumbMap[category] ?? 'rice'
+
+  return {
+    id: `laporan-${routeProduct?.id ?? 'produk'}`,
+    category,
+    name: routeProduct?.name ?? 'Produk Terlaris',
+    sku: routeProduct?.sku ?? `TOP-${String(routeProduct?.id ?? 1).padStart(3, '0')}`,
+    stock,
+    minStock,
+    price,
+    capitalPrice,
+    unitsPerSale: sold,
+    revenue: formatCompactRevenue(revenueValue),
+    revenueTarget: routeProduct?.trend ? `Trend ${routeProduct.trend}` : 'Target 0%',
+    thumb,
+    lastMonthGrowth: trendValue,
+    lastMonthLabel: 'vs lalu',
+    badge: 'Top Seller',
+    title: 'Product Details',
+    accent: routeAccentMap[thumb] ?? routeAccentMap.rice,
+  }
+}
+
 export default function StokFeature({ onMainTabChange }) {
+  const location = useLocation()
+  const navigate = useNavigate()
   const [products, setProducts] = useState(initialProducts)
   const [selectedProductId, setSelectedProductId] = useState(null)
   const [page, setPage] = useState('list')
   const [createForm, setCreateForm] = useState(initialCreateForm)
   const [editForm, setEditForm] = useState(null)
   const [scanReturnPage, setScanReturnPage] = useState('create')
+  const [routedProduct, setRoutedProduct] = useState(null)
+  const [externalNavigation, setExternalNavigation] = useState({
+    enabled: false,
+    returnTo: '/',
+    entryPage: 'detail',
+  })
 
   const selectedProduct = useMemo(
-    () => products.find((product) => product.id === selectedProductId) ?? null,
-    [products, selectedProductId],
+    () =>
+      products.find((product) => product.id === selectedProductId) ??
+      (routedProduct?.id === selectedProductId ? routedProduct : null),
+    [products, routedProduct, selectedProductId],
   )
+
+  useEffect(() => {
+    const routeState = location.state
+
+    if (!routeState?.stokTarget || !routeState?.product) {
+      return
+    }
+
+    const nextProduct = buildRoutedProduct(routeState.product)
+
+    setSelectedProductId(nextProduct.id)
+    setRoutedProduct(nextProduct)
+    setExternalNavigation({
+      enabled: true,
+      returnTo: routeState.returnTo ?? '/',
+      entryPage: routeState.stokTarget,
+    })
+
+    if (routeState.stokTarget === 'edit') {
+      setEditForm(buildEditForm(nextProduct))
+      setPage('edit')
+      return
+    }
+
+    if (routeState.stokTarget === 'scan') {
+      setEditForm(buildEditForm(nextProduct))
+      setScanReturnPage('edit')
+      setPage('scan')
+      return
+    }
+
+    setEditForm(null)
+    setPage('detail')
+  }, [location.state])
 
   function openDetail(productId) {
     setSelectedProductId(productId)
+    setRoutedProduct(null)
+    setExternalNavigation({
+      enabled: false,
+      returnTo: '/',
+      entryPage: 'detail',
+    })
     setEditForm(null)
     setPage('detail')
+  }
+
+  function handleBackToPreviousPage() {
+    if (externalNavigation.enabled) {
+      navigate(externalNavigation.returnTo, { replace: true })
+      return
+    }
+
+    handleBackToList()
   }
 
   function handleBackToList() {
     setPage('list')
     setSelectedProductId(null)
+    setRoutedProduct(null)
+    setExternalNavigation({
+      enabled: false,
+      returnTo: '/',
+      entryPage: 'detail',
+    })
     setEditForm(null)
   }
 
   function handleOpenCreate() {
     setSelectedProductId(null)
+    setRoutedProduct(null)
+    setExternalNavigation({
+      enabled: false,
+      returnTo: '/',
+      entryPage: 'detail',
+    })
     setCreateForm(initialCreateForm)
     setEditForm(null)
     setPage('create')
@@ -120,6 +263,20 @@ export default function StokFeature({ onMainTabChange }) {
   }
 
   function handleSaveProduct(nextValues) {
+    if (String(selectedProductId).startsWith('laporan-')) {
+      setRoutedProduct((currentProduct) =>
+        currentProduct
+          ? {
+              ...currentProduct,
+              ...nextValues,
+            }
+          : currentProduct,
+      )
+      setEditForm(null)
+      setPage('detail')
+      return
+    }
+
     setProducts((currentProducts) =>
       currentProducts.map((product) =>
         product.id === selectedProductId
@@ -135,6 +292,24 @@ export default function StokFeature({ onMainTabChange }) {
   }
 
   function handleSaveStock({ mode, amount }) {
+    if (String(selectedProductId).startsWith('laporan-')) {
+      setRoutedProduct((currentProduct) => {
+        if (!currentProduct) return currentProduct
+
+        const nextStock =
+          mode === 'add'
+            ? currentProduct.stock + amount
+            : clampStock(currentProduct.stock - amount)
+
+        return {
+          ...currentProduct,
+          stock: nextStock,
+        }
+      })
+      setPage('detail')
+      return
+    }
+
     setProducts((currentProducts) =>
       currentProducts.map((product) => {
         if (product.id !== selectedProductId) return product
@@ -245,7 +420,7 @@ export default function StokFeature({ onMainTabChange }) {
     return (
       <DetailProdukPage
         product={selectedProduct}
-        onBack={handleBackToList}
+        onBack={handleBackToPreviousPage}
         onOpenEdit={() => {
           setEditForm(buildEditForm(selectedProduct))
           setPage('edit')
@@ -261,6 +436,11 @@ export default function StokFeature({ onMainTabChange }) {
         product={selectedProduct}
         form={editForm ?? buildEditForm(selectedProduct)}
         onBack={() => {
+          if (externalNavigation.enabled && externalNavigation.entryPage === 'edit') {
+            handleBackToPreviousPage()
+            return
+          }
+
           setEditForm(null)
           setPage('detail')
         }}
