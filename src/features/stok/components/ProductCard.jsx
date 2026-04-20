@@ -1,5 +1,4 @@
 import { formatCurrency, getStockInfo } from '../utils'
-import { ChevronRightIcon } from './icons'
 import ProductThumb from './ProductThumb'
 
 export default function ProductCard({ product, onOpen }) {
@@ -9,36 +8,38 @@ export default function ProductCard({ product, onOpen }) {
     <button
       type="button"
       onClick={() => onOpen(product.id)}
-      className="block w-full rounded-[24px] bg-white px-3.5 py-3 text-left shadow-[0_10px_30px_rgba(111,152,193,0.12)] ring-1 ring-[#edf4fa] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(111,152,193,0.16)]"
+      className="block w-full text-left bg-white p-5 rounded-2xl border border-slate-100 hover:shadow-md transition-all hover:border-blue-100 group relative cursor-pointer active:scale-[0.98]"
     >
-      <div className="flex items-start gap-3">
-        <ProductThumb kind={product.thumb} />
+      <div className="flex items-start gap-4 h-full">
+        {/* Kiri: Ikon/Gambar Produk */}
+        <div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center p-2 shrink-0 border border-slate-100/50">
+          <ProductThumb kind={product.thumb} />
+        </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#1c7bc6]">{product.category}</p>
-              <h3 className="truncate text-[15px] font-bold text-[#17324d]">{product.name}</h3>
-            </div>
-
-            <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#c3d0db]">
-              <ChevronRightIcon />
-            </div>
+        {/* Kanan: Detail Produk */}
+        <div className="flex-1 min-w-0 flex flex-col h-full">
+          
+          <h3 className="text-slate-800 font-bold text-sm mb-1 group-hover:text-blue-600 transition-colors truncate mt-0.5">
+            {product.name}
+          </h3>
+          
+          <div className="flex items-center gap-2 text-xs text-slate-400 mb-3 font-medium">
+            <span className="font-bold text-slate-500 uppercase tracking-wide">{product.category}</span>
+            <span>•</span>
+            <span className="truncate">{product.sku}</span>
           </div>
 
-          <div className="mt-2 flex items-end justify-between gap-3">
-            <div className="space-y-1">
-              <p className={`flex items-center gap-2 text-[13px] font-medium ${stockInfo.textClassName}`}>
-                <span className={`h-2.5 w-2.5 rounded-full ${stockInfo.dotClassName}`} aria-hidden="true" />
-                {`Stok: ${product.stock} unit`}
-              </p>
-              <p className="text-[10px] font-medium tracking-[0.08em] text-[#9cb0c1]">{product.sku}</p>
-            </div>
-
-            <p className="text-[18px] font-black tracking-tight text-[#142c45]">{formatCurrency(product.price)}</p>
+          <div className="mt-auto flex items-end justify-between gap-2">
+            <p className={`flex items-center gap-1.5 text-xs font-semibold ${stockInfo.textClassName}`}>
+              <span className={`h-2 w-2 rounded-full ${stockInfo.dotClassName}`} aria-hidden="true" />
+              Stok {product.stock} unit
+            </p>
+            <p className="text-[17px] font-bold text-slate-800 tracking-tight">{formatCurrency(product.price)}</p>
           </div>
+
         </div>
       </div>
     </button>
   )
 }
+

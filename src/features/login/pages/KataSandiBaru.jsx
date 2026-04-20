@@ -27,32 +27,32 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#1A1D20] font-sans flex justify-center">
-      <div className="min-h-screen flex flex-col items-center w-full max-w-[440px] bg-[#F4F7FB] shadow-2xl overflow-y-auto">
+    <div className="min-h-screen w-full bg-slate-50 font-sans flex items-center justify-center p-4">
+      <div className="w-full max-w-[420px] flex flex-col items-center">
         {/* Header */}
-        <div className="w-full px-6 py-6 flex items-center space-x-4">
-          <button type="button" onClick={() => onNavigate && onNavigate('masuk')} className="p-1 -ml-1 text-[#0057B3] hover:bg-blue-50 rounded-lg transition-colors">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div className="w-full mb-6 flex items-center space-x-4">
+          <button type="button" onClick={() => onNavigate && onNavigate('masuk')} className="p-1 -ml-1 text-slate-600 hover:text-slate-900 transition-colors">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-[18px] font-bold text-[#17324D]">Pengaturan Keamanan</h1>
+          <h1 className="text-lg font-bold text-slate-800 tracking-tight">Pengaturan Keamanan</h1>
         </div>
 
         {/* Main Card */}
-        <div className="w-full px-5 pb-8">
-          <div className="bg-white rounded-[26px] p-6 sm:p-8 shadow-[0_18px_45px_rgba(115,152,181,0.10)] border border-gray-100">
+        <div className="w-full">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col relative z-10">
             
             {/* Icon Box */}
-            <div className="w-16 h-16 bg-[#0E7BD3] rounded-[16px] flex items-center justify-center mx-auto mb-6 shadow-[0_14px_24px_rgba(14,123,211,0.25)]">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+            <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-blue-700/10">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" className="text-white">
                 <path d="M17 11V7A5 5 0 007 7v4H5v10h14V11h-2zm-8-4a3 3 0 116 0v4H9V7zm3 11a2 2 0 110-4 2 2 0 010 4z" />
               </svg>
             </div>
 
             <div className="text-center mb-8">
-              <h2 className="text-[22px] font-black tracking-tight text-[#17324D] mb-3">Buat Kata Sandi Baru</h2>
-              <p className="text-[13px] text-[#607C97] leading-relaxed px-2">
+              <h2 className="text-xl font-bold tracking-tight text-slate-800 mb-2">Buat Kata Sandi Baru</h2>
+              <p className="text-sm text-slate-500 font-medium leading-relaxed px-2">
                 Kata sandi baru Anda harus berbeda dari kata sandi sebelumnya.
               </p>
             </div>
@@ -60,11 +60,11 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
             <form onSubmit={handleSubmit}>
               {/* Input Kata Sandi Baru */}
               <div className="mb-5">
-                <label className="mb-2 block text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#0A76CA]">
+                <label className="mb-2 block text-xs font-semibold text-slate-600">
                   Kata Sandi Baru
                 </label>
-                <div className="bg-[#EAF4FB] rounded-[14px] flex items-center px-4 py-3.5 focus-within:ring-2 focus-within:ring-[#0A76CA]/30 transition-all text-[#23425D]">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#5B6D80]">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl flex items-center px-4 py-3.5 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all text-slate-800">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                   <path d="M7 11V7a5 5 0 0110 0v4" />
                 </svg>
@@ -72,13 +72,13 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="bg-transparent border-none outline-none flex-1 ml-3 text-[#0F2035] font-medium placeholder-[#8B9DB0]"
+                  placeholder="••••••••••••"
+                  className="bg-transparent border-none outline-none flex-1 ml-3 text-sm font-semibold text-slate-800 tracking-widest placeholder:tracking-normal placeholder:text-slate-400 placeholder:font-medium"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="p-1 -mr-1 text-[#5B6D80] hover:text-[#0F2035] transition-colors"
+                  className="p-1 -mr-1 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showPassword ? (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -97,11 +97,11 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
 
             {/* Input Konfirmasi Kata Sandi */}
             <div className="mb-6">
-              <label className="mb-2 block text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#0A76CA]">
+              <label className="mb-2 block text-xs font-semibold text-slate-600">
                 Konfirmasi Kata Sandi Baru
               </label>
-              <div className="bg-[#EAF4FB] rounded-[14px] flex items-center px-4 py-3.5 focus-within:ring-2 focus-within:ring-[#0A76CA]/30 transition-all text-[#23425D]">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#5B6D80]">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl flex items-center px-4 py-3.5 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all text-slate-800">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   <path d="M9 12l2 2 4-4" />
                 </svg>
@@ -109,13 +109,13 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="bg-transparent border-none outline-none flex-1 ml-3 text-[#0F2035] font-medium placeholder-[#8B9DB0]"
+                  placeholder="••••••••••••"
+                  className="bg-transparent border-none outline-none flex-1 ml-3 text-sm font-semibold text-slate-800 tracking-widest placeholder:tracking-normal placeholder:text-slate-400 placeholder:font-medium"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="p-1 -mr-1 text-[#5B6D80] hover:text-[#0F2035] transition-colors"
+                  className="p-1 -mr-1 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showConfirmPassword ? (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -133,54 +133,54 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
             </div>
 
             {/* Persyaratan Kata Sandi Box */}
-            <div className="bg-[#F0F6FB] rounded-2xl p-5 mb-8 border border-[#E1EAF2]">
-              <div className="flex items-center space-x-2 mb-3 text-[#0F2035]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#5B6D80]">
+            <div className="bg-slate-50 rounded-xl p-5 mb-8 border border-slate-200">
+              <div className="flex items-center space-x-2 mb-3 text-slate-800">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="16" x2="12" y2="12" />
                   <line x1="12" y1="8" x2="12.01" y2="8" />
                 </svg>
-                <h3 className="text-sm font-bold">Persyaratan Kata Sandi</h3>
+                <h3 className="text-sm font-bold text-slate-700">Persyaratan Kata Sandi</h3>
               </div>
               
               <ul className="space-y-2.5">
                 <li className="flex items-center space-x-2.5">
                   {hasMinLength ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0E7BD3" className="text-[#0E7BD3] flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#2563eb" className="text-blue-600 flex-shrink-0">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor" />
                     </svg>
                   ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A0AAB5" strokeWidth="2" className="flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 text-slate-300">
                       <circle cx="12" cy="12" r="10" />
                     </svg>
                   )}
-                  <span className="text-xs sm:text-sm text-[#5B6D80]">Minimal 8 karakter</span>
+                  <span className="text-xs sm:text-sm font-medium text-slate-500">Minimal 8 karakter</span>
                 </li>
                 
                 <li className="flex items-center space-x-2.5">
                   {hasSymbol ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0E7BD3" className="text-[#0E7BD3] flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#2563eb" className="text-blue-600 flex-shrink-0">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor" />
                     </svg>
                   ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A0AAB5" strokeWidth="2" className="flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 text-slate-300">
                       <circle cx="12" cy="12" r="10" />
                     </svg>
                   )}
-                  <span className="text-xs sm:text-sm text-[#5B6D80]">Sertakan setidaknya satu simbol (@, #, $)</span>
+                  <span className="text-xs sm:text-sm font-medium text-slate-500">Sertakan setidaknya satu simbol (@, #, $)</span>
                 </li>
 
                 <li className="flex items-center space-x-2.5">
                   {hasUpperAndLower ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0E7BD3" className="text-[#0E7BD3] flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#2563eb" className="text-blue-600 flex-shrink-0">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor" />
                     </svg>
                   ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A0AAB5" strokeWidth="2" className="flex-shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 text-slate-300">
                       <circle cx="12" cy="12" r="10" />
                     </svg>
                   )}
-                  <span className="text-xs sm:text-sm text-[#5B6D80]">Satu huruf besar dan satu huruf kecil</span>
+                  <span className="text-xs sm:text-sm font-medium text-slate-500">Satu huruf besar dan satu huruf kecil</span>
                 </li>
               </ul>
             </div>
@@ -188,7 +188,7 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-[#0E7BD3] hover:bg-[#0c6bb8] text-white font-bold py-4 px-4 rounded-[14px] transition-colors duration-200 shadow-[0_14px_24px_rgba(14,123,211,0.25)] flex items-center justify-center space-x-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md flex items-center justify-center space-x-2 text-sm"
             >
               <span>Simpan Kata Sandi</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -198,8 +198,8 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
             </button>
 
             {/* Footer Link */}
-            <div className="mt-6 text-center">
-              <button type="button" onClick={() => onNavigate && onNavigate('masuk')} className="text-[#0A76CA] font-bold text-sm hover:underline">
+            <div className="mt-8 text-center pt-2">
+              <button type="button" onClick={() => onNavigate && onNavigate('masuk')} className="text-slate-600 font-bold text-sm hover:text-slate-800 transition-colors">
                 Kembali ke Masuk
               </button>
             </div>
@@ -211,5 +211,7 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
     </div>
   );
 };
+
+export default KataSandiBaru;
 
 export default KataSandiBaru;

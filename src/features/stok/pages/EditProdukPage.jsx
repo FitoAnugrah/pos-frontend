@@ -1,31 +1,27 @@
 import { productCategories } from '../data'
-import ActionButton from '../components/ActionButton'
-import PageCanvas from '../components/PageCanvas'
 import ProductThumb from '../components/ProductThumb'
-import { ArrowLeftIcon, EditIcon, PhotoIcon, ScanIcon, TrashIcon, WarnIcon } from '../components/icons'
+import { ArrowLeftIcon, CheckIcon, EditIcon, PhotoIcon, ScanIcon, TrashIcon, WarnIcon } from '../components/icons'
 import { calculateMargin, calculateMarginYield, formatCurrency, getStockInfo } from '../utils'
 
-function Section({ title, children }) {
+function FormCard({ title, children }) {
   return (
-    <section className="mt-4">
-      <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#6d8ba7]">{title}</p>
-      <div className="mt-2 rounded-[22px] bg-white px-4 py-4 shadow-[0_10px_30px_rgba(111,152,193,0.12)] ring-1 ring-[#edf4fa]">
-        {children}
-      </div>
+    <section className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 mb-8">
+      {title && <h2 className="text-lg font-bold text-slate-800 mb-6">{title}</h2>}
+      {children}
     </section>
   )
 }
 
-function TextField({ label, value, onChange, rightIcon }) {
+function TextField({ label, value, onChange, rightIcon, className = '' }) {
   return (
-    <label className="block">
-      <span className="mb-2 block text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#6d8ba7]">{label}</span>
-      <div className="flex items-center rounded-[14px] bg-[#cfe9fb] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+    <label className={`block ${className}`}>
+      <span className="mb-2 block text-sm font-semibold text-slate-600">{label}</span>
+      <div className="flex items-center gap-2 bg-slate-50 w-full rounded-xl px-4 py-3.5 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition-all outline-none">
         <input
           type="text"
           value={value}
           onChange={onChange}
-          className="w-full bg-transparent text-[14px] font-semibold text-[#1a3a57] outline-none"
+          className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none"
         />
         {rightIcon ? rightIcon : null}
       </div>
@@ -33,18 +29,18 @@ function TextField({ label, value, onChange, rightIcon }) {
   )
 }
 
-function NumberField({ label, value, onChange, prefix, accent = 'text-[#1a3a57]' }) {
+function NumberField({ label, value, onChange, prefix, accent = 'text-slate-800', className = '' }) {
   return (
-    <label className="block">
-      <span className="mb-2 block text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#6d8ba7]">{label}</span>
-      <div className="flex items-center gap-2 rounded-[14px] bg-[#cfe9fb] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
-        {prefix ? <span className="text-sm font-bold text-[#2d70a4]">{prefix}</span> : null}
+    <label className={`block ${className}`}>
+      <span className="mb-2 block text-sm font-semibold text-slate-600">{label}</span>
+      <div className="flex items-center gap-2 bg-slate-50 w-full rounded-xl px-4 py-3.5 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition-all outline-none">
+        {prefix ? <span className="text-sm font-bold text-slate-500">{prefix}</span> : null}
         <input
           type="number"
           min="0"
           value={value}
           onChange={onChange}
-          className={`w-full appearance-none bg-transparent text-[14px] font-semibold outline-none ${accent}`}
+          className={`w-full appearance-none bg-transparent text-sm font-semibold outline-none ${accent}`}
         />
       </div>
     </label>
@@ -68,121 +64,141 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
   }
 
   return (
-    <PageCanvas>
-      <header className="flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex items-center gap-2 text-[#16324d]"
-          aria-label="Kembali ke detail produk"
-        >
-          <ArrowLeftIcon className="h-5 w-5 text-[#0d74c8]" />
-          <span className="text-[17px] font-semibold">Edit Produk</span>
-        </button>
-
-        <ActionButton label="Simpan" className="px-5 py-2.5 text-[13px]" onClick={handleSubmit} />
-      </header>
-
-      <div className="mt-5 rounded-[22px] bg-white px-4 py-4 shadow-[0_10px_30px_rgba(111,152,193,0.12)] ring-1 ring-[#edf4fa]">
-        <div className="flex items-center gap-3">
-          <ProductThumb kind={product.thumb} className="h-16 w-16 rounded-[18px]" />
-          <div>
-            <p className="text-[16px] font-bold text-[#16324d]">{product.name}</p>
-            <button type="button" className="mt-1 flex items-center gap-1 text-[12px] font-semibold text-[#0d74c8]">
-              <PhotoIcon className="h-3.5 w-3.5" />
-              Ganti Foto
+    <div className="flex h-screen overflow-hidden bg-slate-50">
+      <div className="w-full max-w-4xl mx-auto h-full overflow-y-auto pb-16 px-8 no-scrollbar">
+        <form onSubmit={handleSubmit}>
+          
+          <header className="flex justify-between items-center mb-10 mt-8">
+            <button
+              type="button"
+              onClick={onBack}
+              className="flex items-center gap-3 text-slate-800 hover:text-blue-600 transition-colors"
+              aria-label="Kembali ke detail produk"
+            >
+              <ArrowLeftIcon className="h-6 w-6 text-blue-600" />
+              <span className="text-2xl font-bold">Edit Produk</span>
             </button>
-          </div>
-        </div>
-      </div>
 
-      <form onSubmit={handleSubmit}>
-        <Section title="Informasi Dasar">
-          <div className="space-y-4">
-            <TextField label="Nama Produk" value={form.name} onChange={onFieldChange('name')} />
+            <button 
+              type="submit" 
+              className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 hover:shadow-lg active:scale-95 transition-all"
+            >
+              Simpan
+            </button>
+          </header>
 
-            <label className="block">
-              <span className="mb-2 block text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#6d8ba7]">Kategori</span>
-              <div className="rounded-[14px] bg-[#cfe9fb] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
-                <select
-                  value={form.category}
-                  onChange={onFieldChange('category')}
-                  className="w-full bg-transparent text-[14px] font-semibold text-[#1a3a57] outline-none"
-                >
-                  {productCategories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-6 mb-8">
+            <div className="w-20 h-20 bg-slate-50 rounded-xl flex-shrink-0 flex items-center justify-center p-2 border border-slate-100 shadow-sm relative overflow-hidden">
+               <ProductThumb kind={product.thumb} className="h-full w-full object-contain" />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-slate-800">{product.name}</p>
+              <div className="mt-2 text-sm text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2 cursor-pointer">
+                <PhotoIcon className="h-4 w-4" />
+                Ganti Foto
               </div>
-            </label>
-
-            <TextField
-              label="Kode SKU"
-              value={form.sku}
-              onChange={onFieldChange('sku')}
-              rightIcon={
-                <button
-                  type="button"
-                  onClick={onOpenScan}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-[#0d74c8] transition hover:bg-[#dff0fd]"
-                  aria-label="Scan kode SKU"
-                >
-                  <ScanIcon className="h-4 w-4" />
-                </button>
-              }
-            />
-          </div>
-        </Section>
-
-        <Section title="Manajemen Stok">
-          <div className="grid grid-cols-2 gap-3">
-            <NumberField label="Stok Saat Ini" value={form.stock} onChange={onFieldChange('stock')} />
-            <NumberField label="Minimal Stok" value={form.minStock} onChange={onFieldChange('minStock')} accent="text-[#b26000]" />
+            </div>
           </div>
 
-          <div className="mt-4 rounded-[16px] border border-[#efd9bc] bg-[#fff5ea] px-3 py-3 text-[#996233]">
-            <div className="flex items-start gap-2">
-              <div className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-current">
-                <WarnIcon className="h-3 w-3" />
+          <FormCard title="Informasi Dasar">
+            <div className="grid grid-cols-2 gap-6">
+              <TextField label="Nama Produk" value={form.name} onChange={onFieldChange('name')} className="col-span-2" />
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-slate-600">Kategori</span>
+                <div className="bg-slate-50 w-full rounded-xl px-4 py-3.5 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition-all outline-none">
+                  <select
+                    value={form.category}
+                    onChange={onFieldChange('category')}
+                    className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none cursor-pointer"
+                  >
+                    {productCategories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </label>
+
+              <TextField
+                label="Kode SKU"
+                value={form.sku}
+                onChange={onFieldChange('sku')}
+                rightIcon={
+                  <button
+                    type="button"
+                    onClick={onOpenScan}
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-blue-600 transition hover:bg-blue-50"
+                    aria-label="Scan kode SKU"
+                  >
+                    <ScanIcon className="h-5 w-5" />
+                  </button>
+                }
+              />
+            </div>
+          </FormCard>
+
+          <FormCard title="Manajemen Stok">
+            <div className="grid grid-cols-2 gap-6">
+              <NumberField label="Stok Saat Ini" value={form.stock} onChange={onFieldChange('stock')} />
+              <NumberField label="Minimal Stok" value={form.minStock} onChange={onFieldChange('minStock')} accent="text-amber-600" />
+            </div>
+
+            <div className={`mt-6 p-5 rounded-xl flex items-start gap-3 shadow-sm border ${stockInfo.tone === 'alert' ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'}`}>
+              <div className={`mt-0.5 shrink-0 ${stockInfo.tone === 'alert' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                {stockInfo.tone === 'alert' ? (
+                  <WarnIcon className="h-5 w-5" />
+                ) : (
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full border border-current">
+                    <CheckIcon className="h-3.5 w-3.5" />
+                  </div>
+                )}
               </div>
-              <p className="text-[11px] leading-5">
+              <p className="text-sm font-medium leading-relaxed">
                 {stockInfo.tone === 'alert'
                   ? 'Peringatan stok aktif karena jumlah item menyentuh atau berada di bawah batas minimal.'
                   : 'Stok produk masih berada di atas batas minimal dan aman untuk dijual.'}
               </p>
             </div>
-          </div>
-        </Section>
+          </FormCard>
 
-        <Section title="Harga & Keuangan">
-          <div className="space-y-4">
-            <NumberField label="Harga Modal" value={form.capitalPrice} onChange={onFieldChange('capitalPrice')} prefix="Rp" />
-            <NumberField label="Harga Jual" value={form.price} onChange={onFieldChange('price')} prefix="Rp" />
+          <FormCard title="Harga & Keuangan">
+            <div className="grid grid-cols-2 gap-6">
+              <NumberField label="Harga Modal" value={form.capitalPrice} onChange={onFieldChange('capitalPrice')} prefix="Rp" />
+              <NumberField label="Harga Jual" value={form.price} onChange={onFieldChange('price')} prefix="Rp" />
+            </div>
 
-            <div className="rounded-[18px] bg-[#f3f8fd] px-4 py-4">
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#6d8ba7]">Margin Keuntungan</p>
-              <div className="mt-2 flex items-end justify-between gap-3">
+            <div className="mt-6 rounded-xl bg-blue-50 border border-blue-100 p-6">
+              <p className="text-sm font-semibold text-blue-600">Margin Keuntungan</p>
+              <div className="mt-3 flex items-end justify-between gap-3">
                 <div>
-                  <p className="text-[18px] font-black tracking-tight text-[#0d74c8]">{formatCurrency(margin)}</p>
-                  <p className="text-[11px] font-semibold text-[#4c84b6]">({marginYield})</p>
+                  <p className="text-3xl font-black tracking-tight text-slate-800">{formatCurrency(margin)}</p>
+                  <p className="text-sm font-semibold text-slate-500 mt-1">Rentang: {marginYield}</p>
                 </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#deedf9] text-[#0d74c8]">
-                  <EditIcon className="h-4 w-4" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm text-blue-600">
+                  <EditIcon className="h-6 w-6" />
                 </div>
               </div>
             </div>
-          </div>
-        </Section>
+          </FormCard>
 
-        <div className="mt-7 flex justify-center">
-          <ActionButton label="Hapus Produk" icon={<TrashIcon className="h-4 w-4" />} variant="danger" className="px-6 py-3" />
-        </div>
-        <p className="mt-3 text-center text-[10px] font-medium uppercase tracking-[0.14em] text-[#9fb0bf]">
-          Tindakan ini tidak dapat dibatalkan
-        </p>
-      </form>
-    </PageCanvas>
+          <div className="mt-10 flex justify-center">
+            <button 
+              type="button" 
+              className="flex items-center gap-2 px-8 py-4 rounded-xl font-bold border border-red-500 bg-red-50 text-red-600 shadow-sm hover:bg-red-100 hover:shadow-md transition-all active:scale-95"
+            >
+              <TrashIcon className="h-5 w-5" />
+              Hapus Produk
+            </button>
+          </div>
+          <p className="mt-4 pb-8 text-center text-xs font-bold uppercase tracking-widest text-slate-400">
+            Tindakan ini tidak dapat dibatalkan
+          </p>
+
+        </form>
+      </div>
+    </div>
   )
 }
+

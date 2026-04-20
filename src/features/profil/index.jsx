@@ -3,6 +3,7 @@ import profilText from './text';
 import EditInformasiAkun from './components/EditInformasiAkun';
 import AturKeamanan from './components/AturKeamanan';
 import Bahasa from './components/Bahasa';
+import Sidebar from '../dashboard/components/Sidebar';
 
 const Profil = ({ activeTab, onTabChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -54,220 +55,213 @@ const Profil = ({ activeTab, onTabChange }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#1A1D20] flex justify-center w-full font-sans">
-      <div className="w-full max-w-[440px] bg-[#f4f7fb] min-h-screen relative shadow-2xl overflow-x-hidden flex flex-col font-sans text-slate-800 pb-8">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5">
-          <button 
-            onClick={() => onTabChange && onTabChange('terminal')}
-            className="text-blue-600 p-1 -ml-1 rounded-full hover:bg-blue-50 transition-colors">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-        </button>
-        <h1 className="text-lg font-bold text-blue-700">{profilText.header.title}</h1>
-        <button className="text-blue-600 p-1 -mr-1 rounded-full hover:bg-blue-50 transition-colors">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </button>
-      </div>
+    <div className="flex h-screen bg-slate-50 font-sans w-full justify-center md:justify-start overflow-hidden">
+      
+      {/* Sidebar for Desktop */}
+      <Sidebar activeTab="profil" onTabChange={onTabChange} />
 
-      {/* Profile Info */}
-      <div className="flex flex-col items-center mt-2">
-        <div className="relative">
-          <div className="w-24 h-24 rounded-full bg-slate-200 border-4 border-white shadow-sm overflow-hidden">
-            <img src={profileData.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-          </div>
-          <button onClick={() => setIsEditing(true)} className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full border-2 border-white shadow-sm hover:bg-blue-700 transition-colors">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-          </button>
-        </div>
-        <h2 className="text-xl font-bold mt-3 text-slate-800">{profileData.namaLengkap}</h2>
-        <p className="text-sm text-slate-500">{profileData.role}</p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="flex px-4 mt-6 space-x-3">
-        <div className="flex-1 bg-white rounded-xl p-4 shadow-sm">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">{profilText.stats.totalShift.label}</p>
-          <p className="text-2xl font-bold text-blue-600">{profilText.stats.totalShift.value}</p>
-        </div>
-        <div className="flex-1 bg-white rounded-xl p-4 shadow-sm">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">{profilText.stats.peringkat.label}</p>
-          <div className="flex items-center text-[#c28e0e]">
-            <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            <span className="text-xl font-bold">{profilText.stats.peringkat.value}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Menus */}
-      <div className="px-4 mt-6 space-y-4">
+      {/* Main Content Scrollable Area */}
+      <div className="flex-1 w-full max-w-[440px] md:max-w-none mx-auto bg-slate-50 h-screen overflow-y-auto overflow-x-hidden shadow-2xl md:shadow-none">
         
-        {/* Informasi Akun */}
-        <section className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="bg-[#eef5fc] px-4 py-3 flex justify-between items-center">
-            <h3 className="text-[11px] font-semibold text-blue-500">{profilText.sections.informasiAkun.title}</h3>
-            <button onClick={() => setIsEditing(true)} className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-              Edit
-            </button>
+        {/* Desktop Topbar */}
+        <div className="hidden md:flex items-center justify-between px-10 py-6 bg-white/80 backdrop-blur border-b border-slate-100 sticky top-0 z-20">
+          <div>
+            <h1 className="text-xl font-bold text-slate-800">{profilText.header.title}</h1>
+            <p className="text-sm text-slate-500">Kelola pengaturan preferensi dan informasi akun Anda.</p>
           </div>
-          <div className="divide-y divide-slate-100">
-            {/* Item */}
-            <div className="flex items-center p-4">
-              <div className="text-slate-500 mr-4">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] text-slate-400 mb-0.5">{profilText.sections.informasiAkun.items.namaLengkap.label}</p>
-                <p className="text-[13px] font-medium text-slate-700">{profileData.namaLengkap}</p>
-              </div>
-            </div>
-            {/* Item */}
-            <div className="flex items-center p-4">
-              <div className="text-slate-500 mr-4">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] text-slate-400 mb-0.5">{profilText.sections.informasiAkun.items.email.label}</p>
-                <p className="text-[13px] font-medium text-slate-700">{profileData.email}</p>
-              </div>
-              <div className="text-green-500 bg-green-100 rounded-full p-0.5">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-              </div>
-            </div>
-            {/* Item */}
-            <div className="flex items-center p-4">
-              <div className="text-slate-500 mr-4">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] text-slate-400 mb-0.5">{profilText.sections.informasiAkun.items.noTelepon.label}</p>
-                <p className="text-[13px] font-medium text-slate-700">{profileData.noTelepon}</p>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
 
-        {/* Keamanan */}
-        <section className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="bg-[#eef5fc] px-4 py-3">
-            <h3 className="text-[11px] font-semibold text-blue-500">{profilText.sections.keamanan.title}</h3>
-          </div>
-          <div className="divide-y divide-slate-100">
-            <button className="w-full flex items-center p-4 hover:bg-slate-50 transition-colors">
-              <div className="text-slate-500 mr-4">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              </div>
-              <div className="flex-1 text-left">
-                <p className="text-[13px] font-medium text-slate-700">{profilText.sections.keamanan.items.ubahPassword}</p>
-              </div>
-              <div className="text-slate-400">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-              </div>
-            </button>
+        {/* Mobile Header */}
+        <div className="md:hidden flex items-center justify-between px-6 py-5 bg-white border-b border-slate-100 sticky top-0 z-20">
             <button 
-              onClick={() => setIsSecurityOpen(true)}
-              className="w-full flex items-center p-4 hover:bg-slate-50 transition-colors"
-            >
-              <div className="text-slate-500 mr-4">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-              </div>
-              <div className="flex-1 text-left">
-                <p className="text-[13px] font-medium text-slate-700">{profilText.sections.keamanan.items.aturPin}</p>
-              </div>
-              <div className="text-slate-400">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-              </div>
+              onClick={() => onTabChange && onTabChange('terminal')}
+              className="text-blue-600 p-1 -ml-1 rounded-full hover:bg-blue-50 transition-colors">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
             </button>
-          </div>
-        </section>
+            <h1 className="text-lg font-bold text-blue-700">{profilText.header.title}</h1>
+            <div className="w-8"></div> {/* Spacer balance */}
+        </div>
 
-        {/* Pengaturan Aplikasi */}
-        <section className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="bg-[#eef5fc] px-4 py-3">
-            <h3 className="text-[11px] font-semibold text-blue-500">{profilText.sections.pengaturanAplikasi.title}</h3>
+        {/* Main Content Padding */}
+        <div className="p-6 md:p-12 w-full max-w-7xl mx-auto flex flex-col">
+          
+          <div className="mb-12 hidden md:block">
+            <h2 className="text-3xl font-semibold text-slate-800">{profilText.header.title}</h2>
           </div>
-          <div className="divide-y divide-slate-100">
-            <button 
-              onClick={() => setIsBahasaOpen(true)}
-              className="w-full flex items-center p-4 hover:bg-slate-50 transition-colors"
-            >
-              <div className="text-slate-500 mr-4">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-              </div>
-              <div className="flex-1 text-left">
-                <p className="text-[13px] font-medium text-slate-700">{profilText.sections.pengaturanAplikasi.items.bahasa.label}</p>
-              </div>
-              <div className="text-blue-600 text-[13px] font-bold flex items-center">
-                {currentLang === 'id' ? 'Indonesia' : currentLang === 'en' ? 'English' : currentLang === 'ms' ? 'Malay' : 'Chinese'}
-              </div>
-            </button>
-            <div className="w-full flex items-center p-4">
-              <div className="text-slate-500 mr-4">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-              </div>
-              <div className="flex-1 text-left">
-                <p className="text-[13px] font-medium text-slate-700">{profilText.sections.pengaturanAplikasi.items.modeGelap}</p>
-              </div>
-              <div>
-                <button 
-                  onClick={() => setIsDarkMode(!isDarkMode)}
-                  className={`w-10 h-5 rounded-full flex items-center transition-colors duration-300 focus:outline-none ${isDarkMode ? 'bg-blue-600' : 'bg-slate-200'}`}
-                >
-                  <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${isDarkMode ? 'translate-x-5' : 'translate-x-0.5'}`}></div>
+
+          {/* Profile Content Grid */}
+          <div className="md:grid md:grid-cols-[400px_1fr] md:gap-12 flex flex-col items-start w-full">
+            
+            {/* LEFT COLUMN: Central Profile Card */}
+            <div className="w-full flex-shrink-0">
+               <div className="bg-white p-10 rounded-2xl shadow-xl border border-slate-100/50 flex flex-col items-center relative w-full">
+                 
+                 <div className="relative mb-6">
+                   <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner bg-slate-100">
+                     <img src={profileData.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                   </div>
+                   <button 
+                     onClick={() => setIsEditing(true)} 
+                     className="absolute bottom-1 right-1 bg-white text-blue-600 p-2.5 rounded-full shadow-md border border-slate-100 hover:bg-blue-50 hover:scale-105 transition-all"
+                   >
+                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                   </button>
+                 </div>
+
+                 <div className="flex flex-col items-center gap-1 text-center mb-10 w-full">
+                   <h2 className="text-2xl font-bold text-slate-900 leading-tight">{profileData.namaLengkap}</h2>
+                   <p className="text-[15px] font-medium text-slate-400">{profileData.role}</p>
+                 </div>
+
+                 {/* Stats Cards */}
+                 <div className="grid grid-cols-2 gap-6 w-full">
+                   <div className="flex flex-col items-center justify-center p-5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{profilText.stats.totalShift.label}</p>
+                     <p className="text-3xl font-bold text-slate-800">{profilText.stats.totalShift.value}</p>
+                   </div>
+                   <div className="flex flex-col items-center justify-center p-5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{profilText.stats.peringkat.label}</p>
+                     <div className="flex items-center gap-2 text-yellow-500 drop-shadow-sm">
+                       <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                       <span className="text-3xl font-bold text-slate-800">{profilText.stats.peringkat.value}</span>
+                     </div>
+                   </div>
+                 </div>
+
+               </div>
+            </div>
+
+            {/* RIGHT COLUMN: Info & Settings Panels */}
+            <div className="flex flex-col gap-10 w-full mt-10 md:mt-0">
+              
+              {/* Informasi Akun */}
+              <section className="bg-white p-8 rounded-xl shadow-sm border border-slate-100">
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-xs font-bold text-slate-400 tracking-wider uppercase">{profilText.sections.informasiAkun.title}</h3>
+                  <button onClick={() => setIsEditing(true)} className="text-sm font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors">
+                    Edit
+                  </button>
+                </div>
+                <div className="flex flex-col gap-6">
+                  <div className="flex justify-between items-center pb-6 border-b border-slate-50 last:border-0 last:pb-0">
+                    <span className="text-sm text-slate-500 font-medium">{profilText.sections.informasiAkun.items.namaLengkap.label}</span>
+                    <span className="text-base font-bold text-slate-800">{profileData.namaLengkap}</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-6 border-b border-slate-50 last:border-0 last:pb-0">
+                    <span className="text-sm text-slate-500 font-medium">{profilText.sections.informasiAkun.items.email.label}</span>
+                    <div className="flex items-center gap-2">
+                       <span className="text-base font-bold text-slate-800">{profileData.email}</span>
+                       <div className="text-emerald-500 bg-emerald-50 rounded-full p-1 border border-emerald-100 shadow-sm ml-1"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center pb-6 border-b border-slate-50 last:border-0 last:pb-0">
+                    <span className="text-sm text-slate-500 font-medium">{profilText.sections.informasiAkun.items.noTelepon.label}</span>
+                    <span className="text-base font-bold text-slate-800">{profileData.noTelepon}</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Keamanan */}
+              <section className="bg-white p-8 rounded-xl shadow-sm border border-slate-100">
+                <h3 className="text-xs font-bold text-slate-400 tracking-wider uppercase mb-6">{profilText.sections.keamanan.title}</h3>
+                <div className="flex flex-col gap-2">
+                  <button className="flex items-center justify-between p-3 -mx-3 hover:bg-slate-50 rounded-lg transition-colors group">
+                    <div className="flex items-center gap-4">
+                      <div className="text-slate-400 group-hover:text-blue-500 transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      </div>
+                      <span className="text-[15px] font-semibold text-slate-700">{profilText.sections.keamanan.items.ubahPassword}</span>
+                    </div>
+                    <svg className="w-4 h-4 text-slate-300 group-hover:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                  </button>
+                  
+                  <button onClick={() => setIsSecurityOpen(true)} className="flex items-center justify-between p-3 -mx-3 hover:bg-slate-50 rounded-lg transition-colors group">
+                    <div className="flex items-center gap-4">
+                      <div className="text-slate-400 group-hover:text-blue-500 transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                      </div>
+                      <span className="text-[15px] font-semibold text-slate-700">{profilText.sections.keamanan.items.aturPin}</span>
+                    </div>
+                    <svg className="w-4 h-4 text-slate-300 group-hover:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                  </button>
+                </div>
+              </section>
+
+              {/* Pengaturan Aplikasi */}
+              <section className="bg-white p-8 rounded-xl shadow-sm border border-slate-100">
+                <h3 className="text-xs font-bold text-slate-400 tracking-wider uppercase mb-6">{profilText.sections.pengaturanAplikasi.title}</h3>
+                <div className="flex flex-col gap-2">
+                  <button onClick={() => setIsBahasaOpen(true)} className="flex items-center justify-between p-3 -mx-3 hover:bg-slate-50 rounded-lg transition-colors group">
+                    <div className="flex items-center gap-4">
+                      <div className="text-slate-400 group-hover:text-blue-500 transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                      </div>
+                      <span className="text-[15px] font-semibold text-slate-700">{profilText.sections.pengaturanAplikasi.items.bahasa.label}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                       <span className="text-[13px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+                         {currentLang === 'id' ? 'Indonesia' : currentLang === 'en' ? 'English' : currentLang === 'ms' ? 'Malay' : 'Chinese'}
+                       </span>
+                       <svg className="w-4 h-4 text-slate-300 group-hover:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                    </div>
+                  </button>
+
+                  <div className="flex items-center justify-between p-3 -mx-3 hover:bg-slate-50 rounded-lg transition-colors group cursor-pointer" onClick={() => setIsDarkMode(!isDarkMode)}>
+                    <div className="flex items-center gap-4">
+                       <div className="text-slate-400 group-hover:text-blue-500 transition-colors">
+                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                       </div>
+                       <span className="text-[15px] font-semibold text-slate-700">{profilText.sections.pengaturanAplikasi.items.modeGelap}</span>
+                    </div>
+                    <div>
+                       <button className={`w-11 h-6 rounded-full flex items-center transition-colors duration-300 focus:outline-none ${isDarkMode ? 'bg-blue-600' : 'bg-slate-200'}`}>
+                         <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${isDarkMode ? 'translate-x-6' : 'translate-x-[4px]'}`}></div>
+                       </button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Bantuan & Privasi */}
+              <section className="bg-white p-8 rounded-xl shadow-sm border border-slate-100">
+                <div className="flex flex-col gap-2">
+                  <button className="flex items-center justify-between p-3 -mx-3 hover:bg-slate-50 rounded-lg transition-colors group">
+                    <div className="flex items-center gap-4">
+                      <div className="text-slate-400 group-hover:text-blue-500 transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      </div>
+                      <span className="text-[15px] font-semibold text-slate-700">{profilText.sections.bantuanPrivasi.pusatBantuan}</span>
+                    </div>
+                    <svg className="w-4 h-4 text-slate-300 group-hover:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                  </button>
+                  
+                  <button className="flex items-center justify-between p-3 -mx-3 hover:bg-slate-50 rounded-lg transition-colors group">
+                    <div className="flex items-center gap-4">
+                      <div className="text-slate-400 group-hover:text-blue-500 transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
+                      </div>
+                      <span className="text-[15px] font-semibold text-slate-700">{profilText.sections.bantuanPrivasi.kebijakanPrivasi}</span>
+                    </div>
+                    <svg className="w-4 h-4 text-slate-300 group-hover:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                  </button>
+                </div>
+              </section>
+
+              {/* Logout Button */}
+              <div className="mt-12 mb-8 md:mb-0">
+                <button className="w-full bg-red-50 text-red-600 font-semibold py-4 rounded-xl border border-red-200 transition-all shadow-sm hover:bg-red-100 active:scale-[0.98]">
+                  {profilText.logout}
                 </button>
               </div>
+
+              {/* Footer Version */}
+              <div className="text-center pb-12">
+                <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">{profilText.footer}</p>
+              </div>
+
             </div>
           </div>
-        </section>
-
-        {/* Bantuan & Privasi */}
-        <section className="bg-white rounded-xl shadow-sm divide-y divide-slate-100 overflow-hidden">
-          <button className="w-full flex items-center p-4 hover:bg-slate-50 transition-colors">
-            <div className="text-slate-500 mr-4">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-[13px] font-medium text-slate-700">{profilText.sections.bantuanPrivasi.pusatBantuan}</p>
-            </div>
-          </button>
-          <button className="w-full flex items-center p-4 hover:bg-slate-50 transition-colors">
-            <div className="text-slate-500 mr-4">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-[13px] font-medium text-slate-700">{profilText.sections.bantuanPrivasi.kebijakanPrivasi}</p>
-            </div>
-          </button>
-        </section>
-
-        {/* Logout Button */}
-        <button className="w-full bg-[#fce8e8] text-red-600 font-bold py-3.5 rounded-xl flex items-center justify-center hover:bg-red-100 transition-colors mt-2">
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-          {profilText.logout}
-        </button>
-
-      </div>
-
-      {/* Footer Version */}
-      <div className="mt-8 text-center pb-4">
-        <p className="text-[10px] text-slate-400">{profilText.footer}</p>
-      </div>
-
+        </div>
       </div>
     </div>
   );
