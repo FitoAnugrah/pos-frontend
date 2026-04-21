@@ -10,6 +10,58 @@ import {
   PrinterIcon,
 } from '../../../components/ui/icons';
 
+if (!membersData.__augmentedV4) {
+  membersData.__augmentedV4 = true;
+  membersData.forEach((m) => {
+    // Fix existing joinedDates that might have been YYYY-MM-DD
+    if (m.joinedDate && m.joinedDate.includes('-')) {
+       const parts = m.joinedDate.split('-');
+       if(parts.length === 3) {
+         const mNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+         m.joinedDate = `${mNames[parseInt(parts[1])-1]} ${parts[0]}`;
+       }
+    }
+
+    m.transactions = [];
+    const numTx = Math.floor(Math.random() * 12) + 5;
+    let memberPts = 0;
+    for (let i = 0; i < numTx; i++) {
+      const rawAmt = Math.floor(Math.random() * 50) * 5000 + 50000;
+      const status = Math.random() > 0.2 ? 'SUCCESS' : 'FAILED';
+      const pts = status === 'SUCCESS' ? Math.floor(rawAmt / 1000) : 0;
+      memberPts += pts;
+
+      const subtotal = Math.floor(rawAmt / 1.06);
+      const tax = Math.floor(subtotal * 0.11);
+      const discount = Math.floor(subtotal * 0.05);
+
+      m.transactions.push({
+        id: `TRX-${Math.floor(Math.random() * 900000) + 100000}`,
+        trxId: `TRX-${Math.floor(Math.random() * 900000) + 100000}`,
+        displayDate: '24 Oct 2023',
+        time: '14:20',
+        amount: `Rp ${rawAmt.toLocaleString('id-ID')}`,
+        status: status,
+        paymentMethod: ['Tunai', 'QRIS', 'SeaBank'][Math.floor(Math.random() * 3)],
+        cashier: ['Admin Ali', 'Anisa Rahma', 'Budi Kasir'][Math.floor(Math.random() * 3)],
+        items: [
+           { name: 'Minyak Goreng 1L', price: 'Rp 25.000', qty: 2, total: 'Rp 50.000' },
+           { name: 'Beras Premium 5kg', price: 'Rp 95.000', qty: 1, total: 'Rp 95.000' },
+           { name: 'Gula Pasir 1kg', price: 'Rp 15.000', qty: 1, total: 'Rp 15.000' }
+        ],
+        points: { earned: `+${pts}`, balance: `${memberPts} pts` },
+        summary: {
+          subtotal: `Rp ${subtotal.toLocaleString('id-ID')}`,
+          tax: `Rp ${tax.toLocaleString('id-ID')}`,
+          discount: `-Rp ${discount.toLocaleString('id-ID')}`
+        },
+        payment: { method: 'Tunai', change: 'Rp 0' }
+      });
+    }
+    m.points = memberPts.toLocaleString('id-ID');
+  });
+}
+
 export default function TransactionDetail() {
   const { trxId } = useParams();
   const navigate = useNavigate();
@@ -49,14 +101,19 @@ export default function TransactionDetail() {
         </div>
 
         <div className="flex flex-col items-center mt-2 px-5">
-          {/* Success Icon */}
-          <div className="bg-[#0A6CBF] w-20 h-20 rounded-full flex items-center justify-center shadow-[0_10px_20px_rgba(10,108,191,0.3)] mb-4">
+          <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg mb-4 ${transaction.status === 'SUCCESS' ? 'bg-[#0A6CBF] shadow-[0_10px_20px_rgba(10,108,191,0.3)]' : 'bg-red-500 shadow-[0_10px_20px_rgba(239,68,68,0.3)]'}`}>
             <div className="bg-white w-10 h-10 rounded-full flex items-center justify-center">
-              <CheckIcon className="w-6 h-6 text-[#0A6CBF]" />
+              {transaction.status === 'SUCCESS' ? (
+                <CheckIcon className="w-6 h-6 text-[#0A6CBF]" />
+              ) : (
+                <span className="text-red-500 font-bold text-xl">X</span>
+              )}
             </div>
           </div>
           
-          <p className="text-[15px] font-semibold text-[#5C7C9E] mb-1">Pembayaran Berhasil</p>
+          <p className="text-[15px] font-semibold text-[#5C7C9E] mb-1">
+            {transaction.status === 'SUCCESS' ? 'Pembayaran Berhasil' : 'Pembayaran Gagal'}
+          </p>
           <h2 className="text-[36px] font-extrabold text-[#11263C] tracking-tight">{transaction.amount}</h2>
 
           {/* Receipt Card */}
@@ -170,11 +227,22 @@ export default function TransactionDetail() {
         {/* Bottom Fixed Action Buttons */}
         <div className="fixed bottom-0 left-0 right-0 w-full flex justify-center bg-transparent z-20 pointer-events-none">
           <div className="w-full max-w-[440px] md:max-w-3xl px-5 py-6 flex gap-3 pointer-events-auto bg-gradient-to-t from-[#F4F8FB] via-[#F4F8FB] to-transparent">
-            <button className="flex-1 bg-[#C9E0F5] hover:bg-[#B3D4EF] text-[#0A6CBF] font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 transition-colors">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Tautan struk disalin ke clipboard!");
+              }}
+              className="flex-1 bg-[#C9E0F5] hover:bg-[#B3D4EF] text-[#0A6CBF] font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 transition-colors">
               <ShareIcon className="w-4 h-4" />
               Bagikan Struk
             </button>
-            <button className="flex-1 bg-[#0A6CBF] hover:bg-[#095BA3] text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-[#0A6CBF]/20">
+            <button 
+              onClick={() => {
+                if(window.confirm('Unduh struk ini?')) {
+                  window.print();
+                }
+              }}
+              className="flex-1 bg-[#0A6CBF] hover:bg-[#095BA3] text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-[#0A6CBF]/20">
               <PrinterIcon className="w-4 h-4" />
               Cetak Struk
             </button>

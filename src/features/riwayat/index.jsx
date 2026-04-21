@@ -139,6 +139,7 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
                 return (
                   <div 
                     key={idx} 
+                    onClick={() => navigate(`/riwayat/${trx.id.replace('#', '')}`)}
                     className="bg-white rounded-3xl p-5 flex items-center justify-between shadow-sm border border-slate-50 hover:shadow-md transition-shadow cursor-pointer"
                   >
                     <div className="flex items-center gap-4">

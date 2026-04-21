@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import membersData from '../../../mock/memberData.json';
 import {
   ArrowLeftIcon,
   UserIcon,
@@ -18,8 +19,21 @@ export default function AddMember() {
     phone: '',
     email: '',
     level: 'SILVER',
+    avatarUrl: null,
   });
   const [errors, setErrors] = useState({});
+  const fileInputRef = useRef(null);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, avatarUrl: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const validate = () => {
     const e = {};
@@ -32,7 +46,26 @@ export default function AddMember() {
   const handleSave = () => {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
-    console.log('Saving new member:', formData);
+    
+    const d = new Date();
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+    const newMember = {
+      id: Date.now(),
+      memberId: `MEMBER-${Math.floor(Math.random() * 10000)}`,
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      level: formData.level,
+      avatarUrl: formData.avatarUrl,
+      points: 0,
+      status: 'Active Account',
+      joinedDate: `${months[d.getMonth()]} ${d.getFullYear()}`,
+      transactions: []
+    };
+    membersData.push(newMember);
+
+    console.log('Saving new member:', newMember);
     navigate('/member');
   };
 
@@ -84,9 +117,23 @@ export default function AddMember() {
         <div className="flex flex-col items-center mb-6">
           <div className="relative mb-3">
             <div className="w-24 h-24 rounded-2xl overflow-hidden bg-blue-50 flex items-center justify-center border-2 border-white shadow-sm">
-              <UserIcon className="w-10 h-10 text-blue-300" />
+              {formData.avatarUrl ? (
+                <img src={formData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <UserIcon className="w-10 h-10 text-blue-300" />
+              )}
             </div>
-            <button className="absolute -bottom-1 -right-1 bg-blue-600 text-white p-2 rounded-full border-2 border-white hover:bg-blue-700 transition-colors shadow-sm">
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleImageUpload} 
+              accept="image/*" 
+              className="hidden" 
+            />
+            <button 
+              onClick={() => fileInputRef.current.click()}
+              className="absolute -bottom-1 -right-1 bg-blue-600 text-white p-2 rounded-full border-2 border-white hover:bg-blue-700 transition-colors shadow-sm"
+            >
               <CameraIcon className="w-3.5 h-3.5" />
             </button>
           </div>

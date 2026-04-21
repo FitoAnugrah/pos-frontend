@@ -14,6 +14,7 @@ import TransactionDetail from '../features/member/pages/TransactionDetail';
 import EditMember from '../features/member/pages/EditMember';
 import AddMember from '../features/member/pages/AddMember';
 import RiwayatTransaksi from '../features/riwayat';
+import DetailTransaksi from '../features/riwayat/DetailTransaksi';
 import Notifications from '../features/monitoring/Notifikasi';
 import AktivitasTerkini from '../features/monitoring/Aktivitas';
 import ScanBarang from '../features/kasir/ScanBarang';
@@ -46,6 +47,7 @@ export default function AppRoutes() {
       <Route path="/stok" element={<StokFeature onMainTabChange={handleMainTabChange} />} />
       <Route path="/stok/manual-entry" element={<ManualEntry />} />
       <Route path="/riwayat" element={<RiwayatTransaksi onMainTabChange={handleMainTabChange} />} />
+      <Route path="/riwayat/:id" element={<DetailTransaksi />} />
       <Route path="/notifikasi" element={<Notifications />} />
       <Route path="/aktivitas" element={<AktivitasTerkini />} />
       <Route path="/member" element={<MemberPage />} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import membersData from '../../../mock/memberData.json';
 import {
@@ -19,8 +19,21 @@ export default function EditMember() {
     phone: member?.phone || '',
     email: member?.email || '',
     level: member?.level || 'BRONZE',
+    avatarUrl: member?.avatarUrl || null,
   });
   const [errors, setErrors] = useState({});
+  const fileInputRef = useRef(null);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, avatarUrl: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   if (!member) {
     return (
@@ -42,8 +55,27 @@ export default function EditMember() {
   const handleSave = () => {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
+    
+    if (member) {
+      member.name = formData.name;
+      member.phone = formData.phone;
+      member.email = formData.email;
+      member.level = formData.level;
+      member.avatarUrl = formData.avatarUrl;
+    }
+
     console.log('Saving member details:', formData);
     navigate(-1);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus member ini?')) {
+      const index = membersData.findIndex(m => m.id === member.id);
+      if (index !== -1) {
+        membersData.splice(index, 1);
+      }
+      navigate('/member');
+    }
   };
 
   const set = (field) => (e) => {
@@ -96,15 +128,25 @@ export default function EditMember() {
         <div className="flex flex-col items-center mb-6">
           <div className="relative mb-3">
             <div className="w-24 h-24 rounded-2xl overflow-hidden bg-blue-50 border-2 border-white shadow-sm">
-              {member.avatarUrl ? (
-                <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
+              {formData.avatarUrl ? (
+                <img src={formData.avatarUrl} alt={formData.name} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-blue-600 font-bold text-3xl flex h-full items-center justify-center">
                   {member.initials}
                 </span>
               )}
             </div>
-            <button className="absolute -bottom-1 -right-1 bg-blue-600 text-white p-2 rounded-full border-2 border-white hover:bg-blue-700 transition-colors shadow-sm">
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleImageUpload} 
+              accept="image/*" 
+              className="hidden" 
+            />
+            <button 
+              onClick={() => fileInputRef.current.click()}
+              className="absolute -bottom-1 -right-1 bg-blue-600 text-white p-2 rounded-full border-2 border-white hover:bg-blue-700 transition-colors shadow-sm"
+            >
               <CameraIcon className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -178,7 +220,7 @@ export default function EditMember() {
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-red-100">
           <h3 className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-3">Zona Berbahaya</h3>
           <button
-            onClick={() => { console.log('Removing:', member.id); navigate('/member'); }}
+            onClick={handleDelete}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-red-200 text-red-500 font-bold text-sm hover:bg-red-50 transition-colors"
           >
             <TrashIcon className="w-4 h-4" />
