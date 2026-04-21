@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import membersData from '../../../mock/memberData.json';
+import membersData from '../../../mock/augmentedMemberData.js';
 import {
   ArrowLeftIcon,
   PhoneIcon,

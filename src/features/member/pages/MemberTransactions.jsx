@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import membersData from '../../../mock/memberData.json';
+import membersData from '../../../mock/augmentedMemberData.js';
 import {
   ArrowLeftIcon,
   SearchIcon,
@@ -24,13 +24,9 @@ export default function MemberTransactions() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(''); // Format: 'YYYY-MM'
 
-  if (!member) {
-    return <div className="p-8 text-center font-sans">Member not found</div>;
-  }
-
   // Determine available months from user's transactions
   const availableMonths = useMemo(() => {
-    if (!member.transactions) return [];
+    if (!member || !member.transactions) return [];
     const months = new Set();
     member.transactions.forEach(trx => {
       if (trx.isoDate) {
@@ -40,16 +36,18 @@ export default function MemberTransactions() {
       }
     });
     return Array.from(months).sort((a, b) => b.localeCompare(a)); // Descending
-  }, [member.transactions]);
+  }, [member]);
 
-  // Initially set selectedMonth to the latest available month, if empty string
-  if (selectedMonth === '' && availableMonths.length > 0) {
-    setSelectedMonth(availableMonths[0]);
-  }
+  // Initially set selectedMonth to the latest available month
+  React.useEffect(() => {
+    if (selectedMonth === '' && availableMonths.length > 0) {
+      setSelectedMonth(availableMonths[0]);
+    }
+  }, [availableMonths, selectedMonth]);
 
   // Filter transactions based on selectedMonth and searchQuery
   const filteredTransactions = useMemo(() => {
-    if (!member.transactions) return [];
+    if (!member || !member.transactions) return [];
     let result = member.transactions;
 
     // Filter by Month
@@ -78,7 +76,11 @@ export default function MemberTransactions() {
     });
 
     return grouped;
-  }, [member.transactions, selectedMonth, searchQuery]);
+  }, [member, selectedMonth, searchQuery]);
+
+  if (!member) {
+    return <div className="p-8 text-center font-sans">Member not found</div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -157,7 +159,6 @@ export default function MemberTransactions() {
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
               >
-                <option value="">Semua Bulan</option>
                 {availableMonths.map(m => {
                   const [year, month] = m.split('-');
                   return <option key={m} value={m}>{getMonthName(parseInt(month)-1)} {year}</option>

@@ -86,7 +86,10 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
               >
                 <BellIcon className="w-5 h-5" />
               </button>
-              <div className="w-8 h-8 rounded-full overflow-hidden bg-[#D1E4F5] border border-white shadow-sm">
+              <div 
+                onClick={() => navigate('/profil')}
+                className="w-8 h-8 rounded-full overflow-hidden bg-[#D1E4F5] border border-white shadow-sm cursor-pointer hover:ring-2 hover:ring-[#0A6CBF] transition-all"
+              >
                 <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" className="w-full h-full object-cover" />
               </div>
             </div>

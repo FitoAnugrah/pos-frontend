@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import membersData from '../../../mock/memberData.json';
+import membersData from '../../../mock/augmentedMemberData.js';
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -9,58 +9,6 @@ import {
   ShareIcon,
   PrinterIcon,
 } from '../../../components/ui/icons';
-
-if (!membersData.__augmentedV4) {
-  membersData.__augmentedV4 = true;
-  membersData.forEach((m) => {
-    // Fix existing joinedDates that might have been YYYY-MM-DD
-    if (m.joinedDate && m.joinedDate.includes('-')) {
-       const parts = m.joinedDate.split('-');
-       if(parts.length === 3) {
-         const mNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-         m.joinedDate = `${mNames[parseInt(parts[1])-1]} ${parts[0]}`;
-       }
-    }
-
-    m.transactions = [];
-    const numTx = Math.floor(Math.random() * 12) + 5;
-    let memberPts = 0;
-    for (let i = 0; i < numTx; i++) {
-      const rawAmt = Math.floor(Math.random() * 50) * 5000 + 50000;
-      const status = Math.random() > 0.2 ? 'SUCCESS' : 'FAILED';
-      const pts = status === 'SUCCESS' ? Math.floor(rawAmt / 1000) : 0;
-      memberPts += pts;
-
-      const subtotal = Math.floor(rawAmt / 1.06);
-      const tax = Math.floor(subtotal * 0.11);
-      const discount = Math.floor(subtotal * 0.05);
-
-      m.transactions.push({
-        id: `TRX-${Math.floor(Math.random() * 900000) + 100000}`,
-        trxId: `TRX-${Math.floor(Math.random() * 900000) + 100000}`,
-        displayDate: '24 Oct 2023',
-        time: '14:20',
-        amount: `Rp ${rawAmt.toLocaleString('id-ID')}`,
-        status: status,
-        paymentMethod: ['Tunai', 'QRIS', 'SeaBank'][Math.floor(Math.random() * 3)],
-        cashier: ['Admin Ali', 'Anisa Rahma', 'Budi Kasir'][Math.floor(Math.random() * 3)],
-        items: [
-           { name: 'Minyak Goreng 1L', price: 'Rp 25.000', qty: 2, total: 'Rp 50.000' },
-           { name: 'Beras Premium 5kg', price: 'Rp 95.000', qty: 1, total: 'Rp 95.000' },
-           { name: 'Gula Pasir 1kg', price: 'Rp 15.000', qty: 1, total: 'Rp 15.000' }
-        ],
-        points: { earned: `+${pts}`, balance: `${memberPts} pts` },
-        summary: {
-          subtotal: `Rp ${subtotal.toLocaleString('id-ID')}`,
-          tax: `Rp ${tax.toLocaleString('id-ID')}`,
-          discount: `-Rp ${discount.toLocaleString('id-ID')}`
-        },
-        payment: { method: 'Tunai', change: 'Rp 0' }
-      });
-    }
-    m.points = memberPts.toLocaleString('id-ID');
-  });
-}
 
 export default function TransactionDetail() {
   const { trxId } = useParams();
