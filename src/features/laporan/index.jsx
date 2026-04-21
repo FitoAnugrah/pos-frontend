@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from 'react'
 import {
+  ArrowLeft,
   CalendarDays,
   ChevronUp,
-  Menu,
   MoreHorizontal,
   Package2,
   ReceiptText,
@@ -17,7 +17,7 @@ import {
   Tooltip,
   XAxis,
 } from 'recharts'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const reportDataByFilter = {
   hari: {
@@ -127,7 +127,7 @@ function formatShortRupiah(value) {
 
 function SummaryCard({ label, value, accentClassName = 'text-slate-900', children, className = '' }) {
   return (
-    <article className={`rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-100 ${className}`}>
+    <article className={`w-full rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-100 ${className}`}>
       <p className="text-sm font-medium text-slate-500">{label}</p>
       <p className={`mt-2 text-3xl font-bold tracking-tight ${accentClassName}`}>{value}</p>
       {children ? <div className="mt-3">{children}</div> : null}
@@ -137,7 +137,7 @@ function SummaryCard({ label, value, accentClassName = 'text-slate-900', childre
 
 function ProductItem({ product }) {
   return (
-    <article className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+    <article className="flex w-full items-center gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
       <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${product.bgClassName}`}>
         {product.icon}
       </div>
@@ -154,6 +154,7 @@ export default function LaporanPenjualan() {
   const [activeFilter, setActiveFilter] = useState('hari')
   const [selectedDate, setSelectedDate] = useState('')
   const dateInputRef = useRef(null)
+  const navigate = useNavigate()
 
   const currentReport = useMemo(() => reportDataByFilter[activeFilter], [activeFilter])
 
@@ -174,15 +175,16 @@ export default function LaporanPenjualan() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 sm:p-5 lg:p-8">
-      <div className="mx-auto w-full max-w-6xl">
+    <div className="w-full min-h-screen bg-slate-50">
+      <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-5 sm:py-5 lg:px-8 lg:py-8">
         <header className="flex items-center justify-between gap-3 rounded-3xl bg-white/80 px-4 py-3 shadow-sm ring-1 ring-slate-100 backdrop-blur sm:px-5">
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-slate-700 transition hover:bg-slate-100"
-            aria-label="Buka menu"
+            onClick={() => navigate('/')}
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-slate-700 transition hover:bg-slate-100 hover:text-blue-600"
+            aria-label="Kembali ke dashboard"
           >
-            <Menu className="h-5 w-5" />
+            <ArrowLeft className="h-5 w-5 cursor-pointer hover:text-blue-600" />
           </button>
 
           <h1 className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">Laporan Penjualan</h1>
@@ -253,11 +255,11 @@ export default function LaporanPenjualan() {
           </div>
         </div>
 
-        <section className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <section className="mt-6 grid w-full grid-cols-1 gap-4 lg:grid-cols-12">
           <SummaryCard
             label={`Total Penjualan ${periodLabel}`}
             value={formatRupiah(currentReport.totalPenjualan)}
-            className="lg:col-span-12"
+            className="w-full lg:col-span-12"
           >
             <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
               <ChevronUp className="h-3.5 w-3.5" />
@@ -265,16 +267,20 @@ export default function LaporanPenjualan() {
             </span>
           </SummaryCard>
 
-          <SummaryCard label="Total Transaksi" value={String(currentReport.totalTransaksi)} className="lg:col-span-6" />
+          <SummaryCard
+            label="Total Transaksi"
+            value={String(currentReport.totalTransaksi)}
+            className="w-full lg:col-span-6"
+          />
           <SummaryCard
             label="Laba Bersih"
             value={formatShortRupiah(currentReport.labaBersih)}
             accentClassName="text-blue-600"
-            className="lg:col-span-6"
+            className="w-full lg:col-span-6"
           />
         </section>
 
-        <section className="mt-6 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-100 sm:p-5">
+        <section className="mt-6 w-full rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-100 sm:p-5">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-base font-semibold text-slate-900">{`Tren Penjualan ${periodLabel}`}</h2>
             <button
@@ -326,7 +332,7 @@ export default function LaporanPenjualan() {
           </div>
         </section>
 
-        <section className="mt-6">
+        <section className="mt-6 w-full">
           <div className="mb-4 flex items-center justify-between gap-3">
             <h2 className="text-xl font-bold tracking-tight text-slate-900">Produk Terlaris</h2>
             <Link
