@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, ChartIcon, CheckIcon, PhotoIcon, ScanIcon } from '../components/icons'
+import { ArrowLeftIcon, ChartIcon, CheckIcon, PhotoIcon, ScanIcon } from '../../../components/ui/icons'
 import { calculateMargin, calculateMarginYield, formatCurrency } from '../utils'
 
 // Refactored InputField

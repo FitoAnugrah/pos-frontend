@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, BoxIcon, CheckIcon, ChartIcon, DotsIcon, EditIcon, MoneyIcon, RefreshIcon, TagIcon } from '../components/icons'
+import { ArrowLeftIcon, BoxIcon, CheckIcon, ChartIcon, DotsIcon, EditIcon, MoneyIcon, RefreshIcon, TagIcon } from '../../../components/ui/icons'
 import ProductThumb from '../components/ProductThumb'
 import { calculateMargin, calculateMarginYield, formatCurrency, getStockInfo } from '../utils'
 

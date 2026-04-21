@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { stockReasons } from '../data'
 import ProductThumb from '../components/ProductThumb'
-import { ArrowLeftIcon, MinusIcon, PlusIcon } from '../components/icons'
+import { ArrowLeftIcon, MinusIcon, PlusIcon } from '../../../components/ui/icons'
 
 function ChevronRightSmall() {
   return (

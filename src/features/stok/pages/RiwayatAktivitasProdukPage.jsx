@@ -7,7 +7,7 @@ import {
   EditIcon,
   MoneyIcon,
   SearchIcon,
-} from '../components/icons'
+} from '../../../components/ui/icons'
 
 const filters = [
   { id: 'all', label: 'Semua' },

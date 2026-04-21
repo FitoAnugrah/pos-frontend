@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { categories } from '../data'
 import ProductCard from '../components/ProductCard'
-import { SearchIcon } from '../components/icons'
+import { SearchIcon } from '../../../components/ui/icons'
 import BottomNav from '../../dashboard/components/BottomNav'
 import Sidebar from '../../dashboard/components/Sidebar'
 

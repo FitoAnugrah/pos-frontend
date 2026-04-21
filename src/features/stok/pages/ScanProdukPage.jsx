@@ -7,7 +7,7 @@ import {
   GalleryIcon,
   ScanIcon,
   WarnIcon,
-} from '../components/icons'
+} from '../../../components/ui/icons'
 
 const RECENT_SCANS = [
   { name: 'Coca-Cola 330ml', sku: 'CC-330-CAN' },
