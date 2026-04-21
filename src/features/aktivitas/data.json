@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "type": "warning",
+    "title": "Stok Minyak < 5",
+    "time": "14:02",
+    "desc": "Alert: Persediaan menipis di gudang pusat",
+    "category": "Stok"
+  },
+  {
+    "id": 2,
+    "type": "member",
+    "title": "Member Baru Terdaftar",
+    "time": "13:45",
+    "desc": "Andi Wijaya telah bergabung dalam program loyalitas.",
+    "category": "Member"
+  },
+  {
+    "id": 3,
+    "type": "receipt",
+    "title": "Transaksi Berhasil",
+    "time": "13:10",
+    "desc": "Pembayaran Invoice #88291 via QRIS sebesar Rp 450.000.",
+    "category": "Transaksi"
+  },
+  {
+    "id": 4,
+    "type": "box",
+    "title": "Update Stok Masuk",
+    "time": "12:30",
+    "desc": "Penambahan 100 unit Beras Premium telah diverifikasi.",
+    "category": "Stok"
+  },
+  {
+    "id": 5,
+    "type": "promo",
+    "title": "Promo Flash Sale Aktif",
+    "time": "11:00",
+    "desc": "Kampanye \"Jumat Berkah\" otomatis diaktifkan pada sistem POS.",
+    "category": "Promo"
+  },
+  {
+    "id": 6,
+    "type": "refund",
+    "title": "Permintaan Refund",
+    "time": "10:15",
+    "desc": "Refund Invoice #88120 sedang menunggu persetujuan supervisor.",
+    "category": "Transaksi"
+  }
+]

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import dashboardText from '../text';
 import { IconWarning, IconInfo, IconDefault } from '../../../components/ui/Icons';
 
@@ -21,11 +22,15 @@ const getIconBg = (type) => {
 };
 
 export default function ActivityFeed() {
+  const navigate = useNavigate();
   return (
     <section>
       <div className="flex justify-between items-center mb-3 px-1">
         <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase">{dashboardText.activity.title}</p>
-        <button className="text-[10px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 px-3 py-1.5 rounded-full transition-colors duration-200 tracking-wider uppercase">
+        <button 
+          onClick={() => navigate('/aktivitas')}
+          className="text-[10px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 px-3 py-1.5 rounded-full transition-colors duration-200 tracking-wider uppercase"
+        >
           {dashboardText.activity.seeAll}
         </button>
       </div>

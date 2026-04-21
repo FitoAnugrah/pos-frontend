@@ -6,6 +6,15 @@ import ProfilFeature from './features/profil'
 import ProdukTerlaris from './features/produk-terlaris'
 import StokFeature from './features/stok'
 import ManualEntry from './features/stok/pages/ManualEntry'
+import MemberPage from './features/member'
+import MemberDetail from './features/member/pages/MemberDetail'
+import MemberTransactions from './features/member/pages/MemberTransactions'
+import TransactionDetail from './features/member/pages/TransactionDetail'
+import EditMember from './features/member/pages/EditMember'
+import AddMember from './features/member/pages/AddMember'
+import RiwayatTransaksi from './features/riwayat'
+import Notifications from './features/notifikasi'
+import AktivitasTerkini from './features/aktivitas'
 
 function PlaceholderPage({ activeTab, title, description, onTabChange }) {
   return (
@@ -38,6 +47,8 @@ function tabToPath(tab) {
       return '/pengaturan'
     case 'profil':
       return '/profil'
+    case 'riwayat':
+      return '/riwayat'
     case 'terminal':
     default:
       return '/'
@@ -48,6 +59,7 @@ function getActiveTab(pathname) {
   if (pathname.startsWith('/stok')) return 'stok'
   if (pathname.startsWith('/profil')) return 'profil'
   if (pathname.startsWith('/pengaturan')) return 'pengaturan'
+  if (pathname.startsWith('/riwayat')) return 'riwayat'
   return 'terminal'
 }
 
@@ -57,16 +69,17 @@ function AppShell() {
   const activeTab = getActiveTab(location.pathname)
 
   function handleNavigation(nextTab) {
-    if (nextTab === 'riwayat') {
-      return
-    }
-
     navigate(tabToPath(nextTab))
   }
 
   function handleQuickAccess(itemId) {
     if (itemId === 'stok') {
       navigate('/stok')
+      return
+    }
+
+    if (itemId === 'member') {
+      navigate('/member')
       return
     }
 
@@ -89,6 +102,15 @@ function AppShell() {
       />
       <Route path="/stok" element={<StokFeature onMainTabChange={handleNavigation} />} />
       <Route path="/stok/manual-entry" element={<ManualEntry />} />
+      <Route path="/riwayat" element={<RiwayatTransaksi onMainTabChange={handleNavigation} />} />
+      <Route path="/notifikasi" element={<Notifications />} />
+      <Route path="/aktivitas" element={<AktivitasTerkini />} />
+      <Route path="/member" element={<MemberPage />} />
+      <Route path="/member/add" element={<AddMember />} />
+      <Route path="/member/:id" element={<MemberDetail />} />
+      <Route path="/member/:id/edit" element={<EditMember />} />
+      <Route path="/member/:id/transactions" element={<MemberTransactions />} />
+      <Route path="/transaction/:trxId" element={<TransactionDetail />} />
       <Route path="/laporan" element={<LaporanPenjualan />} />
       <Route path="/produk-terlaris" element={<ProdukTerlaris />} />
       <Route path="/profil" element={<ProfilFeature activeTab={activeTab} onTabChange={handleNavigation} />} />

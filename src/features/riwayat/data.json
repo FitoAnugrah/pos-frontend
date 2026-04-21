@@ -1,0 +1,123 @@
+[
+  {
+    "id": "#TRX-9981",
+    "isoDate": "2026-04-21T14:02:00",
+    "displayDate": "21 Apr",
+    "time": "14:02",
+    "amount": "Rp 155.000",
+    "status": "BERHASIL",
+    "paymentMethod": "Tunai",
+    "iconType": "bag",
+    "paymentIcon": "wallet"
+  },
+  {
+    "id": "#TRX-9978",
+    "isoDate": "2026-04-21T13:45:00",
+    "displayDate": "21 Apr",
+    "time": "13:45",
+    "amount": "Rp 42.500",
+    "status": "BERHASIL",
+    "paymentMethod": "SeaBank",
+    "iconType": "receipt",
+    "paymentIcon": "bank"
+  },
+  {
+    "id": "#TRX-9975",
+    "isoDate": "2026-04-21T12:30:00",
+    "displayDate": "21 Apr",
+    "time": "12:30",
+    "amount": "Rp 210.000",
+    "status": "BERHASIL",
+    "paymentMethod": "QRIS",
+    "iconType": "qr",
+    "paymentIcon": "qr"
+  },
+  {
+    "id": "#TRX-9970",
+    "isoDate": "2026-04-21T11:15:00",
+    "displayDate": "21 Apr",
+    "time": "11:15",
+    "amount": "- Rp 15.000",
+    "status": "REFUND",
+    "paymentMethod": "Tunai",
+    "iconType": "refund",
+    "paymentIcon": "wallet"
+  },
+  {
+    "id": "#TRX-9968",
+    "isoDate": "2026-04-21T09:40:00",
+    "displayDate": "21 Apr",
+    "time": "09:40",
+    "amount": "Rp 88.000",
+    "status": "BERHASIL",
+    "paymentMethod": "SeaBank",
+    "iconType": "bag",
+    "paymentIcon": "bank"
+  },
+  {
+    "id": "#TRX-9960",
+    "isoDate": "2026-04-20T16:20:00",
+    "displayDate": "20 Apr",
+    "time": "16:20",
+    "amount": "Rp 105.000",
+    "status": "BERHASIL",
+    "paymentMethod": "QRIS",
+    "iconType": "qr",
+    "paymentIcon": "qr"
+  },
+  {
+    "id": "#TRX-9955",
+    "isoDate": "2026-04-19T10:10:00",
+    "displayDate": "19 Apr",
+    "time": "10:10",
+    "amount": "Rp 35.000",
+    "status": "BERHASIL",
+    "paymentMethod": "Tunai",
+    "iconType": "receipt",
+    "paymentIcon": "wallet"
+  },
+  {
+    "id": "#TRX-9940",
+    "isoDate": "2026-04-18T14:05:00",
+    "displayDate": "18 Apr",
+    "time": "14:05",
+    "amount": "- Rp 50.000",
+    "status": "REFUND",
+    "paymentMethod": "SeaBank",
+    "iconType": "refund",
+    "paymentIcon": "bank"
+  },
+  {
+    "id": "#TRX-9910",
+    "isoDate": "2026-04-10T09:15:00",
+    "displayDate": "10 Apr",
+    "time": "09:15",
+    "amount": "Rp 400.000",
+    "status": "BERHASIL",
+    "paymentMethod": "QRIS",
+    "iconType": "bag",
+    "paymentIcon": "qr"
+  },
+  {
+    "id": "#TRX-9880",
+    "isoDate": "2026-04-05T11:45:00",
+    "displayDate": "05 Apr",
+    "time": "11:45",
+    "amount": "Rp 65.000",
+    "status": "BERHASIL",
+    "paymentMethod": "Tunai",
+    "iconType": "receipt",
+    "paymentIcon": "wallet"
+  },
+  {
+    "id": "#TRX-9800",
+    "isoDate": "2026-03-28T13:30:00",
+    "displayDate": "28 Mar",
+    "time": "13:30",
+    "amount": "Rp 120.000",
+    "status": "BERHASIL",
+    "paymentMethod": "SeaBank",
+    "iconType": "bag",
+    "paymentIcon": "bank"
+  }
+]
