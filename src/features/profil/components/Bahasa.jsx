@@ -11,9 +11,9 @@ export default function Bahasa({ onBack, onSave, currentLang = 'id' }) {
   const [selectedLang, setSelectedLang] = useState(currentLang);
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 font-sans flex items-center justify-center p-4">
-      <div className="w-full max-w-[420px] bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden flex flex-col max-h-[95vh]">
-        <div className="px-6 pb-8 pt-6 overflow-y-auto w-full">
+    <div className="min-h-screen w-full bg-slate-50 font-sans flex items-center justify-center p-4 md:p-8">
+      <div className="w-full md:w-2/3 lg:w-1/2 max-w-md md:max-w-xl bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden flex flex-col max-h-[95vh]">
+        <div className="px-4 md:px-8 pb-6 md:pb-8 pt-6 overflow-y-auto w-full">
           <div className="flex items-center justify-between mb-8">
             <button
               type="button"
@@ -76,7 +76,7 @@ export default function Bahasa({ onBack, onSave, currentLang = 'id' }) {
             ))}
           </div>
 
-          <div className="mt-8 flex flex-col gap-4">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="rounded-xl bg-slate-50 border border-slate-100 p-5">
               <svg className="mb-3 text-blue-600" width="24" height="24" viewBox="0 0 24 24" fill="none">
                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 5h7M9 3v2c0 4.418-2.239 8-5 8"/><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 9c-.066.27-.123.543-.17.818C4.55 11.455 5.253 13 6.5 13c1.785 0 2.946-1.579 3.256-3M19 11l-4.5 9m0 0l-4.5-9m4.5 9V11"/>

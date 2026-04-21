@@ -49,9 +49,9 @@ export default function AturKeamanan({ onBack }) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 font-sans flex items-center justify-center p-4">
-      <div className="w-full max-w-[420px] bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden flex flex-col items-center">
-        <div className="px-6 pb-10 pt-6 w-full">
+    <div className="min-h-screen w-full bg-slate-50 font-sans flex items-center justify-center p-4 md:p-8">
+      <div className="w-full md:w-2/3 lg:w-1/2 max-w-md bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden flex flex-col items-center">
+        <div className="px-4 md:px-8 pb-8 md:pb-12 pt-6 w-full">
           <button
             type="button"
             onClick={onBack}

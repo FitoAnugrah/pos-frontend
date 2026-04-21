@@ -46,11 +46,11 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, onOp
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 font-sans p-6 md:p-12 overflow-y-auto">
+    <div className="min-h-screen w-full bg-slate-50 font-sans p-4 md:p-12 overflow-y-auto">
       <div className="w-full max-w-3xl mx-auto flex flex-col pb-12">
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0 mb-8 md:mb-10 w-full">
           <button
             type="button"
             onClick={onBack}
@@ -71,14 +71,14 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, onOp
           <button 
             type="button" 
             onClick={handleSave} 
-            className="bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-700 transition-all font-semibold shadow-sm active:scale-95"
+            className="w-full md:w-auto bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-700 transition-all font-semibold shadow-sm active:scale-95 text-center"
           >
             Save Changes
           </button>
         </div>
 
         {/* Profile Picture Section */}
-        <div className="flex flex-col items-center mb-8">
+        <div className="flex flex-col md:flex-row items-center md:items-start md:gap-8 mb-8">
           <div className="relative">
             <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-slate-200 bg-white shadow-sm overflow-hidden">
               {formData.avatarUrl ? (
@@ -111,12 +111,15 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, onOp
             </label>
           </div>
 
-          <h1 className="mt-5 text-2xl font-bold tracking-tight text-slate-800">{formData.namaLengkap}</h1>
-          <p className="mt-1 text-center text-[15px] font-medium text-slate-500">{formData.role}</p>
+          <div className="mt-5 md:mt-0 flex flex-col items-center md:items-start justify-center flex-1">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-800 text-center md:text-left">{formData.namaLengkap}</h1>
+            <p className="mt-1 text-[15px] font-medium text-slate-500 text-center md:text-left">{formData.role}</p>
+          </div>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm mb-6 space-y-6">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <InputRow
               label="Nama Lengkap"
               value={formData.namaLengkap}
@@ -160,14 +163,15 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, onOp
                 </svg>
               }
             />
+          </div>
         </div>
 
         {/* Action Cards */}
-        <div className="flex flex-col">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Atur Keamanan Button */}
           <div 
             onClick={onOpenSecurity}
-            className="w-full flex justify-between items-center p-5 rounded-xl border transition-all cursor-pointer hover:shadow-md mb-4 bg-blue-50/50 border-blue-100 text-blue-700 hover:bg-blue-50"
+            className="w-full flex justify-between items-center p-4 md:p-5 rounded-xl border transition-all cursor-pointer hover:shadow-md bg-blue-50/50 border-blue-100 text-blue-700 hover:bg-blue-50"
           >
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm border border-blue-100/50">
@@ -193,7 +197,7 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, onOp
           {/* Reset Password Button */}
           <div 
             onClick={onOpenResetPassword}
-            className="w-full flex justify-between items-center p-5 rounded-xl border transition-all cursor-pointer hover:shadow-md mb-4 bg-red-50/50 border-red-100 text-red-600 hover:bg-red-50"
+            className="w-full flex justify-between items-center p-4 md:p-5 rounded-xl border transition-all cursor-pointer hover:shadow-md bg-red-50/50 border-red-100 text-red-600 hover:bg-red-50"
           >
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-red-600 shadow-sm border border-red-100/50">
