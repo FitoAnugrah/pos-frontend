@@ -15,6 +15,7 @@ import AddMember from './features/member/pages/AddMember'
 import RiwayatTransaksi from './features/riwayat'
 import Notifications from './features/notifikasi'
 import AktivitasTerkini from './features/aktivitas'
+import ScanBarang from './features/kasir/ScanBarang'
 
 function PlaceholderPage({ activeTab, title, description, onTabChange }) {
   return (
@@ -100,6 +101,7 @@ function AppShell() {
         path="/"
         element={<Dashboard activeTab={activeTab} onTabChange={handleNavigation} onQuickAccess={handleQuickAccess} />}
       />
+      <Route path="/scan" element={<ScanBarang />} />
       <Route path="/stok" element={<StokFeature onMainTabChange={handleNavigation} />} />
       <Route path="/stok/manual-entry" element={<ManualEntry />} />
       <Route path="/riwayat" element={<RiwayatTransaksi onMainTabChange={handleNavigation} />} />

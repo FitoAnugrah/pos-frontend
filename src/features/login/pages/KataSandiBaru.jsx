@@ -213,5 +213,3 @@ const KataSandiBaru = ({ onNavigate, onSuccess }) => {
 };
 
 export default KataSandiBaru;
-
-export default KataSandiBaru;
