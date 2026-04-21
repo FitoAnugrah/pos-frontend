@@ -4,7 +4,6 @@ import EditInformasiAkun from './components/EditInformasiAkun';
 import AturKeamanan from './components/AturKeamanan';
 import Bahasa from './components/Bahasa';
 import KebijakanPrivasi from './components/KebijakanPrivasi';
-import Sidebar from '../dashboard/components/Sidebar';
 
 const Profil = ({ activeTab, onTabChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -61,13 +60,7 @@ const Profil = ({ activeTab, onTabChange }) => {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans w-full overflow-hidden">
-      
-      {/* Sidebar for Desktop */}
-      <Sidebar activeTab="profil" onTabChange={onTabChange} />
-
-      {/* Main Content Scrollable Area */}
-      <div className="flex-1 w-full bg-slate-50 h-screen overflow-y-auto overflow-x-hidden">
+    <div className="flex-1 w-full bg-slate-50 h-full overflow-y-auto overflow-x-hidden">
         
         {/* Desktop Topbar */}
         <div className="hidden md:flex items-center justify-between px-8 lg:px-12 py-6 bg-white/80 backdrop-blur border-b border-slate-100 sticky top-0 z-20">
@@ -264,8 +257,6 @@ const Profil = ({ activeTab, onTabChange }) => {
               <div className="text-center pb-8 md:pb-12">
                 <p className="text-[10px] md:text-xs font-bold text-slate-400 tracking-widest uppercase">{profilText.footer}</p>
               </div>
-
-            </div>
           </div>
         </div>
       </div>

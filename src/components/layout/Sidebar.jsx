@@ -1,6 +1,6 @@
 import React from 'react';
-import dashboardText from '../text';
-import { IconTerminal, IconRiwayat, IconStok, IconPengaturan } from '../../../components/ui/Icons';
+import appText from '../../constants/appText';
+import { IconTerminal, IconRiwayat, IconStok, IconPengaturan } from '../ui/icons';
 
 // Helper component for nav icons
 const NavIcon = ({ name, active }) => {
@@ -28,12 +28,12 @@ export default function Sidebar({ activeTab = 'terminal', onTabChange }) {
         className="flex items-center gap-3 text-left transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] mb-10"
       >
         <div className="flex-shrink-0 h-10 w-10 bg-gradient-to-tr from-slate-800 to-slate-700 rounded-xl shadow-sm flex items-center justify-center text-white font-bold text-lg">
-          {dashboardText.brand.charAt(0)}
+          {appText.brand.charAt(0)}
         </div>
         <div>
-          <h2 className="text-slate-800 font-bold text-sm leading-tight">{dashboardText.brand}</h2>
+          <h2 className="text-slate-800 font-bold text-sm leading-tight">{appText.brand}</h2>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{dashboardText.brandSub}</span>
+            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{appText.brandSub}</span>
           </div>
         </div>
       </button>
@@ -42,7 +42,7 @@ export default function Sidebar({ activeTab = 'terminal', onTabChange }) {
       <nav className="flex flex-col gap-2 flex-grow">
         <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-2 pl-3">Menu Utama</p>
         
-        {dashboardText.bottomNav.map((item) => {
+        {appText.bottomNav.map((item) => {
           const isActive = activeTab === item.id;
           return (
             <button

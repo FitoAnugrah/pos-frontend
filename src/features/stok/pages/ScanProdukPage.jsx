@@ -638,3 +638,4 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
     </div>
   )
 }
+

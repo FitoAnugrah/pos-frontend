@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { initialProducts } from './data'
+import { initialProducts } from '../../mock/stokData'
 import DetailProdukPage from './pages/DetailProdukPage'
 import EditProdukPage from './pages/EditProdukPage'
 import RiwayatAktivitasProdukPage from './pages/RiwayatAktivitasProdukPage'

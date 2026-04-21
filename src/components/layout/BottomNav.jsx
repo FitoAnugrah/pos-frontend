@@ -1,6 +1,6 @@
 import React from 'react';
-import dashboardText from '../text';
-import { IconTerminal, IconRiwayat, IconStok, IconPengaturan } from '../../../components/ui/Icons';
+import appText from '../../constants/appText';
+import { IconTerminal, IconRiwayat, IconStok, IconPengaturan } from '../ui/icons';
 
 // Helper component for nav icons
 const NavIcon = ({ name, active }) => {
@@ -24,7 +24,7 @@ export default function BottomNav({ activeTab = 'terminal', onTabChange }) {
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-center md:hidden">
       <div className="w-full max-w-[440px] bg-white border-t border-[#f0f4f8] py-3 px-6 pb-6 shadow-[0_-10px_20px_rgba(0,0,0,0.02)] rounded-t-[20px]">
         <div className="flex justify-between items-center">
-          {dashboardText.bottomNav.map((item) => {
+          {appText.bottomNav.map((item) => {
             const isActive = activeTab === item.id;
             return (
               <button

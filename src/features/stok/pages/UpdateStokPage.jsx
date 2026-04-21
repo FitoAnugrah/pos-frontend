@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { stockReasons } from '../data'
+import { stockReasons } from '../../../mock/stokData'
 import ProductThumb from '../components/ProductThumb'
 import { ArrowLeftIcon, MinusIcon, PlusIcon } from '../../../components/ui/icons'
 
@@ -167,3 +167,4 @@ export default function UpdateStokPage({ product, onBack, onSave }) {
     </div>
   )
 }
+

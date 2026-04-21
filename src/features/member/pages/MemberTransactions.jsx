@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import membersData from '../data.json';
+import membersData from '../../../mock/memberData.json';
 import {
   ArrowLeftIcon,
   SearchIcon,
@@ -81,18 +81,30 @@ export default function MemberTransactions() {
   }, [member.transactions, selectedMonth, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex justify-center w-full font-sans">
-      <div className="w-full max-w-[440px] md:max-w-3xl bg-[#F8FAFC] min-h-screen relative shadow-2xl overflow-y-auto overflow-x-hidden flex flex-col">
-        
-        {/* Header */}
-        <div className="flex items-center gap-4 px-6 py-5 bg-[#F8FAFC] sticky top-0 z-20">
-          <button onClick={() => navigate(-1)} className="text-[#0D74C8] hover:bg-slate-200 p-2 rounded-full transition-colors -ml-2">
-            <ArrowLeftIcon className="w-6 h-6" />
-          </button>
-          <h1 className="text-[17px] font-extrabold text-[#11263C]">Semua Transaksi</h1>
-        </div>
+    <div className="min-h-screen bg-[#F8FAFC] font-sans">
 
-        <div className="px-5 pb-10 flex flex-col gap-6">
+      {/* Desktop Top Bar */}
+      <div className="hidden md:flex items-center justify-between px-8 py-5 bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-20">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors font-semibold text-sm"
+        >
+          <ArrowLeftIcon className="w-4 h-4" />
+          Kembali ke {member.name}
+        </button>
+        <h1 className="text-lg font-bold text-slate-800">Semua Transaksi</h1>
+        <div className="w-32" />
+      </div>
+
+      {/* Mobile Header */}
+      <div className="md:hidden flex items-center gap-3 px-4 py-4 bg-[#F8FAFC] sticky top-0 z-20 border-b border-slate-200/50">
+        <button onClick={() => navigate(-1)} className="text-blue-600 p-2 -ml-2 rounded-full hover:bg-blue-50 flex-shrink-0">
+          <ArrowLeftIcon className="w-5 h-5" />
+        </button>
+        <h1 className="text-base font-bold text-slate-800">Semua Transaksi</h1>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-4 md:px-8 py-5 md:py-8">
           
           {/* Member Profile Card */}
           <div className="bg-[#0A6CBF] rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
@@ -181,7 +193,7 @@ export default function MemberTransactions() {
                           <span className="text-[14px] font-extrabold text-[#11263C]">{trx.displayDate}, {trx.time}</span>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500">
-                              {trx.paymentMethod === 'Cash' ? <MoneyIcon className="w-3 h-3" /> : <QrcodeIcon className="w-3 h-3" />}
+                              {trx.paymentMethod === 'Cash' ? <MoneyIcon className="w-3 h-3" /> : <QrCodeIcon className="w-3 h-3" />}
                               {trx.paymentMethod}
                             </span>
                             <span className="text-[8px] text-slate-300">•</span>
@@ -212,10 +224,9 @@ export default function MemberTransactions() {
                 <span className="text-[10px] font-bold text-[#5C7C9E] uppercase tracking-widest">END OF HISTORY</span>
               </div>
             )}
-          </div>
-
         </div>
       </div>
     </div>
   );
 }
+

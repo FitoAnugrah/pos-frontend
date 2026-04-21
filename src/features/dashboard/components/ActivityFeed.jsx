@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import dashboardText from '../text';
-import { IconWarning, IconInfo, IconDefault } from '../../../components/ui/Icons';
+import appText from '../../../constants/appText';
+import { IconWarning, IconInfo, IconDefault } from '../../../components/ui/icons';
 
 // Helper component for feed icons
 const FeedIcon = ({ type }) => {
@@ -26,16 +26,16 @@ export default function ActivityFeed() {
   return (
     <section>
       <div className="flex justify-between items-center mb-3 px-1">
-        <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase">{dashboardText.activity.title}</p>
+        <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase">{appText.activity.title}</p>
         <button 
           onClick={() => navigate('/aktivitas')}
           className="text-[10px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 px-3 py-1.5 rounded-full transition-colors duration-200 tracking-wider uppercase"
         >
-          {dashboardText.activity.seeAll}
+          {appText.activity.seeAll}
         </button>
       </div>
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden">
-        {dashboardText.activity.items.map((item) => (
+        {appText.activity.items.map((item) => (
           <button 
             key={item.id} 
             className="w-full text-left flex items-start gap-4 p-4 md:p-5 border-b border-slate-50 last:border-0 transition-all duration-300 hover:bg-slate-50/80 active:bg-slate-100"

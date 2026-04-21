@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import dashboardText from '../text';
-import { IconPanel } from '../../../components/ui/Icons';
+import appText from '../../../constants/appText';
+import { IconPanel } from '../../../components/ui/icons';
 
 export default function TerminalCard() {
   const navigate = useNavigate();
@@ -20,8 +20,8 @@ export default function TerminalCard() {
           <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 flex items-center justify-center mb-5 shadow-inner">
             <IconPanel className="w-6 h-6" color="#ffffff" />
           </div>
-          <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] mb-1.5">{dashboardText.terminal.badge}</p>
-          <h3 className="text-white text-lg font-bold tracking-tight">{dashboardText.terminal.cta}</h3>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] mb-1.5">{appText.terminal.badge}</p>
+          <h3 className="text-white text-lg font-bold tracking-tight">{appText.terminal.cta}</h3>
         </div>
       </button>
     </div>

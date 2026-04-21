@@ -189,3 +189,4 @@ export default function DetailProdukPage({ product, onBack, onOpenEdit, onOpenSt
   )
 }
 
+

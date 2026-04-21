@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { productActivityHistory } from '../data'
+import { productActivityHistory } from '../../../mock/stokData'
 import {
   ArrowLeftIcon,
   BoxIcon,
@@ -219,3 +219,4 @@ export default function RiwayatAktivitasProdukPage({ onBack }) {
     </div>
   )
 }
+

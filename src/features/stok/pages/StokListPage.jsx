@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
-import { categories } from '../data'
+import { categories } from '../../../mock/stokData'
 import ProductCard from '../components/ProductCard'
 import { SearchIcon } from '../../../components/ui/icons'
-import BottomNav from '../../dashboard/components/BottomNav'
-import Sidebar from '../../dashboard/components/Sidebar'
 
 export default function StokListPage({ products, onOpenDetail, onMainTabChange, onOpenCreate }) {
   const [activeCategory, setActiveCategory] = useState('Semua')
@@ -24,10 +22,7 @@ export default function StokListPage({ products, onOpenDetail, onMainTabChange, 
   }, [activeCategory, products, query])
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 w-full font-sans">
-
-      {/* Sidebar for Desktop */}
-      <Sidebar activeTab="stok" onTabChange={onMainTabChange} />
+    <div className="flex flex-1 overflow-hidden bg-slate-50 w-full font-sans">
 
       {/* Main Container */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 relative flex flex-col w-full">
@@ -110,8 +105,8 @@ export default function StokListPage({ products, onOpenDetail, onMainTabChange, 
 
         </div>
       </div>
-      <BottomNav activeTab="stok" onTabChange={onMainTabChange} />
     </div>
   )
 }
+
 

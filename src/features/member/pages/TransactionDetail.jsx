@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import membersData from '../data.json';
+import membersData from '../../../mock/memberData.json';
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -185,3 +185,4 @@ export default function TransactionDetail() {
     </div>
   );
 }
+

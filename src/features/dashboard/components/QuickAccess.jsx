@@ -1,6 +1,6 @@
 import React from 'react';
-import dashboardText from '../text';
-import { IconDefault, IconStok, IconRiwayat, IconPanel } from '../../../components/ui/Icons';
+import appText from '../../../constants/appText';
+import { IconDefault, IconStok, IconPanel } from '../../../components/ui/icons';
 
 const Icon = ({ name }) => {
   switch (name) {
@@ -15,9 +15,9 @@ const Icon = ({ name }) => {
 export default function QuickAccess({ onItemClick }) {
   return (
     <section>
-      <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase mb-3 px-1">{dashboardText.quickAccess.title}</p>
+      <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase mb-3 px-1">{appText.quickAccess.title}</p>
       <div className="grid grid-cols-2 gap-4">
-        {dashboardText.quickAccess.items.map((item) => (
+        {appText.quickAccess.items.map((item) => (
           <button 
             key={item.id} 
             type="button"

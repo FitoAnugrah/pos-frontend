@@ -1,6 +1,6 @@
 import React from 'react';
-import dashboardText from '../text';
-import { IconUserCircle, IconBell } from '../../../components/ui/Icons';
+import appText from '../../constants/appText';
+import { IconUserCircle, IconBell } from '../ui/icons';
 
 export default function Header({ onProfileClick }) {
   return (
@@ -15,10 +15,10 @@ export default function Header({ onProfileClick }) {
           <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#F4F8FA] rounded-full"></div>
         </div>
         <div>
-          <h2 className="text-slate-800 font-bold text-base leading-tight">{dashboardText.brand}</h2>
+          <h2 className="text-slate-800 font-bold text-base leading-tight">{appText.brand}</h2>
           <div className="flex items-center gap-1.5 mt-0.5">
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-[0_0_4px_rgba(16,185,129,0.5)]"></span>
-            <span className="text-slate-500 text-xs uppercase font-bold tracking-wider">{dashboardText.brandSub}</span>
+            <span className="text-slate-500 text-xs uppercase font-bold tracking-wider">{appText.brandSub}</span>
           </div>
         </div>
       </button>

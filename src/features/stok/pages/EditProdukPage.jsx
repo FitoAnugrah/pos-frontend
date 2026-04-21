@@ -1,4 +1,4 @@
-import { productCategories } from '../data'
+import { productCategories } from '../../../mock/stokData'
 import ProductThumb from '../components/ProductThumb'
 import { ArrowLeftIcon, CheckIcon, EditIcon, PhotoIcon, ScanIcon, TrashIcon, WarnIcon } from '../../../components/ui/icons'
 import { calculateMargin, calculateMarginYield, formatCurrency, getStockInfo } from '../utils'

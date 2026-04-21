@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BottomNav from '../../features/dashboard/components/BottomNav';
-import Sidebar from '../../features/dashboard/components/Sidebar';
-import riwayatData from './data.json';
+import riwayatData from '../../mock/riwayatData.json';
 import {
   SearchIcon,
   BellIcon,
@@ -72,10 +70,7 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F4F8FB] w-full font-sans">
-      <Sidebar activeTab="riwayat" onTabChange={onMainTabChange} />
-
-      <div className="flex-1 overflow-y-auto overflow-x-hidden relative flex flex-col w-full bg-[#F4F8FB]">
+    <div className="flex-1 overflow-y-auto overflow-x-hidden relative flex flex-col w-full bg-[#F4F8FB]">
         <div className="w-full max-w-[440px] md:max-w-3xl lg:max-w-4xl mx-auto flex flex-col pb-24 md:pb-10">
           
           {/* Top Bar (Mobile/Desktop) */}
@@ -202,8 +197,5 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
           </div>
         </div>
       </div>
-      
-      <BottomNav activeTab="riwayat" onTabChange={onMainTabChange} />
-    </div>
   );
 }
