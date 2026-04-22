@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import profilText from './text';
 import EditInformasiAkun from './components/EditInformasiAkun';
 import AturKeamanan from './components/AturKeamanan';
@@ -12,6 +13,7 @@ const Profil = ({ activeTab, onTabChange }) => {
   const [isBahasaOpen, setIsBahasaOpen] = useState(false);
   const [isKebijakanPrivasiOpen, setIsKebijakanPrivasiOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState('id');
+  const navigate = useNavigate();
   
   const [profileData, setProfileData] = useState({
     namaLengkap: profilText.sections.informasiAkun.items.namaLengkap.value,
@@ -54,7 +56,6 @@ const Profil = ({ activeTab, onTabChange }) => {
         onBack={() => setIsEditing(false)}
         onSave={handleSaveProfile}
         onOpenSecurity={() => setIsSecurityOpen(true)}
-        onOpenResetPassword={() => alert('Halaman Reset Password belum tersedia')}
       />
     );
   }
@@ -164,7 +165,7 @@ const Profil = ({ activeTab, onTabChange }) => {
               <section className="bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-slate-100">
                 <h3 className="text-xs md:text-sm font-bold text-slate-400 tracking-wider uppercase mb-4 md:mb-6">{profilText.sections.keamanan.title}</h3>
                 <div className="flex flex-col gap-2">
-                  <button className="flex items-center justify-between p-3 -mx-3 hover:bg-slate-50 rounded-xl transition-colors group">
+                  <button onClick={() => navigate('/login', { state: { view: 'sandi-baru' } })} className="flex items-center justify-between p-3 -mx-3 hover:bg-slate-50 rounded-xl transition-colors group">
                     <div className="flex items-center gap-3 md:gap-4">
                       <div className="text-slate-400 group-hover:text-blue-500 transition-colors">
                         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -248,7 +249,10 @@ const Profil = ({ activeTab, onTabChange }) => {
 
               {/* Logout Button */}
               <div className="mt-8 mb-6 md:mt-10 md:mb-0">
-                <button className="w-full bg-red-50 text-red-600 font-semibold py-3.5 md:py-4 rounded-xl border border-red-200 transition-all shadow-sm hover:bg-red-100 active:scale-[0.98] text-sm md:text-base">
+                <button 
+                  onClick={() => navigate('/login')}
+                  className="w-full bg-red-50 text-red-600 font-semibold py-3.5 md:py-4 rounded-xl border border-red-200 transition-all shadow-sm hover:bg-red-100 active:scale-[0.98] text-sm md:text-base"
+                >
                   {profilText.logout}
                 </button>
               </div>

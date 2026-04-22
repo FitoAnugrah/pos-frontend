@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Masuk from './pages/Masuk';
 import BuatAkun from './pages/BuatAkun';
 import LupaKataSandi from './pages/LupaKataSandi';
@@ -6,7 +7,8 @@ import VerifikasiOtp from './pages/VerifikasiOtp';
 import KataSandiBaru from './pages/KataSandiBaru';
 
 export default function LoginFeature({ onLoginSuccess }) {
-  const [currentView, setCurrentView] = useState('masuk');
+  const location = useLocation();
+  const [currentView, setCurrentView] = useState(location.state?.view || 'masuk');
   const [flowContext, setFlowContext] = useState(''); // 'register' atau 'forgot-password'
   const [userEmail, setUserEmail] = useState(''); // Untuk diteruskan antar layar jika perlu
 

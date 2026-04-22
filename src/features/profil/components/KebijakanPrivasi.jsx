@@ -13,6 +13,7 @@ import {
   Briefcase,
   Monitor
 } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 
 const KebijakanPrivasi = ({ onBack }) => {
   const contentRef = useRef(null);
@@ -25,55 +26,28 @@ const KebijakanPrivasi = ({ onBack }) => {
   const handleDownloadPDF = async () => {
     try {
       const element = contentRef.current;
-      if (!element) {
-        window.print();
-        return;
-      }
+      if (!element) return;
 
-      const printWindow = window.open('', '_blank', 'width=900,height=700');
-      if (!printWindow) {
-        window.print();
-        return;
-      }
+      const opt = {
+        margin:       0.5,
+        filename:     'Kebijakan_Privasi_POS_AI.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+          scale: 2,
+          ignoreElements: (el) => el.id === 'pdf-exclude-buttons'
+        },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
 
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="id">
-          <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Kebijakan Privasi POS AI</title>
-            <style>
-              body {
-                font-family: Arial, sans-serif;
-                margin: 24px;
-                color: #1e293b;
-                line-height: 1.6;
-                background: #ffffff;
-              }
-              button {
-                display: none !important;
-              }
-            </style>
-          </head>
-          <body>
-            ${element.innerHTML}
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
+      html2pdf().set(opt).from(element).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
-      window.print();
     }
   };
 
   return (
     <div className="flex h-screen bg-[#F6FAFE] font-sans w-full justify-center md:justify-start overflow-hidden">
-      <div className="flex-1 w-full md:w-3/4 lg:w-2/3 mx-auto bg-[#F6FAFE] h-screen overflow-y-auto overflow-x-hidden shadow-2xl md:shadow-none relative">
+      <div className="flex-1 w-full md:w-3/4 lg:w-2/3 mx-auto bg-[#F6FAFE] h-screen overflow-y-auto overflow-x-hidden shadow-2xl md:shadow-none relative [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         
         {/* Header */}
         <div className="flex items-center gap-4 px-6 py-5 sticky top-0 z-20 bg-[#F6FAFE]/90 backdrop-blur-md">
@@ -234,7 +208,7 @@ const KebijakanPrivasi = ({ onBack }) => {
           {/* Support Section */}
           <div className="bg-[#EAF3FF] rounded-2xl p-6 text-center mb-8 border border-blue-50/50">
             <p className="text-[11px] font-medium text-slate-600 mb-4">Punya pertanyaan mengenai privasi Anda?</p>
-            <div className="space-y-3 md:space-y-0 md:gap-4 flex flex-col md:flex-row items-center justify-center">
+            <div id="pdf-exclude-buttons" className="space-y-3 md:space-y-0 md:gap-4 flex flex-col md:flex-row items-center justify-center">
               <button 
                 onClick={handleHubungiSupport}
                 className="w-full md:w-auto md:px-8 bg-[#0066FF] hover:bg-blue-700 text-white text-[13px] font-bold py-3 rounded-xl transition-all shadow-md shadow-blue-200"

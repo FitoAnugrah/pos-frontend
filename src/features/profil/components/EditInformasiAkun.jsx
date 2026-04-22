@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function InputRow({ label, value, icon, onChange, type = "text", error }) {
   return (
@@ -21,7 +22,8 @@ function InputRow({ label, value, icon, onChange, type = "text", error }) {
   )
 }
 
-export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, onOpenResetPassword, initialData }) {
+export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, initialData }) {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState(initialData || {
     namaLengkap: 'Budi Santoso',
     email: 'budi@posai.com',
@@ -189,7 +191,7 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, onOp
             </div>
           </div>
 
-          <div onClick={onOpenResetPassword} className="w-full flex justify-between items-center p-4 md:p-5 rounded-xl border transition-all cursor-pointer hover:shadow-md bg-red-50/50 border-red-100 text-red-600 hover:bg-red-50">
+          <div onClick={() => navigate('/login', { state: { view: 'sandi-baru' } })} className="w-full flex justify-between items-center p-4 md:p-5 rounded-xl border transition-all cursor-pointer hover:shadow-md bg-red-50/50 border-red-100 text-red-600 hover:bg-red-50">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-red-600 shadow-sm border border-red-100/50">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
