@@ -1,11 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import appText from '../../../constants/appText';
 
 export default function StatsRow() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex gap-4 w-full">
       {/* Omset Card */}
-      <button className="text-left flex-1 bg-white rounded-xl p-5 shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 relative overflow-hidden">
+      <button
+        type="button"
+        onClick={() => navigate('/laporan')}
+        className="text-left flex-1 bg-white rounded-xl p-5 shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 relative overflow-hidden"
+      >
         <div className="flex items-center justify-between mb-2 relative z-10">
           <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase">{appText.stats.omset.label}</p>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,7 +32,11 @@ export default function StatsRow() {
       </button>
 
       {/* Transaksi Card */}
-      <button className="text-left flex-1 bg-white rounded-xl p-5 shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 relative overflow-hidden">
+      <button
+        type="button"
+        onClick={() => navigate('/riwayat')}
+        className="text-left flex-1 bg-white rounded-xl p-5 shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 relative overflow-hidden"
+      >
         <div className="flex items-center justify-between mb-2 relative z-10">
           <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase">{appText.stats.transaksi.label}</p>
         </div>
