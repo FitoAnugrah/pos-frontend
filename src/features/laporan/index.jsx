@@ -84,24 +84,33 @@ const topProducts = [
   {
     id: 1,
     name: 'Minyak Goreng 1L',
+    category: 'Sembako',
     sold: 24,
     revenue: 600000,
+    trend: '+5.2%',
+    thumb: 'drink',
     bgClassName: 'bg-orange-100',
     icon: <Package2 className="h-5 w-5 text-orange-500" />,
   },
   {
     id: 2,
     name: 'Beras Premium 5kg',
+    category: 'Sembako',
     sold: 18,
     revenue: 1170000,
+    trend: '+3.8%',
+    thumb: 'rice',
     bgClassName: 'bg-amber-100',
     icon: <ShoppingBag className="h-5 w-5 text-amber-600" />,
   },
   {
     id: 3,
     name: 'Gula Pasir 1kg',
+    category: 'Sembako',
     sold: 32,
     revenue: 512000,
+    trend: '+2.1%',
+    thumb: 'rice',
     bgClassName: 'bg-stone-100',
     icon: <ReceiptText className="h-5 w-5 text-stone-600" />,
   },
@@ -135,9 +144,13 @@ function SummaryCard({ label, value, accentClassName = 'text-slate-900', childre
   )
 }
 
-function ProductItem({ product }) {
+function ProductItem({ product, onOpenProduct }) {
   return (
-    <article className="flex w-full items-center gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+    <button
+      type="button"
+      onClick={() => onOpenProduct(product)}
+      className="flex w-full items-center gap-3 rounded-2xl bg-white p-4 text-left shadow-sm ring-1 ring-slate-100 transition-all hover:-translate-y-0.5 hover:shadow-md"
+    >
       <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${product.bgClassName}`}>
         {product.icon}
       </div>
@@ -146,7 +159,7 @@ function ProductItem({ product }) {
         <p className="mt-1 text-sm text-slate-500">{`Terjual: ${product.sold}`}</p>
       </div>
       <p className="shrink-0 text-sm font-bold text-slate-900">{formatRupiah(product.revenue)}</p>
-    </article>
+    </button>
   )
 }
 
@@ -172,6 +185,28 @@ export default function LaporanPenjualan() {
   function handleDateChange(event) {
     setSelectedDate(event.target.value)
     setActiveFilter('custom')
+  }
+
+  function buildStokPayload(product) {
+    return {
+      id: product.id,
+      name: product.name,
+      category: product.category,
+      sold: product.sold,
+      trend: product.trend,
+      revenue: product.revenue,
+      thumb: product.thumb,
+    }
+  }
+
+  function handleOpenTopProduct(product) {
+    navigate('/stok', {
+      state: {
+        stokTarget: 'detail',
+        returnTo: '/laporan',
+        product: buildStokPayload(product),
+      },
+    })
   }
 
   return (
@@ -345,7 +380,7 @@ export default function LaporanPenjualan() {
 
           <div className="space-y-3">
             {topProducts.map((product) => (
-              <ProductItem key={product.id} product={product} />
+              <ProductItem key={product.id} product={product} onOpenProduct={handleOpenTopProduct} />
             ))}
           </div>
         </section>

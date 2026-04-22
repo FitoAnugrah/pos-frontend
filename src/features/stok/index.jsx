@@ -10,6 +10,8 @@ import TambahStokBaruPage from './pages/TambahStokBaruPage'
 import UpdateStokPage from './pages/UpdateStokPage'
 import { clampStock } from './utils'
 
+const STOCK_PRODUCTS_STORAGE_KEY = 'pos-stock-products'
+
 const initialCreateForm = {
   name: '',
   category: '',
@@ -29,6 +31,31 @@ function buildEditForm(product) {
     minStock: product.minStock,
     capitalPrice: product.capitalPrice,
     price: product.price,
+  }
+}
+
+function normalizeScanCode(value) {
+  return String(value ?? '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+}
+
+function loadStoredProducts() {
+  if (typeof window === 'undefined') {
+    return initialProducts
+  }
+
+  try {
+    const storedProducts = window.localStorage.getItem(STOCK_PRODUCTS_STORAGE_KEY)
+    if (!storedProducts) {
+      return initialProducts
+    }
+
+    const parsedProducts = JSON.parse(storedProducts)
+    return Array.isArray(parsedProducts) && parsedProducts.length > 0 ? parsedProducts : initialProducts
+  } catch {
+    return initialProducts
   }
 }
 
@@ -106,7 +133,7 @@ function buildRoutedProduct(routeProduct) {
 export default function StokFeature({ onMainTabChange }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const [products, setProducts] = useState(initialProducts)
+  const [products, setProducts] = useState(() => loadStoredProducts())
   const [selectedProductId, setSelectedProductId] = useState(null)
   const [page, setPage] = useState('list')
   const [createForm, setCreateForm] = useState(initialCreateForm)
@@ -125,6 +152,19 @@ export default function StokFeature({ onMainTabChange }) {
       (routedProduct?.id === selectedProductId ? routedProduct : null),
     [products, routedProduct, selectedProductId],
   )
+
+  const scanLookupProducts = useMemo(() => {
+    const routeProducts = routedProduct ? [routedProduct] : []
+    return [...products, ...routeProducts]
+  }, [products, routedProduct])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    window.localStorage.setItem(STOCK_PRODUCTS_STORAGE_KEY, JSON.stringify(products))
+  }, [products])
 
   useEffect(() => {
     const routeState = location.state
@@ -246,10 +286,15 @@ export default function StokFeature({ onMainTabChange }) {
   }
 
   function handleScanResult(sku) {
+    const normalizedResult = normalizeScanCode(sku)
+    const matchedProduct =
+      scanLookupProducts.find((product) => normalizeScanCode(product.sku) === normalizedResult) ?? null
+    const resolvedSku = matchedProduct?.sku ?? String(sku ?? '').trim()
+
     if (scanReturnPage === 'edit') {
       setEditForm((current) => ({
         ...(current ?? buildEditForm(selectedProduct)),
-        sku,
+        sku: resolvedSku,
       }))
       setPage('edit')
       return
@@ -257,7 +302,7 @@ export default function StokFeature({ onMainTabChange }) {
 
     setCreateForm((current) => ({
       ...current,
-      sku,
+      sku: resolvedSku,
     }))
     setPage('create')
   }
@@ -289,6 +334,21 @@ export default function StokFeature({ onMainTabChange }) {
     )
     setEditForm(null)
     setPage('detail')
+  }
+
+  function handleDeleteProduct() {
+    const productToDelete = selectedProduct
+    if (!productToDelete) return
+
+    if (String(selectedProductId).startsWith('laporan-')) {
+      handleBackToPreviousPage()
+      return
+    }
+
+    setProducts((currentProducts) => currentProducts.filter((product) => product.id !== selectedProductId))
+    setEditForm(null)
+    setPage('list')
+    setSelectedProductId(null)
   }
 
   function handleSaveStock({ mode, amount }) {
@@ -394,6 +454,7 @@ export default function StokFeature({ onMainTabChange }) {
     if (page === 'scan') {
       return (
         <ScanProdukPage
+          products={scanLookupProducts}
           onBack={() => setPage(scanReturnPage)}
           onManualInput={() => setPage(scanReturnPage)}
           onOpenHistory={handleOpenScanHistory}
@@ -447,6 +508,7 @@ export default function StokFeature({ onMainTabChange }) {
         onFieldChange={handleEditFieldChange}
         onOpenScan={() => handleOpenScan('edit')}
         onSave={handleSaveProduct}
+        onDelete={handleDeleteProduct}
       />
     )
   }
@@ -470,6 +532,7 @@ export default function StokFeature({ onMainTabChange }) {
   if (page === 'scan') {
     return (
       <ScanProdukPage
+        products={scanLookupProducts}
         onBack={() => setPage(scanReturnPage)}
         onManualInput={() => setPage(scanReturnPage)}
         onOpenHistory={handleOpenScanHistory}

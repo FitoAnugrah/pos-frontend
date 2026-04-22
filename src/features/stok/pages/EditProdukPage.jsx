@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { productCategories } from '../../../mock/stokData'
 import ProductThumb from '../components/ProductThumb'
 import { ArrowLeftIcon, CheckIcon, EditIcon, PhotoIcon, ScanIcon, TrashIcon, WarnIcon } from '../../../components/ui/icons'
@@ -47,10 +48,77 @@ function NumberField({ label, value, onChange, prefix, accent = 'text-slate-800'
   )
 }
 
-export default function EditProdukPage({ product, form, onBack, onFieldChange, onOpenScan, onSave }) {
+function DeleteConfirmModal({ productName, onClose, onConfirm }) {
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 p-4 backdrop-blur-sm md:items-center">
+      <div
+        className="absolute inset-0"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-product-title"
+        className="relative w-full max-w-md overflow-hidden rounded-[28px] border border-red-100 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]"
+      >
+        <div className="bg-[radial-gradient(circle_at_top_left,_rgba(254,226,226,0.9),_transparent_50%),linear-gradient(180deg,#ffffff_0%,#fff7f7_100%)] px-6 pb-6 pt-7 md:px-7">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 text-red-500 shadow-sm shadow-red-100">
+            <TrashIcon className="h-7 w-7" />
+          </div>
+
+          <h3 id="delete-product-title" className="mt-5 text-2xl font-extrabold tracking-tight text-slate-900">
+            Hapus produk ini?
+          </h3>
+
+          <p className="mt-3 text-sm leading-7 text-slate-600">
+            Produk <span className="font-bold text-slate-800">{productName}</span> akan dihapus dari daftar stok.
+            Tindakan ini tidak dapat dibatalkan.
+          </p>
+
+          <div className="mt-6 rounded-2xl border border-red-100 bg-white/80 px-4 py-3 text-sm font-semibold text-red-500">
+            Pastikan data produk ini memang sudah tidak dibutuhkan lagi.
+          </div>
+
+          <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={onConfirm}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-red-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-600 active:scale-[0.98]"
+            >
+              <TrashIcon className="h-4 w-4" />
+              Ya, Hapus Produk
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function EditProdukPage({ product, form, onBack, onFieldChange, onOpenScan, onSave, onDelete }) {
   const stockInfo = getStockInfo(Number(form.stock), Number(form.minStock))
   const margin = calculateMargin(Number(form.price), Number(form.capitalPrice))
   const marginYield = calculateMarginYield(Number(form.price), Number(form.capitalPrice))
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -61,6 +129,11 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
       capitalPrice: Math.max(Number(form.capitalPrice), 0),
       price: Math.max(Number(form.price), 0),
     })
+  }
+
+  function handleConfirmDelete() {
+    setIsDeleteDialogOpen(false)
+    onDelete()
   }
 
   return (
@@ -186,6 +259,7 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
           <div className="mt-10 flex justify-center">
             <button 
               type="button" 
+              onClick={() => setIsDeleteDialogOpen(true)}
               className="flex items-center gap-2 px-8 py-4 rounded-xl font-bold border border-red-500 bg-red-50 text-red-600 shadow-sm hover:bg-red-100 hover:shadow-md transition-all active:scale-95"
             >
               <TrashIcon className="h-5 w-5" />
@@ -198,6 +272,14 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
 
         </form>
       </div>
+
+      {isDeleteDialogOpen ? (
+        <DeleteConfirmModal
+          productName={product.name}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          onConfirm={handleConfirmDelete}
+        />
+      ) : null}
     </div>
   )
 }

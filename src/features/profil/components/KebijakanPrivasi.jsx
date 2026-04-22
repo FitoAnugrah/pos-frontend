@@ -13,7 +13,6 @@ import {
   Briefcase,
   Monitor
 } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
 
 const KebijakanPrivasi = ({ onBack }) => {
   const contentRef = useRef(null);
@@ -26,14 +25,46 @@ const KebijakanPrivasi = ({ onBack }) => {
   const handleDownloadPDF = async () => {
     try {
       const element = contentRef.current;
-      const opt = {
-        margin:       0.5,
-        filename:     'Kebijakan_Privasi_POS_AI.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
+      if (!element) {
+        window.print();
+        return;
+      }
+
+      const printWindow = window.open('', '_blank', 'width=900,height=700');
+      if (!printWindow) {
+        window.print();
+        return;
+      }
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="id">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Kebijakan Privasi POS AI</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                margin: 24px;
+                color: #1e293b;
+                line-height: 1.6;
+                background: #ffffff;
+              }
+              button {
+                display: none !important;
+              }
+            </style>
+          </head>
+          <body>
+            ${element.innerHTML}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
     } catch (error) {
       console.error('Error generating PDF:', error);
       window.print();

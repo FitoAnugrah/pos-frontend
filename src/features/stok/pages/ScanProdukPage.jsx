@@ -9,11 +9,6 @@ import {
   WarnIcon,
 } from '../../../components/ui/icons'
 
-const RECENT_SCANS = [
-  { name: 'Coca-Cola 330ml', sku: 'CC-330-CAN' },
-  { name: 'Beras Premium 5kg', sku: 'BR-PRM-005' },
-]
-
 const PREFERRED_FORMATS = [
   'qr_code',
   'ean_13',
@@ -27,6 +22,22 @@ const PREFERRED_FORMATS = [
   'pdf417',
   'data_matrix',
   'aztec',
+]
+
+const HTML5_SUPPORTED_FORMATS = [
+  'QR_CODE',
+  'AZTEC',
+  'CODABAR',
+  'CODE_39',
+  'CODE_93',
+  'CODE_128',
+  'DATA_MATRIX',
+  'ITF',
+  'EAN_13',
+  'EAN_8',
+  'PDF_417',
+  'UPC_A',
+  'UPC_E',
 ]
 
 function normalizeScannerError(error) {
@@ -54,6 +65,12 @@ function normalizeScannerError(error) {
   }
 
   return 'Scanner belum bisa dijalankan. Coba lagi atau gunakan Chrome atau Edge terbaru.'
+}
+
+function sanitizeDetectedCode(value) {
+  return String(value ?? '')
+    .trim()
+    .replace(/\s+/g, '')
 }
 
 async function getDetectorFormats() {
@@ -99,12 +116,13 @@ function applyHtml5ScannerLayout(regionId) {
   })
 }
 
-export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, onScanResult }) {
+export default function ScanProdukPage({ products = [], onBack, onManualInput, onOpenHistory, onScanResult }) {
   const scannerRegionId = useId().replace(/:/g, '')
   const hiddenScanRegionId = `${scannerRegionId}-file`
 
   const videoRef = useRef(null)
   const html5QrcodeRef = useRef(null)
+  const html5QrcodeModuleRef = useRef(null)
   const mediaStreamRef = useRef(null)
   const detectorRef = useRef(null)
   const scannerRef = useRef(null)
@@ -122,15 +140,43 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
   const [manualCode, setManualCode] = useState('')
   const [activeEngine, setActiveEngine] = useState(null)
 
-  async function getHtml5QrcodeClass() {
-    if (html5QrcodeRef.current) {
-      return html5QrcodeRef.current
+  const recentScans = products.slice(0, 4).map((product) => ({
+    name: product.name,
+    sku: product.sku,
+  }))
+
+  async function getHtml5QrcodeModule() {
+    if (html5QrcodeModuleRef.current) {
+      return html5QrcodeModuleRef.current
     }
 
     const module = await import('html5-qrcode')
+    html5QrcodeModuleRef.current = module
     html5QrcodeRef.current = module.Html5Qrcode
 
-    return html5QrcodeRef.current
+    return module
+  }
+
+  function getHtml5Formats(module) {
+    const supportedFormats = module?.Html5QrcodeSupportedFormats
+    if (!supportedFormats) {
+      return undefined
+    }
+
+    return HTML5_SUPPORTED_FORMATS.map((formatKey) => supportedFormats[formatKey]).filter(
+      (formatValue) => formatValue !== undefined,
+    )
+  }
+
+  function buildHtml5Config(module) {
+    return {
+      formatsToSupport: getHtml5Formats(module),
+      useBarCodeDetectorIfSupported: false,
+      experimentalFeatures: {
+        useBarCodeDetectorIfSupported: false,
+      },
+      verbose: false,
+    }
   }
 
   async function stopAllScanning() {
@@ -169,10 +215,13 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
   async function handleDetectedCode(decodedText) {
     if (handledRef.current) return
 
+    const sanitizedCode = sanitizeDetectedCode(decodedText)
+    if (!sanitizedCode) return
+
     handledRef.current = true
     setStatusText('Kode terdeteksi, membuka produk...')
     await stopAllScanning()
-    onScanResult(decodedText)
+    onScanResult(sanitizedCode)
   }
 
   async function startNativeScanner() {
@@ -257,12 +306,15 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
   }
 
   async function startHtml5Scanner() {
-    const Html5QrcodeClass = await getHtml5QrcodeClass()
-    const scanner = new Html5QrcodeClass(scannerRegionId)
+    const module = await getHtml5QrcodeModule()
+    const Html5QrcodeClass = module.Html5Qrcode
+    const scanner = new Html5QrcodeClass(scannerRegionId, buildHtml5Config(module))
     scannerRef.current = scanner
 
     const config = {
       fps: 10,
+      disableFlip: false,
+      aspectRatio: 1.7777778,
       qrbox: (viewfinderWidth, viewfinderHeight) => {
         const edge = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.58)
 
@@ -324,6 +376,8 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
     setActiveEngine('html5')
   }
 
+  /* eslint-disable react-hooks/exhaustive-deps */
+  // Scanner di-reset hanya saat region berubah atau user menekan tombol restart.
   useEffect(() => {
     let cancelled = false
 
@@ -335,24 +389,24 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
       handledRef.current = false
 
       try {
-        await startNativeScanner()
+        await startHtml5Scanner()
 
         if (!cancelled) {
           setStatusText('Kamera aktif')
           setCameraActive(true)
         }
-      } catch (nativeError) {
+      } catch (html5Error) {
         try {
           await stopAllScanning()
-          await startHtml5Scanner()
+          await startNativeScanner()
 
           if (!cancelled) {
             setStatusText('Kamera aktif')
             setCameraActive(true)
           }
-        } catch (html5Error) {
+        } catch (nativeError) {
           if (!cancelled) {
-            const finalError = html5Error ?? nativeError
+            const finalError = nativeError ?? html5Error
             setStatusText('Scanner tidak aktif')
             setErrorText(normalizeScannerError(finalError))
             setRawErrorText(String(finalError?.message ?? finalError ?? ''))
@@ -370,6 +424,7 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
       void stopAllScanning()
     }
   }, [scannerNonce, scannerRegionId])
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   async function handleGalleryPick(event) {
     const file = event.target.files?.[0]
@@ -380,36 +435,42 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
     setStatusText('Memproses gambar...')
 
     try {
+      const module = await getHtml5QrcodeModule()
+      const Html5QrcodeClass = module.Html5Qrcode
+      const tempScanner = new Html5QrcodeClass(hiddenScanRegionId, buildHtml5Config(module))
+
+      try {
+        const fileScanResult = await tempScanner.scanFileV2(file, false)
+        const decodedText = sanitizeDetectedCode(fileScanResult?.decodedText)
+
+        await Promise.resolve(tempScanner.clear()).catch(() => undefined)
+
+        if (decodedText) {
+          onScanResult(decodedText)
+          return
+        }
+      } catch {
+        await Promise.resolve(tempScanner.clear()).catch(() => undefined)
+      }
+
       const detectorFormats = await getDetectorFormats()
 
       if (detectorFormats && detectorFormats.length) {
         const detector = new window.BarcodeDetector({ formats: detectorFormats })
-        const imageUrl = URL.createObjectURL(file)
+        const imageBitmap = await createImageBitmap(file)
 
         try {
-          const image = new Image()
-          image.src = imageUrl
-
-          await new Promise((resolve, reject) => {
-            image.onload = resolve
-            image.onerror = reject
-          })
-
-          const results = await detector.detect(image)
+          const results = await detector.detect(imageBitmap)
           if (results.length > 0 && results[0]?.rawValue) {
-            onScanResult(results[0].rawValue)
+            onScanResult(sanitizeDetectedCode(results[0].rawValue))
             return
           }
         } finally {
-          URL.revokeObjectURL(imageUrl)
+          imageBitmap.close?.()
         }
       }
 
-      const Html5QrcodeClass = await getHtml5QrcodeClass()
-      const tempScanner = new Html5QrcodeClass(hiddenScanRegionId)
-      const decodedText = await tempScanner.scanFile(file, true)
-      await Promise.resolve(tempScanner.clear()).catch(() => undefined)
-      onScanResult(decodedText)
+      throw new Error('No MultiFormat Readers were able to detect the code.')
     } catch (error) {
       setErrorText('Barcode pada gambar tidak terbaca. Coba foto yang lebih jelas atau scan langsung.')
       setRawErrorText(String(error?.message ?? error ?? ''))
@@ -422,10 +483,11 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
   function handleManualSubmit(event) {
     event.preventDefault()
 
-    if (!manualCode.trim()) return
+    const sanitizedCode = sanitizeDetectedCode(manualCode)
+    if (!sanitizedCode) return
 
     onManualInput?.()
-    onScanResult(manualCode.trim())
+    onScanResult(sanitizedCode)
   }
 
   async function handleRestartScanner() {
@@ -596,7 +658,7 @@ export default function ScanProdukPage({ onBack, onManualInput, onOpenHistory, o
               </div>
 
               <div className="space-y-1">
-                {RECENT_SCANS.map((item) => (
+                {recentScans.map((item) => (
                   <button
                     key={item.sku}
                     type="button"
