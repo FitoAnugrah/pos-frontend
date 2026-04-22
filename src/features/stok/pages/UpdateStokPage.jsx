@@ -35,7 +35,7 @@ export default function UpdateStokPage({ product, onBack, onSave }) {
     : Math.max(product.stock - amount, 0)
 
   return (
-    <div className="bg-slate-50 min-h-screen overflow-y-auto no-scrollbar">
+    <div className="bg-slate-50 min-h-screen">
       <div className="w-full max-w-2xl mx-auto py-12 px-8">
 
         {/* Page Header */}

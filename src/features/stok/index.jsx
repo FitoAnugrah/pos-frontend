@@ -15,11 +15,12 @@ const STOCK_PRODUCTS_STORAGE_KEY = 'pos-stock-products'
 const initialCreateForm = {
   name: '',
   category: '',
-  sku: 'AUTO-12345',
-  stock: 0,
-  minStock: 5,
-  capitalPrice: 45000,
-  price: 65000,
+  sku: '',
+  stock: '',
+  minStock: '',
+  capitalPrice: '',
+  price: '',
+  photo: '',
 }
 
 function buildEditForm(product) {
@@ -249,16 +250,19 @@ export default function StokFeature({ onMainTabChange }) {
   function handleCreateFieldChange(field) {
     return (event) => {
       const rawValue = event.target.value
-      const nextValue =
-        field === 'stock' || field === 'minStock' || field === 'capitalPrice' || field === 'price'
-          ? Number(rawValue || 0)
-          : rawValue
 
       setCreateForm((current) => ({
         ...current,
-        [field]: nextValue,
+        [field]: rawValue,
       }))
     }
+  }
+
+  function handleCreatePhotoChange(photo) {
+    setCreateForm((current) => ({
+      ...current,
+      photo,
+    }))
   }
 
   function handleEditFieldChange(field) {
@@ -411,12 +415,13 @@ export default function StokFeature({ onMainTabChange }) {
     return {
       id: nextId,
       category: formValues.category,
-      name: formValues.name || 'Produk Baru',
-      sku: formValues.sku || `AUTO-${String(nextId).padStart(5, '0')}`,
-      stock: formValues.stock,
-      minStock: formValues.minStock,
-      price: formValues.price,
-      capitalPrice: formValues.capitalPrice,
+      name: String(formValues.name ?? '').trim() || 'Produk Baru',
+      sku: String(formValues.sku ?? '').trim() || `AUTO-${String(nextId).padStart(5, '0')}`,
+      stock: Math.max(Number(formValues.stock), 0),
+      minStock: Math.max(Number(formValues.minStock), 0),
+      price: Math.max(Number(formValues.price), 0),
+      capitalPrice: Math.max(Number(formValues.capitalPrice), 0),
+      photo: String(formValues.photo ?? ''),
       unitsPerSale: 0,
       revenue: 'Rp 0',
       revenueTarget: 'Target 0%',
@@ -445,6 +450,7 @@ export default function StokFeature({ onMainTabChange }) {
           form={createForm}
           onBack={handleBackToList}
           onFieldChange={handleCreateFieldChange}
+          onPhotoChange={handleCreatePhotoChange}
           onOpenScan={() => handleOpenScan('create')}
           onSave={handleCreateProduct}
         />
@@ -523,6 +529,7 @@ export default function StokFeature({ onMainTabChange }) {
         form={createForm}
         onBack={handleBackToList}
         onFieldChange={handleCreateFieldChange}
+        onPhotoChange={handleCreatePhotoChange}
         onOpenScan={() => handleOpenScan('create')}
         onSave={handleCreateProduct}
       />

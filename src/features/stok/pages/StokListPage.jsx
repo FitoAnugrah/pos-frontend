@@ -22,10 +22,10 @@ export default function StokListPage({ products, onOpenDetail, onMainTabChange, 
   }, [activeCategory, products, query])
 
   return (
-    <div className="flex flex-1 overflow-hidden bg-slate-50 w-full font-sans">
+    <div className="flex flex-1 bg-slate-50 w-full font-sans">
 
       {/* Main Container */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 relative flex flex-col w-full">
+      <div className="flex-1 overflow-x-hidden p-6 md:p-10 relative flex flex-col w-full">
         <div className="w-full max-w-7xl mx-auto flex flex-col pb-24 md:pb-10">
 
           {/* Header Section */}

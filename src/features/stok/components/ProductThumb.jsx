@@ -1,4 +1,9 @@
-export default function ProductThumb({ kind, className = 'h-14 w-14 rounded-2xl', large = false, accent }) {
+export default function ProductThumb({ kind, className = 'h-14 w-14 rounded-2xl', large = false, accent, src, alt = 'Foto produk' }) {
+  if (src) {
+    const fitClassName = /\bobject-(contain|cover|fill|none|scale-down)\b/.test(className) ? '' : ' object-cover'
+    return <img src={src} alt={alt} className={`${className}${fitClassName}`} />
+  }
+
   const common = `relative overflow-hidden ${className}`
   const labelClass = large ? 'text-[11px] tracking-[0.22em]' : 'text-[7px] tracking-[0.24em]'
 

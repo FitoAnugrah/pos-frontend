@@ -3,7 +3,7 @@ export function formatCurrency(value) {
 }
 
 export function calculateMargin(price, capitalPrice) {
-  return Math.max(price - capitalPrice, 0)
+  return price - capitalPrice
 }
 
 export function calculateMarginYield(price, capitalPrice) {

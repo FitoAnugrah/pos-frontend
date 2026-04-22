@@ -1,5 +1,16 @@
+import { useRef } from 'react'
 import { ArrowLeftIcon, ChartIcon, CheckIcon, PhotoIcon, ScanIcon } from '../../../components/ui/icons'
 import { calculateMargin, calculateMarginYield, formatCurrency } from '../utils'
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => resolve(String(reader.result ?? ''))
+    reader.onerror = () => reject(reader.error ?? new Error('Gagal membaca file foto'))
+    reader.readAsDataURL(file)
+  })
+}
 
 // Refactored InputField
 function InputField({ label, value, onChange, placeholder, type = 'text', prefix, suffixButton }) {
@@ -24,27 +35,71 @@ function InputField({ label, value, onChange, placeholder, type = 'text', prefix
 
 const categoryOptions = ['Sembako', 'Minuman', 'Snack']
 
-export default function TambahStokBaruPage({ form, onBack, onFieldChange, onOpenScan, onSave }) {
+export default function TambahStokBaruPage({ form, onBack, onFieldChange, onPhotoChange, onOpenScan, onSave }) {
+  const photoInputRef = useRef(null)
   const margin = calculateMargin(Number(form.price), Number(form.capitalPrice))
   const marginYield = calculateMarginYield(Number(form.price), Number(form.capitalPrice))
+  const canSave =
+    String(form.name ?? '').trim().length > 0 &&
+    String(form.category ?? '').trim().length > 0 &&
+    String(form.sku ?? '').trim().length > 0 &&
+    String(form.stock ?? '').trim().length > 0 &&
+    Number.isFinite(Number(form.stock)) &&
+    Number(form.stock) >= 0 &&
+    String(form.minStock ?? '').trim().length > 0 &&
+    Number.isFinite(Number(form.minStock)) &&
+    Number(form.minStock) >= 0 &&
+    String(form.capitalPrice ?? '').trim().length > 0 &&
+    Number.isFinite(Number(form.capitalPrice)) &&
+    Number(form.capitalPrice) > 0 &&
+    String(form.price ?? '').trim().length > 0 &&
+    Number.isFinite(Number(form.price)) &&
+    Number(form.price) > 0
 
   function handleSubmit(event) {
     event?.preventDefault()
+    if (!canSave) {
+      return
+    }
+
     onSave({
       ...form,
-      name: form.name.trim(),
+      name: String(form.name ?? '').trim(),
       category: form.category || 'Sembako',
-      sku: form.sku.trim(),
+      sku: String(form.sku ?? '').trim(),
       stock: Math.max(Number(form.stock), 0),
       minStock: Math.max(Number(form.minStock), 0),
       capitalPrice: Math.max(Number(form.capitalPrice), 0),
       price: Math.max(Number(form.price), 0),
+      photo: String(form.photo ?? ''),
     })
   }
 
+  async function handlePhotoSelect(event) {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      event.target.value = ''
+      return
+    }
+
+    try {
+      const photoDataUrl = await readFileAsDataUrl(file)
+      onPhotoChange?.(photoDataUrl)
+    } catch {
+      // Ignore file read errors and keep the form usable.
+    } finally {
+      event.target.value = ''
+    }
+  }
+
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 w-full font-sans">
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-12 relative w-full">
+    <div className="flex min-h-full bg-slate-50 w-full font-sans">
+      <div className="flex-1 overflow-x-hidden p-6 md:p-12 relative w-full">
         <div className="w-full max-w-3xl mx-auto flex flex-col pb-12">
           
           {/* Header */}
@@ -63,7 +118,8 @@ export default function TambahStokBaruPage({ form, onBack, onFieldChange, onOpen
             <button
               type="button"
               onClick={handleSubmit}
-              className="bg-blue-600 text-white rounded-xl py-2.5 px-6 font-semibold shadow-sm hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-2"
+              disabled={!canSave}
+              className="bg-blue-600 text-white rounded-xl py-2.5 px-6 font-semibold shadow-sm hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
             >
               <CheckIcon className="h-4 w-4" />
               Save Stok
@@ -74,15 +130,36 @@ export default function TambahStokBaruPage({ form, onBack, onFieldChange, onOpen
 
           {/* Restrukturisasi Zona Media */}
           <div className="flex flex-col items-center mb-8">
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePhotoSelect}
+            />
             <button
               type="button"
-              className="flex flex-col items-center justify-center bg-white border-4 border-slate-50 shadow-sm w-32 h-32 rounded-[2rem] hover:bg-slate-50 transition-colors group relative"
+              onClick={() => photoInputRef.current?.click()}
+              className="flex flex-col items-center justify-center bg-white border-4 border-slate-50 shadow-sm w-32 h-32 rounded-[2rem] hover:bg-slate-50 transition-colors group relative overflow-hidden"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
-                <PhotoIcon className="h-5 w-5" />
-              </div>
+              {form.photo ? (
+                <img
+                  src={form.photo}
+                  alt="Preview foto produk"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
+                  <PhotoIcon className="h-5 w-5" />
+                </div>
+              )}
+              {form.photo ? (
+                <div className="absolute inset-0 bg-slate-950/10 transition-colors group-hover:bg-slate-950/0" />
+              ) : null}
             </button>
-            <p className="mt-4 text-[13px] font-bold text-slate-500 hidden md:block">Upload Foto Produk (Maks 5MB)</p>
+            <p className="mt-4 text-[13px] font-bold text-slate-500 hidden md:block">
+              {form.photo ? 'Klik untuk ganti foto produk' : 'Upload Foto Produk (Maks 5MB)'}
+            </p>
           </div>
 
           {/* Form */}

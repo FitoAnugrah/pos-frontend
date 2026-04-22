@@ -13,7 +13,7 @@ export default function ProductCard({ product, onOpen }) {
       <div className="flex items-start gap-4 h-full">
         {/* Kiri: Ikon/Gambar Produk */}
         <div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center p-2 shrink-0 border border-slate-100/50">
-          <ProductThumb kind={product.thumb} />
+          <ProductThumb kind={product.thumb} src={product.photo} alt={product.name} />
         </div>
 
         {/* Kanan: Detail Produk */}

@@ -27,8 +27,8 @@ export default function DetailProdukPage({ product, onBack, onOpenEdit, onOpenSt
   const marginYield = calculateMarginYield(product.price, product.capitalPrice)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 w-full font-sans">
-      <div className="flex-1 overflow-y-auto p-6 md:p-10 relative">
+    <div className="flex min-h-full bg-slate-50 w-full font-sans">
+      <div className="flex-1 p-6 md:p-10 relative">
         <div className="w-full max-w-6xl mx-auto flex gap-4 items-center mb-10">
           <button
             type="button"
@@ -53,7 +53,14 @@ export default function DetailProdukPage({ product, onBack, onOpenEdit, onOpenSt
                   </span>
                 </div>
                 <div className="absolute bottom-4 h-1/2 w-4/5 rounded-full blur-3xl opacity-50" style={{ backgroundColor: product.accent.glow }} />
-                <ProductThumb kind={product.thumb} large accent={product.accent} className="h-48 w-48 rounded-[24px] z-10 relative shadow-2xl" />
+                <ProductThumb
+                  kind={product.thumb}
+                  src={product.photo}
+                  alt={product.name}
+                  large
+                  accent={product.accent}
+                  className="h-48 w-48 rounded-[24px] z-10 relative shadow-2xl"
+                />
               </div>
             </div>
 

@@ -119,9 +119,29 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
   const margin = calculateMargin(Number(form.price), Number(form.capitalPrice))
   const marginYield = calculateMarginYield(Number(form.price), Number(form.capitalPrice))
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const canSave =
+    String(form.name ?? '').trim().length > 0 &&
+    String(form.category ?? '').trim().length > 0 &&
+    String(form.sku ?? '').trim().length > 0 &&
+    String(form.stock ?? '').trim().length > 0 &&
+    Number.isFinite(Number(form.stock)) &&
+    Number(form.stock) >= 0 &&
+    String(form.minStock ?? '').trim().length > 0 &&
+    Number.isFinite(Number(form.minStock)) &&
+    Number(form.minStock) >= 0 &&
+    String(form.capitalPrice ?? '').trim().length > 0 &&
+    Number.isFinite(Number(form.capitalPrice)) &&
+    Number(form.capitalPrice) > 0 &&
+    String(form.price ?? '').trim().length > 0 &&
+    Number.isFinite(Number(form.price)) &&
+    Number(form.price) > 0
 
   function handleSubmit(event) {
     event.preventDefault()
+    if (!canSave) {
+      return
+    }
+
     onSave({
       ...form,
       stock: Math.max(Number(form.stock), 0),
@@ -137,8 +157,8 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
-      <div className="w-full max-w-4xl mx-auto h-full overflow-y-auto pb-16 px-8 no-scrollbar">
+    <div className="flex min-h-full bg-slate-50">
+      <div className="w-full max-w-4xl mx-auto pb-16 px-8">
         <form onSubmit={handleSubmit}>
           
           <header className="flex justify-between items-center mb-10 mt-8">
@@ -154,7 +174,8 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
 
             <button 
               type="submit" 
-              className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 hover:shadow-lg active:scale-95 transition-all"
+              disabled={!canSave}
+              className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 hover:shadow-lg active:scale-95 transition-all disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
             >
               Simpan
             </button>
@@ -162,7 +183,7 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-6 mb-8">
             <div className="w-20 h-20 bg-slate-50 rounded-xl flex-shrink-0 flex items-center justify-center p-2 border border-slate-100 shadow-sm relative overflow-hidden">
-               <ProductThumb kind={product.thumb} className="h-full w-full object-contain" />
+               <ProductThumb kind={product.thumb} src={product.photo} alt={product.name} className="h-full w-full object-contain" />
             </div>
             <div>
               <p className="text-xl font-bold text-slate-800">{product.name}</p>
