@@ -19,7 +19,7 @@ const KebijakanPrivasi = ({ onBack }) => {
 
   const handleHubungiSupport = () => {
     // Open an External Link via the device's system handler
-    window.location.href = 'https://wa.me/[YOUR_SUPPORT_NUMBER]';
+    window.location.href = 'https://wa.me/6285823629025';
   };
 
   const handleDownloadPDF = async () => {
