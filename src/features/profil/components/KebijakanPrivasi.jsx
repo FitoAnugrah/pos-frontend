@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { 
   ArrowLeft, 
   ShieldCheck, 
@@ -17,6 +17,7 @@ import html2pdf from 'html2pdf.js';
 
 const KebijakanPrivasi = ({ onBack }) => {
   const contentRef = useRef(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleHubungiSupport = () => {
     // Open an External Link via the device's system handler
@@ -24,24 +25,96 @@ const KebijakanPrivasi = ({ onBack }) => {
   };
 
   const handleDownloadPDF = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    
     try {
-      const element = contentRef.current;
-      if (!element) return;
+      const plainHtml = `
+        <div style="font-family: 'Courier New', Courier, monospace; color: #000; padding: 20px; font-size: 11px; line-height: 1.6; background: #fff;">
+          <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px;">
+            <h1 style="font-size: 20px; margin: 0 0 5px 0;">KEBIJAKAN PRIVASI & PENGELOLAAN DATA</h1>
+            <h2 style="font-size: 16px; margin: 0 0 10px 0;">Sistem Point of Sale (POS) A'i</h2>
+            <p style="margin: 0; font-size: 10px;">Status Dokumen: AKTIF & BERLAKU SEJAK 24 MEI 2024</p>
+          </div>
+          
+          <p>Sistem POS A'i menghargai privasi dan kerahasiaan data operasional bisnis Anda. Dokumen ini menjelaskan bagaimana kami mengumpulkan, menyimpan, dan memproses data dari perangkat Kasir dan Terminal Anda.</p>
+          
+          <h2 style="font-size: 13px; margin-top: 20px; border-bottom: 1px solid #000; padding-bottom: 3px;">1. DATA YANG DIKUMPULKAN</h2>
+          <p>Saat Anda menggunakan layanan Point of Sale kami, kami mengumpulkan jenis data berikut secara otomatis maupun manual:</p>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 15px; border: 1px solid #000; text-align: left;">
+            <thead>
+              <tr style="background-color: #f0f0f0;">
+                <th style="border: 1px solid #000; padding: 8px; width: 30%;">Tipe Data</th>
+                <th style="border: 1px solid #000; padding: 8px;">Detail & Deskripsi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Data Master (Produk/Stok)</td>
+                <td style="border: 1px solid #000; padding: 8px;">Informasi SKU, Harga Modal, Harga Jual, Margin, dan Jumlah Stok tersisa di gudang/toko.</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Data Transaksi & Finansial</td>
+                <td style="border: 1px solid #000; padding: 8px;">Riwayat penjualan, perhitungan pajak (PPN), diskon, dan metode pembayaran pelanggan.</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Data Member / Pelanggan</td>
+                <td style="border: 1px solid #000; padding: 8px;">Nama pelanggan, nomor telepon, histori transaksi, dan poin keanggotaan (jika diaktifkan).</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Data Karyawan / Shift</td>
+                <td style="border: 1px solid #000; padding: 8px;">Log aktivitas kasir, rekap jam kerja (shift), dan otoritas pembatalan transaksi.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 style="font-size: 13px; margin-top: 20px; border-bottom: 1px solid #000; padding-bottom: 3px;">2. TUJUAN PENGGUNAAN DATA</h2>
+          <p>Seluruh data yang tersimpan di dalam terminal POS digunakan khusus untuk:</p>
+          <ul style="margin-top: 5px; padding-left: 20px;">
+            <li><strong>Operasional Kasir:</strong> Sinkronisasi pemotongan stok otomatis setiap kali transaksi berhasil dilakukan.</li>
+            <li><strong>Analitik & Pelaporan:</strong> Menyusun ringkasan omset harian, produk terlaris, dan kalkulasi profit secara akurat.</li>
+            <li><strong>Audit Internal:</strong> Menyediakan rekam jejak (log) untuk mengidentifikasi selisih kas atau transaksi yang dibatalkan (void).</li>
+          </ul>
+
+          <h2 style="font-size: 13px; margin-top: 20px; border-bottom: 1px solid #000; padding-bottom: 3px;">3. PENYIMPANAN LOKAL (LOCALSTORAGE) & KEAMANAN</h2>
+          <p>Untuk mendukung performa yang sangat cepat dan kapabilitas luring (offline), POS A'i secara default menyimpan data esensial di penyimpanan lokal perangkat (Local Storage & IndexedDB) dengan lapisan perlindungan berikut:</p>
+          <ul style="margin-top: 5px; padding-left: 20px;">
+            <li>Semua kalkulasi nilai finansial diproses murni secara lokal di perangkat yang ditugaskan.</li>
+            <li>Data tidak akan dikirimkan ke pihak ketiga manapun untuk tujuan periklanan atau pemasaran silang (cross-marketing).</li>
+            <li>Kami menyarankan pengguna untuk membersihkan cache browser hanya setelah proses tutup buku/tutup shift selesai dilakukan.</li>
+          </ul>
+
+          <h2 style="font-size: 13px; margin-top: 20px; border-bottom: 1px solid #000; padding-bottom: 3px;">4. HAK PENGHAPUSAN & KENDALI PENUH</h2>
+          <p>Pemilik toko memegang kendali 100% atas basis datanya. Anda memiliki kewenangan tak terbatas untuk melakukan pembersihan data transaksi historis, mengoreksi data inventaris (stock opname), hingga menghapus catatan database anggota secara sepihak.</p>
+
+          <div style="margin-top: 40px; text-align: center; border-top: 1px dashed #000; padding-top: 15px;">
+            <p style="margin: 0; font-weight: bold; font-size: 14px;">POS A'i © 2024 Dikal Lampa Solutions</p>
+            <p style="margin: 5px 0 0 0; font-size: 10px;">Dokumen legal ini dicetak langsung dari Sistem Kasir Internal.</p>
+          </div>
+        </div>
+      `;
 
       const opt = {
         margin:       0.5,
-        filename:     'Kebijakan_Privasi_POS_AI.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
+        filename:     'Kebijakan_Privasi_POS_AI_Nota.pdf',
+        image:        { type: 'jpeg', quality: 1 },
         html2canvas:  { 
-          scale: 2,
-          ignoreElements: (el) => el.id === 'pdf-exclude-buttons'
+          scale: 2, 
+          useCORS: true,
+          logging: false
         },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(element).save();
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Gunakan langsung API string dari html2pdf, tidak perlu memanipulasi document.body
+      await html2pdf().set(opt).from(plainHtml).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
+      alert('Gagal mengunduh PDF. Pastikan memori perangkat cukup.');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -217,9 +290,20 @@ const KebijakanPrivasi = ({ onBack }) => {
               </button>
               <button 
                 onClick={handleDownloadPDF}
-                className="w-full md:w-auto md:px-8 bg-white hover:bg-slate-50 text-[#0066FF] text-[13px] font-bold py-3 rounded-xl border border-blue-100 transition-all shadow-sm"
+                disabled={isDownloading}
+                className={`w-full md:w-auto md:px-8 bg-white hover:bg-slate-50 text-[#0066FF] text-[13px] font-bold py-3 rounded-xl border border-blue-100 transition-all shadow-sm flex justify-center items-center gap-2 ${isDownloading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                Download PDF
+                {isDownloading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Memproses PDF...
+                  </>
+                ) : (
+                  'Download PDF'
+                )}
               </button>
             </div>
           </div>
