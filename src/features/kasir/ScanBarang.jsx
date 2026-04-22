@@ -3,28 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Zap, ShoppingCart, ShoppingBasket, 
   Tag, Barcode, Home, Clock, Box, Settings, 
-  Minus, Plus, Edit3
+  Minus, Plus, Edit3, Check
 } from 'lucide-react';
+import { getProducts } from '../../utils/productStorage';
 
 const ScanBarang = () => {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  const [cartCount, setCartCount] = useState(3);
+  const [cartItems, setCartItems] = useState([]);
+  const [addedFeedback, setAddedFeedback] = useState(false);
   const [scanStatus, setScanStatus] = useState('Position barcode within the frame');
   const [scannedProduct, setScannedProduct] = useState(null);
   
-  // Database mock produk realistis
-  const MOCK_PRODUCTS = [
-    { sku: "8856680007288", name: "Genive Natural Hair Tonic 120ml", price: 65000, stock: 45, category: "Perawatan Rambut" },
-    { sku: "8998866100155", name: "Indomie Mie Goreng", price: 3000, stock: 210, category: "Makanan" },
-    { sku: "8992770094017", name: "Aqua Air Mineral 600ml", price: 3500, stock: 120, category: "Minuman" },
-    { sku: "8998866200633", name: "Teh Pucuk Harum 350ml", price: 4000, stock: 85, category: "Minuman" },
-    { sku: "8999999195350", name: "SilverQueen Coklat 62g", price: 16500, stock: 32, category: "Cemilan" },
-    { sku: "MOCK1", name: "Minyak Goreng Bimoli 2L", price: 34000, stock: 45, category: "Sembako" },
-    { sku: "MOCK2", name: "Beras Premium BMW 5kg", price: 68000, stock: 15, category: "Sembako" },
-    { sku: "MOCK3", name: "Pepsodent Pasta Gigi 190g", price: 12500, stock: 68, category: "Kebersihan" },
-    { sku: "MOCK4", name: "Sunlight Sabun Cuci 755ml", price: 18000, stock: 41, category: "Kebersihan" }
-  ];
+
   
   // Ref & State untuk Native Scanner vs Fallback
   const videoRef = useRef(null);
@@ -73,21 +64,17 @@ const ScanBarang = () => {
                 const barcodes = await detector.detect(video);
                 if (barcodes.length > 0) {
                   const decodedText = barcodes[0].rawValue;
-                  setScanStatus('Barcode terdeteksi: ' + decodedText);
                   
                   // Cari apakah barcode persis ada di database
-                  let selectedProduct = MOCK_PRODUCTS.find(p => p.sku === decodedText);
+                  const selectedProduct = getProducts().find(p => p.sku === decodedText);
                   
                   if (!selectedProduct) {
-                    // Fallback: Ambil mock produk secara konsisten berdasarkan hash barcode
-                    const hash = Array.from(decodedText).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                    const fallback = MOCK_PRODUCTS[hash % MOCK_PRODUCTS.length];
-                    selectedProduct = { ...fallback, sku: decodedText };
+                    setScanStatus(`Produk dengan SKU ${decodedText} tidak ditemukan di database gudang.`);
+                  } else {
+                    setScanStatus('Barcode terdeteksi: ' + decodedText);
+                    setScannedProduct(selectedProduct);
+                    setQuantity(1);
                   }
-                  
-                  // Set produk hasil scan
-                  setScannedProduct(selectedProduct);
-                  setQuantity(1);
                 }
               } catch (e) {
                 // Silent catch
@@ -138,18 +125,15 @@ const ScanBarang = () => {
           },
           (decodedText) => {
             if (isMounted) {
-              setScanStatus('Barcode terdeteksi: ' + decodedText);
-              
-              let selectedProduct = MOCK_PRODUCTS.find(p => p.sku === decodedText);
+              const selectedProduct = getProducts().find(p => p.sku === decodedText);
               
               if (!selectedProduct) {
-                const hash = Array.from(decodedText).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                const fallback = MOCK_PRODUCTS[hash % MOCK_PRODUCTS.length];
-                selectedProduct = { ...fallback, sku: decodedText };
+                setScanStatus(`Produk dengan SKU ${decodedText} tidak ditemukan di database gudang.`);
+              } else {
+                setScanStatus('Barcode terdeteksi: ' + decodedText);
+                setScannedProduct(selectedProduct);
+                setQuantity(1);
               }
-              
-              setScannedProduct(selectedProduct);
-              setQuantity(1);
             }
           },
           () => {} // Silent on error
@@ -186,12 +170,45 @@ const ScanBarang = () => {
 
   // Variabel dummy produk (sudah diganti dengan state scannedProduct)
 
+  const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+
   const handleDecrease = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
 
   const handleIncrease = () => {
     if (quantity < 10) setQuantity(quantity + 1);
+  };
+
+  const handleAddToCart = () => {
+    if (!scannedProduct) return;
+    
+    // Hitung total di cart untuk validasi stok
+    const existing = cartItems.find(item => item.sku === scannedProduct.sku);
+    const existingQty = existing ? existing.qty : 0;
+    const requestedQty = existingQty + quantity;
+    
+    if (requestedQty > scannedProduct.stock) {
+      alert(`Stok tidak mencukupi. Sisa stok: ${scannedProduct.stock} unit.`);
+      return;
+    }
+
+    setCartItems(prev => {
+      if (existing) {
+        return prev.map(item =>
+          item.sku === scannedProduct.sku
+            ? { ...item, qty: requestedQty }
+            : item
+        );
+      }
+      return [...prev, { ...scannedProduct, qty: quantity }];
+    });
+    // Visual feedback
+    setAddedFeedback(true);
+    setTimeout(() => setAddedFeedback(false), 1200);
+    // Reset scan state for next item
+    setScannedProduct(null);
+    setQuantity(1);
   };
 
   return (
@@ -206,13 +223,16 @@ const ScanBarang = () => {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <span className="font-bold text-lg tracking-wide shadow-black drop-shadow-md">Scan Items</span>
+          <span className="font-bold text-lg tracking-wide shadow-black drop-shadow-md">Scan Barang</span>
         </div>
         <div className="flex items-center space-x-3 pointer-events-auto">
           <button className="p-2.5 bg-slate-800/60 hover:bg-slate-700/80 rounded-full backdrop-blur-md transition-all border border-white/10 shadow-lg">
             <Zap className="w-5 h-5" />
           </button>
-          <button className="relative p-2.5 bg-slate-800/60 hover:bg-slate-700/80 rounded-full backdrop-blur-md transition-all border border-white/10 shadow-lg">
+          <button 
+            onClick={() => navigate('/keranjang')}
+            className="relative p-2.5 bg-slate-800/60 hover:bg-slate-700/80 rounded-full backdrop-blur-md transition-all border border-white/10 shadow-lg"
+          >
             <ShoppingCart className="w-5 h-5" />
             {cartCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full border-2 border-slate-900 min-w-[20px] text-center shadow-sm">
@@ -288,13 +308,13 @@ const ScanBarang = () => {
 
             {/* Header Produk */}
             <div className="mb-7">
-              <span className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase">Product Detected</span>
+              <span className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase">Produk Terdeteksi</span>
               <div className="flex justify-between items-start mt-3 gap-4">
                 <h2 className="text-2xl font-black text-slate-800 leading-tight flex-1">{scannedProduct.name}</h2>
                 <div className="text-right flex-shrink-0">
                   <p className="text-2xl font-black text-blue-700 tracking-tight">Rp {(scannedProduct.price * quantity).toLocaleString('id-ID')}</p>
                   <p className="text-[13px] font-semibold text-slate-500 mt-1.5 bg-slate-100 inline-block px-2.5 py-1 rounded-md">
-                    Stock: {Math.max(0, scannedProduct.stock - quantity)} units
+                    Stok: {Math.max(0, scannedProduct.stock - quantity)} unit
                   </p>
                 </div>
               </div>
@@ -308,7 +328,7 @@ const ScanBarang = () => {
                   <Barcode className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-extrabold text-blue-400 uppercase tracking-widest mb-0.5">SKU ID</p>
+                  <p className="text-[10px] font-extrabold text-blue-400 uppercase tracking-widest mb-0.5">Kode SKU</p>
                   <p className="text-sm font-bold text-slate-700">{scannedProduct.sku}</p>
                 </div>
               </div>
@@ -318,7 +338,7 @@ const ScanBarang = () => {
                   <Tag className="w-5 h-5" />
                 </div>
                 <div className="overflow-hidden">
-                  <p className="text-[10px] font-extrabold text-blue-400 uppercase tracking-widest mb-0.5">Category</p>
+                  <p className="text-[10px] font-extrabold text-blue-400 uppercase tracking-widest mb-0.5">Kategori</p>
                   <p className="text-sm font-bold text-slate-700 truncate">{scannedProduct.category}</p>
                 </div>
               </div>
@@ -327,8 +347,8 @@ const ScanBarang = () => {
             {/* Kontrol Kuantitas */}
             <div className="mb-8">
               <div className="flex justify-between items-end mb-3">
-                <h3 className="font-bold text-slate-800 text-[15px]">Set Quantity</h3>
-                <span className="text-xs font-semibold text-slate-400">Max. 10 per sale</span>
+                <h3 className="font-bold text-slate-800 text-[15px]">Atur Kuantitas</h3>
+                <span className="text-xs font-semibold text-slate-400">Maks. 10 per transaksi</span>
               </div>
               
               <div className="bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-center p-2 shadow-sm">
@@ -372,15 +392,21 @@ const ScanBarang = () => {
         {/* Tombol Aksi */}
         <div className="flex flex-col space-y-3 mt-auto pt-4">
           <button 
+            onClick={handleAddToCart}
             disabled={!scannedProduct}
             className={`w-full font-bold py-4.5 px-4 rounded-2xl transition-all shadow-lg flex items-center justify-center space-x-2.5 h-14 ${
-              scannedProduct 
-                ? 'bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white shadow-blue-600/30' 
-                : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+              addedFeedback
+                ? 'bg-emerald-500 text-white shadow-emerald-500/30 scale-[0.98]'
+                : scannedProduct 
+                  ? 'bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white shadow-blue-600/30' 
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
             }`}
           >
-            <ShoppingCart className="w-[18px] h-[18px] stroke-[2.5px]" />
-            <span className="text-[15px]">Tambah ke Keranjang</span>
+            {addedFeedback ? (
+              <><Check className="w-[18px] h-[18px] stroke-[2.5px]" /><span className="text-[15px]">Ditambahkan!</span></>
+            ) : (
+              <><ShoppingCart className="w-[18px] h-[18px] stroke-[2.5px]" /><span className="text-[15px]">Tambah ke Keranjang</span></>
+            )}
           </button>
           
           <div className="grid grid-cols-2 gap-3">
@@ -406,32 +432,32 @@ const ScanBarang = () => {
 
       {/* Bottom Navigation (Khusus Mobile) */}
       <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-100 px-6 py-2.5 flex justify-between items-center z-50 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.03)]">
-        <button className="flex flex-col items-center space-y-1 text-blue-600 w-16">
+        <button onClick={() => navigate('/')} className="flex flex-col items-center space-y-1 text-blue-600 w-16">
           <div className="p-1.5 bg-blue-50 text-blue-600 rounded-xl">
             <Home className="w-[22px] h-[22px] stroke-[2.5px]" />
           </div>
-          <span className="text-[10px] font-bold">Register</span>
+          <span className="text-[10px] font-bold">Terminal</span>
         </button>
         
-        <button className="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition-colors w-16">
+        <button onClick={() => navigate('/riwayat')} className="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition-colors w-16">
           <div className="p-1.5">
             <Clock className="w-[22px] h-[22px]" />
           </div>
-          <span className="text-[10px] font-semibold">History</span>
+          <span className="text-[10px] font-semibold">Riwayat</span>
         </button>
         
-        <button className="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition-colors w-16">
+        <button onClick={() => navigate('/stok')} className="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition-colors w-16">
           <div className="p-1.5">
             <Box className="w-[22px] h-[22px]" />
           </div>
-          <span className="text-[10px] font-semibold">Inventory</span>
+          <span className="text-[10px] font-semibold">Stok</span>
         </button>
         
-        <button className="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition-colors w-16">
+        <button onClick={() => navigate('/pengaturan')} className="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition-colors w-16">
           <div className="p-1.5">
             <Settings className="w-[22px] h-[22px]" />
           </div>
-          <span className="text-[10px] font-semibold">Settings</span>
+          <span className="text-[10px] font-semibold">Pengaturan</span>
         </button>
       </div>
 

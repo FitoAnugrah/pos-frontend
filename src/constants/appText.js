@@ -15,7 +15,7 @@ const dashboardText = {
     transaksi: {
       label: 'TRANSAKSI AKTIF',
       value: '12',
-      sub: '3 Jual selesai 3 hrs ago',
+      sub: '3 Penjualan selesai 3 jam yang lalu',
     },
   },
 
@@ -31,7 +31,7 @@ const dashboardText = {
 
   activity: {
     title: 'AKTIVITAS TERKINI',
-    seeAll: 'SEE ALL',
+    seeAll: 'LIHAT SEMUA',
     items: [
       {
         id: 1,
@@ -43,8 +43,8 @@ const dashboardText = {
       {
         id: 2,
         type: 'info',
-        title: 'Member buat mendaftar',
-        desc: 'Registrasi via Aplikasi Merchant',
+        title: 'Member baru mendaftar',
+        desc: 'Registrasi via Aplikasi Pelanggan',
         time: '09:45',
       },
       {

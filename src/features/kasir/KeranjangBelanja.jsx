@@ -8,7 +8,8 @@ import {
   Minus, 
   Plus, 
   Banknote,
-  ImageIcon
+  ImageIcon,
+  Trash2
 } from 'lucide-react';
 
 const KeranjangBelanja = () => {
@@ -39,14 +40,25 @@ const KeranjangBelanja = () => {
     }
   ]);
 
+  // Fungsi hapus item
+  const handleRemoveItem = (id) => {
+    setCart((prev) => prev.filter(item => item.id !== id));
+  };
+
   // Fungsi untuk update kuantitas
   const updateQuantity = (id, increment) => {
+    const item = cart.find(i => i.id === id);
+    if (item && item.qty + increment < 1) {
+      if (window.confirm("Hapus barang dari pesanan?")) {
+        handleRemoveItem(id);
+      }
+      return;
+    }
+    
     setCart((prevCart) =>
       prevCart.map((item) => {
         if (item.id === id) {
-          const newQty = item.qty + increment;
-          // Batasi minimal 1 (jangan sampai minus)
-          return { ...item, qty: Math.max(1, newQty) };
+          return { ...item, qty: item.qty + increment };
         }
         return item;
       })
@@ -147,43 +159,70 @@ const KeranjangBelanja = () => {
             </div>
 
             <div className="flex flex-col gap-3">
-              {cart.map((item) => (
-                <div key={item.id} className="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex items-center gap-3 md:gap-4 transition-all hover:shadow-md">
-                  {/* Gambar Produk */}
-                  <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200/50 overflow-hidden">
-                    {item.image ? (
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <ImageIcon className="w-6 h-6 text-slate-300" />
-                    )}
+              {cart.length === 0 ? (
+                <div className="py-12 flex flex-col items-center justify-center bg-white rounded-2xl border border-slate-100">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                    <Banknote className="w-8 h-8 text-slate-300" />
                   </div>
-
-                  {/* Info Produk */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-slate-800 text-[15px] truncate">{item.name}</h3>
-                    <p className="font-bold text-blue-600 text-[14px] mt-0.5 tracking-tight">{formatRupiah(item.price)}</p>
-                  </div>
-
-                  {/* Kontrol Qty */}
-                  <div className="bg-slate-50 border border-blue-100 rounded-full flex items-center p-1 shrink-0 shadow-inner">
-                    <button 
-                      onClick={() => updateQuantity(item.id, -1)}
-                      className="w-8 h-8 rounded-full bg-white text-blue-600 flex items-center justify-center shadow-sm border border-slate-100 hover:bg-blue-50 active:scale-90 transition-all"
-                    >
-                      <Minus className="w-4 h-4 stroke-[3px]" />
-                    </button>
-                    <span className="w-10 text-center font-black text-slate-800 text-[15px] tabular-nums">
-                      {item.qty}
-                    </span>
-                    <button 
-                      onClick={() => updateQuantity(item.id, 1)}
-                      className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md hover:bg-blue-700 active:scale-90 transition-all"
-                    >
-                      <Plus className="w-4 h-4 stroke-[3px]" />
-                    </button>
-                  </div>
+                  <p className="text-slate-500 font-bold mb-1">Keranjang Kosong</p>
+                  <p className="text-slate-400 text-sm mb-4">Belum ada barang di keranjang.</p>
+                  <button 
+                    onClick={() => navigate('/scan')} 
+                    className="bg-blue-50 text-blue-600 font-bold px-5 py-2.5 rounded-xl hover:bg-blue-100 transition-colors"
+                  >
+                    Mulai Scan Barang
+                  </button>
                 </div>
-              ))}
+              ) : (
+                cart.map((item) => (
+                  <div key={item.id} className="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex items-center gap-3 md:gap-4 transition-all hover:shadow-md">
+                    {/* Gambar Produk */}
+                    <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200/50 overflow-hidden">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <ImageIcon className="w-6 h-6 text-slate-300" />
+                      )}
+                    </div>
+
+                    {/* Info Produk */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-slate-800 text-[15px] truncate">{item.name}</h3>
+                      <p className="font-bold text-blue-600 text-[14px] mt-0.5 tracking-tight">{formatRupiah(item.price)}</p>
+                    </div>
+
+                    {/* Kontrol Kanan (Trash + Qty) */}
+                    <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                      <button 
+                        onClick={() => handleRemoveItem(item.id)}
+                        className="p-2 rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+                        title="Hapus item"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+
+                      {/* Kontrol Qty */}
+                      <div className="bg-slate-50 border border-blue-100 rounded-full flex items-center p-1 shrink-0 shadow-inner">
+                        <button 
+                          onClick={() => updateQuantity(item.id, -1)}
+                          className="w-8 h-8 rounded-full bg-white text-blue-600 flex items-center justify-center shadow-sm border border-slate-100 hover:bg-blue-50 active:scale-90 transition-all"
+                        >
+                          <Minus className="w-4 h-4 stroke-[3px]" />
+                        </button>
+                        <span className="w-10 text-center font-black text-slate-800 text-[15px] tabular-nums">
+                          {item.qty}
+                        </span>
+                        <button 
+                          onClick={() => updateQuantity(item.id, 1)}
+                          className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md hover:bg-blue-700 active:scale-90 transition-all"
+                        >
+                          <Plus className="w-4 h-4 stroke-[3px]" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
           
@@ -216,7 +255,12 @@ const KeranjangBelanja = () => {
 
           <button 
             onClick={() => navigate('/pembayaran')}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold text-[15px] flex justify-center items-center gap-2.5 shadow-lg shadow-blue-600/30 active:scale-95 transition-all"
+            disabled={cart.length === 0}
+            className={`w-full py-4 rounded-2xl font-bold text-[15px] flex justify-center items-center gap-2.5 transition-all ${
+              cart.length === 0 
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 active:scale-95'
+            }`}
           >
             <Banknote className="w-5 h-5 stroke-[2.5px]" />
             Lanjut Pembayaran

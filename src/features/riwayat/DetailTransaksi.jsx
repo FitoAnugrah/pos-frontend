@@ -22,46 +22,33 @@ export default function DetailTransaksi() {
   }
 
   const rawTotal = parseInt(String(transaction.amount).replace(/[^0-9]/g, '')) || 0;
-  const isTargetTrx = transaction.id === '#TRX-9981' || transaction.id === 'TRX-9981';
-
-  let calculatedSubtotal, calculatedPajak, calculatedDiskon, calculatedUangDiterima, calculatedKembali, isMember;
-
-  if (isTargetTrx) {
-    calculatedSubtotal = 154000;
-    calculatedPajak = 1000;
-    calculatedDiskon = 0;
-    calculatedUangDiterima = 200000;
-    calculatedKembali = 45000;
-    isMember = false;
-  } else {
-    isMember = (parseInt(transaction.id.replace(/[^0-9]/g, '')) || 0) % 2 === 0;
-    const multiplier = isMember ? 1.05 : 1.10;
-    calculatedSubtotal = Math.floor(rawTotal / multiplier);
-    calculatedPajak = Math.floor(calculatedSubtotal * 0.10);
-    calculatedDiskon = isMember ? Math.floor(calculatedSubtotal * 0.05) : 0;
-    
-    let denom = rawTotal > 100000 ? 100000 : 50000;
-    calculatedUangDiterima = Math.ceil(rawTotal / denom) * denom;
-    if (calculatedUangDiterima === rawTotal) calculatedUangDiterima += denom;
-    calculatedKembali = calculatedUangDiterima - rawTotal;
-  }
-
-  const subtotalStr = `Rp ${calculatedSubtotal.toLocaleString('id-ID')}`;
-  const diskonStr = calculatedDiskon > 0 ? `- Rp ${calculatedDiskon.toLocaleString('id-ID')}` : '- Rp 0';
-  const pajakStr = `Rp ${calculatedPajak.toLocaleString('id-ID')}`;
+  
+  // Ambil nilai dari objek transaksi, dengan fallback jika data mock tidak lengkap
+  const subtotal = transaction.subtotal !== undefined ? transaction.subtotal : Math.floor(rawTotal / 1.10);
+  const pajak = transaction.tax !== undefined ? transaction.tax : Math.floor(subtotal * 0.10);
+  const diskon = transaction.discount || 0;
+  const uangDiterima = transaction.cashReceived !== undefined ? transaction.cashReceived : Math.ceil(rawTotal / 50000) * 50000;
+  const kembali = transaction.change !== undefined ? transaction.change : (uangDiterima - rawTotal);
+  
+  // Format mata uang
+  const formatRp = (num) => `Rp ${num.toLocaleString('id-ID')}`;
+  
+  const subtotalStr = transaction.summary?.subtotal || formatRp(subtotal);
+  const diskonStr = transaction.summary?.discount || (diskon > 0 ? `- ${formatRp(diskon)}` : '- Rp 0');
+  const pajakStr = transaction.summary?.tax || formatRp(pajak);
   const totalAkhir = transaction.amount;
-  const uangDiterimaStr = `Rp ${calculatedUangDiterima.toLocaleString('id-ID')}`;
-  const kembaliStr = `Rp ${calculatedKembali.toLocaleString('id-ID')}`;
+  const uangDiterimaStr = transaction.payment?.cashReceived || formatRp(uangDiterima);
+  const kembaliStr = transaction.payment?.change || formatRp(Math.max(0, kembali));
 
-  const items = isTargetTrx ? [
-    { name: 'Minyak Goreng 1L', qty: 1, price: 'Rp 25.000', total: 'Rp 25.000' },
-    { name: 'Beras Premium 5kg', qty: 1, price: 'Rp 82.500', total: 'Rp 82.500' },
-    { name: 'Gula Pasir 1kg', qty: 3, price: 'Rp 15.500', total: 'Rp 46.500' }
-  ] : [
-    { name: 'Produk Retail', qty: 1, price: subtotalStr, total: subtotalStr }
+  // Fallback untuk items
+  const items = transaction.items || [
+    { name: 'Item Pembelian', qty: 1, price: transaction.amount, total: transaction.amount }
   ];
 
   const isRefund = transaction.status === 'REFUND';
+  const isMember = transaction.memberId ? true : false;
+  const memberName = transaction.memberName || 'Pelanggan';
+  const cashierName = transaction.cashier || 'Admin';
 
   const getPaymentIcon = (iconStr) => {
     switch(iconStr) {
@@ -103,11 +90,11 @@ export default function DetailTransaksi() {
             <div className="flex justify-between items-end">
               <div>
                 <p className="text-[10px] font-bold text-[#8FA5B8] uppercase tracking-wider mb-1">Tanggal & Waktu</p>
-                <p className="text-[13px] font-bold text-[#11263C]">{isTargetTrx ? '24 Okt, 14:02' : `${transaction.displayDate}, ${transaction.time}`}</p>
+                <p className="text-[13px] font-bold text-[#11263C]">{transaction.displayDate}, {transaction.time}</p>
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-bold text-[#8FA5B8] uppercase tracking-wider mb-1">{isMember ? 'Nama Member' : 'Nama Kasir'}</p>
-                <p className={`text-[13px] font-bold ${isMember ? 'text-[#0A6CBF]' : 'text-[#11263C]'}`}>{isMember ? 'Pelanggan Setia' : 'Admin Ali'}</p>
+                <p className={`text-[13px] font-bold ${isMember ? 'text-[#0A6CBF]' : 'text-[#11263C]'}`}>{isMember ? memberName : cashierName}</p>
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import membersData from '../../mock/augmentedMemberData.js';
+import { getMembers } from '../../utils/memberStorage';
 import {
   PlusIcon,
   SearchIcon,
@@ -110,8 +110,14 @@ function MemberCard({ member, onClick }) {
 
 export default function MemberPage() {
   const navigate = useNavigate();
+  const [membersData, setMembersData] = useState([]);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('newest');
+
+  // Load from localStorage on mount (always fresh data)
+  useEffect(() => {
+    setMembersData(getMembers());
+  }, []);
 
   const totalMembers = membersData.length;
   const activeMembers = membersData.filter((m) => m.status === 'Active Account').length;
@@ -136,7 +142,7 @@ export default function MemberPage() {
     }
 
     return result;
-  }, [search, sort]);
+  }, [membersData, search, sort]);
 
   return (
     <div className="bg-slate-50 min-h-screen font-sans">

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import membersData from '../../../mock/memberData.json';
+import { saveMember } from '../../../utils/memberStorage';
 import {
   ArrowLeftIcon,
   UserIcon,
@@ -50,9 +50,7 @@ export default function AddMember() {
     const d = new Date();
     const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-    const newMember = {
-      id: Date.now(),
-      memberId: `MEMBER-${Math.floor(Math.random() * 10000)}`,
+    saveMember({
       name: formData.name,
       phone: formData.phone,
       email: formData.email,
@@ -62,10 +60,8 @@ export default function AddMember() {
       status: 'Active Account',
       joinedDate: `${months[d.getMonth()]} ${d.getFullYear()}`,
       transactions: []
-    };
-    membersData.push(newMember);
+    });
 
-    console.log('Saving new member:', newMember);
     navigate('/member');
   };
 

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import membersData from '../../../mock/memberData.json';
+import { getMemberById, updateMember, deleteMember } from '../../../utils/memberStorage';
 import {
   ArrowLeftIcon,
   TrashIcon,
@@ -13,7 +13,7 @@ export default function EditMember() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const member = membersData.find(m => m.id === parseInt(id));
+  const member = getMemberById(id);
   const [formData, setFormData] = useState({
     name: member?.name || '',
     phone: member?.phone || '',
@@ -56,24 +56,20 @@ export default function EditMember() {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
     
-    if (member) {
-      member.name = formData.name;
-      member.phone = formData.phone;
-      member.email = formData.email;
-      member.level = formData.level;
-      member.avatarUrl = formData.avatarUrl;
-    }
+    updateMember(id, {
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      level: formData.level,
+      avatarUrl: formData.avatarUrl,
+    });
 
-    console.log('Saving member details:', formData);
     navigate(-1);
   };
 
   const handleDelete = () => {
     if (window.confirm('Apakah Anda yakin ingin menghapus member ini?')) {
-      const index = membersData.findIndex(m => m.id === member.id);
-      if (index !== -1) {
-        membersData.splice(index, 1);
-      }
+      deleteMember(id);
       navigate('/member');
     }
   };

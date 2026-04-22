@@ -159,7 +159,7 @@ export const initialProducts = [
     lastMonthGrowth: 12,
     lastMonthLabel: 'vs lalu',
     badge: 'Premium Quality',
-    title: 'Product Details',
+    title: 'Detail Produk',
     accent: {
       shell: 'from-[#5b2f74] via-[#61307a] to-[#4c2866]',
       glow: 'rgba(105,55,142,0.45)',
@@ -181,7 +181,7 @@ export const initialProducts = [
     lastMonthGrowth: 8,
     lastMonthLabel: 'vs lalu',
     badge: 'Best Seller',
-    title: 'Product Details',
+    title: 'Detail Produk',
     accent: {
       shell: 'from-[#2f3441] via-[#20262f] to-[#141a22]',
       glow: 'rgba(70,83,105,0.45)',
@@ -203,7 +203,7 @@ export const initialProducts = [
     lastMonthGrowth: 18,
     lastMonthLabel: 'vs lalu',
     badge: 'Ready Stock',
-    title: 'Product Details',
+    title: 'Detail Produk',
     accent: {
       shell: 'from-[#47240d] via-[#72350f] to-[#231107]',
       glow: 'rgba(130,79,35,0.45)',
@@ -225,7 +225,7 @@ export const initialProducts = [
     lastMonthGrowth: 10,
     lastMonthLabel: 'vs lalu',
     badge: 'Kids Favorite',
-    title: 'Product Details',
+    title: 'Detail Produk',
     accent: {
       shell: 'from-[#181818] via-[#101010] to-[#050505]',
       glow: 'rgba(73,73,73,0.45)',
@@ -247,7 +247,7 @@ export const initialProducts = [
     lastMonthGrowth: 4,
     lastMonthLabel: 'vs lalu',
     badge: 'Fresh Daily',
-    title: 'Product Details',
+    title: 'Detail Produk',
     accent: {
       shell: 'from-[#18303a] via-[#0f2430] to-[#5c3722]',
       glow: 'rgba(61,94,104,0.45)',

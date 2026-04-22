@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import membersData from '../../../mock/augmentedMemberData.js';
+import { getMembers } from '../../../utils/memberStorage';
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -18,7 +18,7 @@ export default function TransactionDetail() {
   let transaction = null;
   let memberOwner = null;
 
-  for (const m of membersData) {
+  for (const m of getMembers()) {
     if (m.transactions) {
       const found = m.transactions.find(t => t.trxId === trxId || t.id === trxId); // Support both ID types
       if (found) {

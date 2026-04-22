@@ -23,6 +23,7 @@ import KeranjangBelanja from '../features/kasir/KeranjangBelanja';
 import HalamanPembayaran from '../features/kasir/HalamanPembayaran';
 import LoginFeature from '../features/login';
 import PlaceholderPage from '../components/layout/PlaceholderPage';
+import HalamanPengaturan from '../features/pengaturan/HalamanPengaturan';
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -66,15 +67,7 @@ export default function AppRoutes() {
       <Route path="/produk-terlaris" element={<ProdukTerlaris />} />
       <Route path="/profil" element={<ProfilFeature onTabChange={handleMainTabChange} />} />
       <Route path="/login" element={<LoginFeature onLoginSuccess={() => navigate('/')} />} />
-      <Route
-        path="/pengaturan"
-        element={
-          <PlaceholderPage
-            title="Pengaturan"
-            description="Halaman pengaturan belum tersedia."
-          />
-        }
-      />
+      <Route path="/pengaturan" element={<HalamanPengaturan />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

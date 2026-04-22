@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import membersData from '../../../mock/augmentedMemberData.js';
+import { getMembers } from '../../../utils/memberStorage';
 import {
   ArrowLeftIcon,
   PhoneIcon,
@@ -24,7 +24,7 @@ export default function MemberDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const member = membersData.find(m => m.id === parseInt(id));
+  const member = getMembers().find(m => m.id === parseInt(id));
 
   if (!member) {
     return (

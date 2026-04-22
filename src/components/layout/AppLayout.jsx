@@ -36,6 +36,10 @@ function isSubPage(pathname) {
     /^\/transaction\//.test(pathname) || // /transaction/:id
     /^\/laporan/.test(pathname) ||
     /^\/scan/.test(pathname) ||
+    /^\/input-sku/.test(pathname) ||
+    /^\/keranjang/.test(pathname) ||
+    /^\/pembayaran/.test(pathname) ||
+    /^\/profil/.test(pathname) ||
     /^\/login/.test(pathname)
   );
 }
