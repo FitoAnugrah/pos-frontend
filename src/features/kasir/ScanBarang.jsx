@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Zap, ShoppingCart, ShoppingBasket, 
   Tag, Barcode, Home, Clock, Box, Settings, 
-  Minus, Plus 
+  Minus, Plus, Edit3
 } from 'lucide-react';
 
 const ScanBarang = () => {
@@ -251,13 +251,23 @@ const ScanBarang = () => {
             <span className="text-[15px]">Tambah ke Keranjang</span>
           </button>
           
-          <button 
-            onClick={() => navigate('/keranjang')}
-            className="w-full bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 active:scale-[0.98] text-blue-600 font-bold py-3.5 px-4 rounded-2xl transition-all flex items-center justify-center space-x-2.5 h-14"
-          >
-            <ShoppingBasket className="w-[18px] h-[18px] stroke-[2.5px]" />
-            <span className="text-[15px]">Lihat Keranjang</span>
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            <button 
+              onClick={() => navigate('/keranjang')}
+              className="w-full bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 active:scale-[0.98] text-blue-600 font-bold py-3.5 px-4 rounded-2xl transition-all flex items-center justify-center space-x-2.5 h-14"
+            >
+              <ShoppingBasket className="w-[18px] h-[18px] stroke-[2.5px]" />
+              <span className="text-[13px]">Lihat Keranjang</span>
+            </button>
+            
+            <button 
+              onClick={() => navigate('/input-sku')}
+              className="w-full bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 active:scale-[0.98] text-slate-600 font-bold py-3.5 px-4 rounded-2xl transition-all flex items-center justify-center space-x-2.5 h-14"
+            >
+              <Edit3 className="w-[18px] h-[18px] stroke-[2.5px]" />
+              <span className="text-[13px]">Input Manual</span>
+            </button>
+          </div>
         </div>
 
       </div>

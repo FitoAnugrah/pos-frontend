@@ -18,6 +18,8 @@ import DetailTransaksi from '../features/riwayat/DetailTransaksi';
 import Notifications from '../features/monitoring/Notifikasi';
 import AktivitasTerkini from '../features/monitoring/Aktivitas';
 import ScanBarang from '../features/kasir/ScanBarang';
+import InputSKUManual from '../features/kasir/InputSKUManual';
+import KeranjangBelanja from '../features/kasir/KeranjangBelanja';
 import LoginFeature from '../features/login';
 import PlaceholderPage from '../components/layout/PlaceholderPage';
 
@@ -44,6 +46,8 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<Dashboard onQuickAccess={handleQuickAccess} />} />
       <Route path="/scan" element={<ScanBarang />} />
+      <Route path="/input-sku" element={<InputSKUManual />} />
+      <Route path="/keranjang" element={<KeranjangBelanja />} />
       <Route path="/stok" element={<StokFeature onMainTabChange={handleMainTabChange} />} />
       <Route path="/stok/manual-entry" element={<ManualEntry />} />
       <Route path="/riwayat" element={<RiwayatTransaksi onMainTabChange={handleMainTabChange} />} />
