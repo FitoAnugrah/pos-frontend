@@ -79,7 +79,7 @@ const KeranjangBelanja = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans relative pb-52 md:pb-0">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans relative pb-32 md:pb-0">
       
       {/* Header */}
       <div className="flex justify-between items-center p-4 md:px-8 md:pt-8 bg-slate-50 md:bg-transparent sticky top-0 z-20">
@@ -230,7 +230,7 @@ const KeranjangBelanja = () => {
 
         {/* Kolom Kanan: Ringkasan Pembayaran */}
         {/* Posisinya fixed di bawah untuk mobile, tapi relative/sticky untuk desktop */}
-        <div className="fixed bottom-[90px] left-4 right-4 bg-white border border-slate-100 rounded-3xl shadow-[0_-5px_30px_rgba(0,0,0,0.12)] p-5 z-40 md:relative md:w-full md:left-auto md:right-auto md:bottom-auto md:border-none md:rounded-3xl md:shadow-lg md:p-6 md:sticky md:top-24 md:flex md:flex-col md:bg-white md:z-10">
+        <div className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-100 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.08)] p-5 z-40 md:relative md:border-none md:rounded-3xl md:shadow-lg md:p-6 md:sticky md:top-24 md:flex md:flex-col md:bg-white md:z-10">
           
           {/* Header Ringkasan (Hanya Desktop) */}
           <div className="hidden md:flex items-center gap-2 mb-6">

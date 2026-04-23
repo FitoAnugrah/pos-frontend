@@ -39,6 +39,7 @@ function isSubPage(pathname) {
     /^\/input-sku/.test(pathname) ||
     /^\/keranjang/.test(pathname) ||
     /^\/pembayaran/.test(pathname) ||
+    /^\/struk/.test(pathname) ||
     /^\/profil/.test(pathname) ||
     /^\/login/.test(pathname)
   );

@@ -21,6 +21,7 @@ import ScanBarang from '../features/kasir/ScanBarang';
 import InputSKUManual from '../features/kasir/InputSKUManual';
 import KeranjangBelanja from '../features/kasir/KeranjangBelanja';
 import HalamanPembayaran from '../features/kasir/HalamanPembayaran';
+import StrukDigital from '../features/kasir/StrukDigital';
 import LoginFeature from '../features/login';
 import PlaceholderPage from '../components/layout/PlaceholderPage';
 import HalamanPengaturan from '../features/pengaturan/HalamanPengaturan';
@@ -51,6 +52,7 @@ export default function AppRoutes() {
       <Route path="/input-sku" element={<InputSKUManual />} />
       <Route path="/keranjang" element={<KeranjangBelanja />} />
       <Route path="/pembayaran" element={<HalamanPembayaran />} />
+      <Route path="/struk" element={<StrukDigital />} />
       <Route path="/stok" element={<StokFeature onMainTabChange={handleMainTabChange} />} />
       <Route path="/stok/manual-entry" element={<ManualEntry />} />
       <Route path="/riwayat" element={<RiwayatTransaksi onMainTabChange={handleMainTabChange} />} />
