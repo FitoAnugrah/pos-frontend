@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { 
   ArrowLeft, 
   ShieldCheck, 
@@ -13,10 +13,8 @@ import {
   Briefcase,
   Monitor
 } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
 
 const KebijakanPrivasi = ({ onBack }) => {
-  const contentRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleHubungiSupport = () => {
@@ -30,7 +28,7 @@ const KebijakanPrivasi = ({ onBack }) => {
     
     try {
       const plainHtml = `
-        <div style="font-family: 'Courier New', Courier, monospace; color: #000; padding: 20px; font-size: 11px; line-height: 1.6; background: #fff;">
+        <div style="font-family: 'Courier New', Courier, monospace; color: #000; padding: 20px; font-size: 11px; line-height: 1.6; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
           <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px;">
             <h1 style="font-size: 20px; margin: 0 0 5px 0;">KEBIJAKAN PRIVASI & PENGELOLAAN DATA</h1>
             <h2 style="font-size: 16px; margin: 0 0 10px 0;">Sistem Point of Sale (POS) A'i</h2>
@@ -94,25 +92,36 @@ const KebijakanPrivasi = ({ onBack }) => {
         </div>
       `;
 
-      const opt = {
-        margin:       0.5,
-        filename:     'Kebijakan_Privasi_POS_AI_Nota.pdf',
-        image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { 
-          scale: 2, 
-          useCORS: true,
-          logging: false
-        },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
+      const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700');
 
-      await new Promise(resolve => setTimeout(resolve, 50));
+      if (!printWindow) {
+        throw new Error('Popup blocked');
+      }
 
-      // Gunakan langsung API string dari html2pdf, tidak perlu memanipulasi document.body
-      await html2pdf().set(opt).from(plainHtml).save();
+      printWindow.document.open();
+      printWindow.document.write(`<!doctype html>
+        <html>
+          <head>
+            <title>Kebijakan Privasi POS AI</title>
+            <meta charset="utf-8" />
+            <style>
+              @page { size: letter; margin: 0.5in; }
+              html, body { margin: 0; padding: 0; background: #fff; }
+            </style>
+          </head>
+          <body>
+            ${plainHtml}
+          </body>
+        </html>`);
+      printWindow.document.close();
+
+      await new Promise(resolve => setTimeout(resolve, 250));
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Gagal mengunduh PDF. Pastikan memori perangkat cukup.');
+      alert('Gagal membuka mode cetak PDF. Coba izinkan pop-up lalu ulangi.');
     } finally {
       setIsDownloading(false);
     }
@@ -130,7 +139,7 @@ const KebijakanPrivasi = ({ onBack }) => {
           <h1 className="text-sm font-bold text-slate-800">Kebijakan Privasi</h1>
         </div>
 
-        <div className="px-4 md:px-8 pb-12 md:pb-16" ref={contentRef}>
+        <div className="px-4 md:px-8 pb-12 md:pb-16">
           {/* Top Banner section */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left mt-2 mb-8">
             <div className="inline-flex items-center gap-1.5 bg-blue-100/50 text-blue-500 px-3 py-1 rounded-full text-[10px] font-bold mb-4">

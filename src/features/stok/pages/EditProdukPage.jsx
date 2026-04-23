@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { productCategories } from '../../../mock/stokData'
 import ProductThumb from '../components/ProductThumb'
 import { ArrowLeftIcon, CheckIcon, EditIcon, PhotoIcon, ScanIcon, TrashIcon, WarnIcon } from '../../../components/ui/icons'
@@ -114,7 +114,18 @@ function DeleteConfirmModal({ productName, onClose, onConfirm }) {
   )
 }
 
-export default function EditProdukPage({ product, form, onBack, onFieldChange, onOpenScan, onSave, onDelete }) {
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => resolve(String(reader.result ?? ''))
+    reader.onerror = () => reject(reader.error ?? new Error('Gagal membaca file foto'))
+    reader.readAsDataURL(file)
+  })
+}
+
+export default function EditProdukPage({ product, form, onBack, onFieldChange, onPhotoChange, onOpenScan, onSave, onDelete }) {
+  const photoInputRef = useRef(null)
   const stockInfo = getStockInfo(Number(form.stock), Number(form.minStock))
   const margin = calculateMargin(Number(form.price), Number(form.capitalPrice))
   const marginYield = calculateMarginYield(Number(form.price), Number(form.capitalPrice))
@@ -136,6 +147,8 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
     Number.isFinite(Number(form.price)) &&
     Number(form.price) > 0
 
+  const photoPreview = form.photo || product.photo || ''
+
   function handleSubmit(event) {
     event.preventDefault()
     if (!canSave) {
@@ -149,6 +162,26 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
       capitalPrice: Math.max(Number(form.capitalPrice), 0),
       price: Math.max(Number(form.price), 0),
     })
+  }
+
+  async function handlePhotoSelect(event) {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    try {
+      const photoDataUrl = await readFileAsDataUrl(file)
+      onPhotoChange?.({
+        photo: photoDataUrl,
+        photoFile: file,
+      })
+    } catch (error) {
+      console.error('Error reading product photo:', error)
+    } finally {
+      event.target.value = ''
+    }
   }
 
   function handleConfirmDelete() {
@@ -183,11 +216,21 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-6 mb-8">
             <div className="w-20 h-20 bg-slate-50 rounded-xl flex-shrink-0 flex items-center justify-center p-2 border border-slate-100 shadow-sm relative overflow-hidden">
-               <ProductThumb kind={product.thumb} src={product.photo} alt={product.name} className="h-full w-full object-contain" />
+               <ProductThumb kind={product.thumb} src={photoPreview} alt={product.name} className="h-full w-full object-contain" />
             </div>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePhotoSelect}
+            />
             <div>
               <p className="text-xl font-bold text-slate-800">{product.name}</p>
-              <div className="mt-2 text-sm text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2 cursor-pointer">
+              <div
+                className="mt-2 text-sm text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2 cursor-pointer"
+                onClick={() => photoInputRef.current?.click()}
+              >
                 <PhotoIcon className="h-4 w-4" />
                 Ganti Foto
               </div>

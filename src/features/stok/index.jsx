@@ -32,6 +32,8 @@ function buildEditForm(product) {
     minStock: product.minStock,
     capitalPrice: product.capitalPrice,
     price: product.price,
+    photo: product.photo ?? '',
+    photoFile: null,
   }
 }
 
@@ -280,6 +282,14 @@ export default function StokFeature({ onMainTabChange }) {
     }
   }
 
+  function handleEditPhotoChange({ photo, photoFile }) {
+    setEditForm((current) => ({
+      ...(current ?? buildEditForm(selectedProduct)),
+      photo,
+      photoFile,
+    }))
+  }
+
   function handleOpenScan(source = 'create') {
     setScanReturnPage(source)
     setPage('scan')
@@ -312,12 +322,15 @@ export default function StokFeature({ onMainTabChange }) {
   }
 
   function handleSaveProduct(nextValues) {
+    const { photoFile, ...persistedValues } = nextValues
+    void photoFile
+
     if (String(selectedProductId).startsWith('laporan-')) {
       setRoutedProduct((currentProduct) =>
         currentProduct
           ? {
               ...currentProduct,
-              ...nextValues,
+              ...persistedValues,
             }
           : currentProduct,
       )
@@ -331,7 +344,7 @@ export default function StokFeature({ onMainTabChange }) {
         product.id === selectedProductId
           ? {
               ...product,
-              ...nextValues,
+              ...persistedValues,
             }
           : product,
       ),
@@ -512,6 +525,7 @@ export default function StokFeature({ onMainTabChange }) {
           setPage('detail')
         }}
         onFieldChange={handleEditFieldChange}
+        onPhotoChange={handleEditPhotoChange}
         onOpenScan={() => handleOpenScan('edit')}
         onSave={handleSaveProduct}
         onDelete={handleDeleteProduct}
