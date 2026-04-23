@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import PinDot from '../components/PinDot';
+import KeyButton from '../components/KeyButton';
 
 const pinIndicators = Array.from({ length: 6 }, (_, index) => index)
 const keypadRows = [
@@ -6,27 +8,6 @@ const keypadRows = [
   ['4', '5', '6'],
   ['7', '8', '9'],
 ]
-
-function PinDot({ active }) {
-  return <span className={`h-3 w-3 rounded-full ${active ? 'bg-[#0E7BD3]' : 'bg-[#C7E3F5]'} transition-colors duration-200`} />
-}
-
-function KeyButton({ label, tone = 'default', onClick, children }) {
-  const toneClass =
-    tone === 'danger'
-      ? 'bg-[#E5D8CF] text-[#8C4A0F] active:bg-[#D5C8BF]'
-      : 'bg-white text-[#17324D] shadow-[0_12px_20px_rgba(150,182,208,0.12)] active:bg-slate-50'
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex h-[56px] items-center justify-center rounded-[14px] text-[24px] font-black tracking-tight transition-colors ${toneClass}`}
-    >
-      {children ?? label}
-    </button>
-  )
-}
 
 export default function AturKeamanan({ onBack }) {
   const [pin, setPin] = useState('');
@@ -101,14 +82,22 @@ export default function AturKeamanan({ onBack }) {
             ))}
             <div />
             <KeyButton label="0" onClick={() => handleKeyPress('0')} />
-            <div className="flex h-[56px] items-center justify-center rounded-xl text-24px font-black tracking-tight transition-colors bg-red-50 text-red-600 active:bg-red-100 cursor-pointer" onClick={handleDelete}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M20 5H9L4 12L9 19H20C21.1 19 22 18.1 22 17V7C22 5.9 21.1 5 20 5ZM17.59 15L16.17 16.41L13 13.24L9.83 16.41L8.41 15L11.59 11.83L8.41 8.66L9.83 7.24L13 10.41L16.17 7.24L17.59 8.66L14.41 11.83L17.59 15Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="flex h-[56px] items-center justify-center rounded-[14px] font-black tracking-tight transition-colors bg-red-50 text-red-600 hover:bg-red-100 active:bg-red-200 shadow-[0_2px_8px_rgba(200,50,50,0.1)] hover:shadow-md cursor-pointer group"
+              title="Backspace - Hapus digit"
+            >
+              <div className="flex flex-col items-center gap-0.5">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="group-hover:scale-110 transition-transform">
+                  <path
+                    d="M20 5H9L4 12L9 19H20C21.1 19 22 18.1 22 17V7C22 5.9 21.1 5 20 5ZM17.59 15L16.17 16.41L13 13.24L9.83 16.41L8.41 15L11.59 11.83L8.41 8.66L9.83 7.24L13 10.41L16.17 7.24L17.59 8.66L14.41 11.83L17.59 15Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span className="text-[8px] font-bold text-red-600 mt-0.5 tracking-tight">DEL</span>
+              </div>
+            </button>
           </div>
 
           <div className="mx-auto mt-12 h-1.5 w-32 rounded-full bg-slate-200" />
