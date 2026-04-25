@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getMembers } from '../../../utils/memberStorage';
+import TukarPoinModal from '../components/TukarPoinModal';
+import { getMembers, updateMember } from '../../../utils/memberStorage';
 import {
   ArrowLeftIcon,
   PhoneIcon,
@@ -23,8 +24,9 @@ function getLevelStyle(level) {
 export default function MemberDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [isTukarPoinModalOpen, setIsTukarPoinModalOpen] = useState(false);
 
-  const member = getMembers().find(m => m.id === parseInt(id));
+  const [member, setMember] = useState(() => getMembers().find(m => m.id === parseInt(id)));
 
   if (!member) {
     return (
@@ -58,6 +60,7 @@ export default function MemberDetail() {
             Edit Member
           </button>
           <button
+            onClick={() => setIsTukarPoinModalOpen(true)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm"
           >
             <GiftIcon className="w-4 h-4" />
@@ -253,6 +256,7 @@ export default function MemberDetail() {
               Edit Member
             </button>
             <button
+              onClick={() => setIsTukarPoinModalOpen(true)}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 text-sm transition-colors shadow-lg shadow-blue-600/30"
             >
               <GiftIcon className="w-4 h-4" />
@@ -261,6 +265,30 @@ export default function MemberDetail() {
           </div>
         </div>
       </div>
+
+      <TukarPoinModal 
+        isOpen={isTukarPoinModalOpen} 
+        onClose={() => setIsTukarPoinModalOpen(false)} 
+        memberPoints={member ? parseInt(String(member.points).replace(/[,.]/g, '')) || 0 : 0}
+        onExchange={(product) => {
+          const currentPoints = parseInt(String(member.points).replace(/[,.]/g, '')) || 0;
+          const newPoints = currentPoints - product.points;
+          const formattedPoints = newPoints.toLocaleString('id-ID');
+          
+          // Perbarui state lokal agar UI terupdate
+          setMember(prev => ({ ...prev, points: formattedPoints }));
+          
+          // Simpan perubahan ke storage
+          updateMember(member.id, { points: formattedPoints });
+          
+          setIsTukarPoinModalOpen(false);
+          
+          // Opsional: feedback sukses
+          setTimeout(() => {
+            alert(`Berhasil menukarkan ${product.name}! Sisa poin: ${formattedPoints} pts.`);
+          }, 300);
+        }}
+      />
 
     </div>
   );
