@@ -4,19 +4,37 @@ import FAQItem from '../components/FAQItem';
 const transactionsFaqData = [
   {
     question: 'Cara membatalkan transaksi',
-    answer: 'Untuk membatalkan transaksi, buka halaman Riwayat > pilih transaksi yang ingin dibatalkan > klik tombol "Batalkan Transaksi" (pastikan transaksi masih dalam periode yang diizinkan, biasanya 24 jam dari waktu transaksi dibuat). Masukkan PIN keamanan Anda untuk mengkonfirmasi pembatalan.'
+    answer: [
+      'Buka halaman Riwayat.',
+      'Pilih transaksi yang ingin dibatalkan.',
+      'Klik tombol "Batalkan Transaksi" (pastikan transaksi masih dalam periode yang diizinkan, biasanya 24 jam dari waktu transaksi dibuat).',
+      'Masukkan PIN keamanan Anda untuk mengkonfirmasi pembatalan.'
+    ]
   },
   {
     question: 'Cara cetak ulang struk',
-    answer: 'Anda dapat mencetak ulang struk transaksi dengan membuka menu Riwayat > cari transaksi yang diinginkan > klik tombol "Cetak" atau "Print". Struk akan dicetak dengan informasi transaksi lengkap termasuk tanggal, waktu, dan detail pembayaran.'
+    answer: [
+      'Buka menu Riwayat.',
+      'Cari transaksi yang diinginkan.',
+      'Klik tombol "Cetak" atau "Print".',
+      'Struk akan dicetak dengan informasi transaksi lengkap termasuk tanggal, waktu, dan detail pembayaran.'
+    ]
   },
   {
     question: 'Masalah pembayaran OJK',
-    answer: 'Jika mengalami masalah saat melakukan pembayaran OJK, pastikan koneksi internet stabil. Coba ulang transaksi setelah beberapa saat. Jika masalah tetap berlanjut, hubungi customer support kami melalui WhatsApp dengan screenshot detail transaksi.'
+    answer: [
+      'Pastikan koneksi internet stabil.',
+      'Coba ulang transaksi setelah beberapa saat.',
+      'Jika masalah tetap berlanjut, hubungi customer support kami melalui WhatsApp dengan melampirkan screenshot detail transaksi.'
+    ]
   },
   {
     question: 'Cara input diskon manual',
-    answer: 'Saat melakukan transaksi di halaman Kasir, sebelum checkout, Anda dapat klik tombol "Diskon" di bagian total pembayaran. Masukkan persentase atau nominal diskon yang diinginkan, kemudian konfirmasi. Diskon akan otomatis dikurangkan dari total harga.'
+    answer: [
+      'Saat melakukan transaksi di halaman Kasir, sebelum checkout, klik tombol "Diskon" di bagian total pembayaran.',
+      'Masukkan persentase atau nominal diskon yang diinginkan.',
+      'Konfirmasi diskon tersebut, dan diskon akan otomatis dikurangkan dari total harga.'
+    ]
   }
 ];
 
@@ -34,10 +52,13 @@ export default function TransactionsHelp({ onTabChange }) {
   };
 
   // Filter FAQ berdasarkan search query
-  const filteredFaq = transactionsFaqData.filter(faq => 
-    faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredFaq = transactionsFaqData.filter(faq => {
+    const qMatch = faq.question.toLowerCase().includes(searchQuery.toLowerCase());
+    const aMatch = Array.isArray(faq.answer) 
+      ? faq.answer.some(step => step.toLowerCase().includes(searchQuery.toLowerCase()))
+      : faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+    return qMatch || aMatch;
+  });
 
   return (
     <div className="flex-1 w-full bg-slate-50 h-full overflow-y-auto overflow-x-hidden">
@@ -102,7 +123,7 @@ export default function TransactionsHelp({ onTabChange }) {
           {filteredFaq.length > 0 ? (
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
               {filteredFaq.map((faq, index) => (
-                <FAQItem key={index} question={faq.question} answer={faq.answer} />
+                <FAQItem key={index} question={faq.question} answer={faq.answer} isExpanded={searchQuery.length > 0} />
               ))}
             </div>
           ) : (

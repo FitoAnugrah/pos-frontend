@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 
-export default function FAQItem({ question, answer }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function FAQItem({ question, answer, isExpanded = false }) {
+  const [isOpen, setIsOpen] = React.useState(isExpanded);
+
+  React.useEffect(() => {
+    setIsOpen(isExpanded);
+  }, [isExpanded]);
 
   return (
     <div className="border-b border-slate-100 last:border-0">
@@ -23,7 +27,15 @@ export default function FAQItem({ question, answer }) {
       </button>
       {isOpen && (
         <div className="px-4 md:px-5 pb-4 md:pb-5 pt-0 text-sm text-slate-600 leading-relaxed">
-          {answer}
+          {Array.isArray(answer) ? (
+            <ol className="list-decimal pl-5 space-y-2">
+              {answer.map((step, idx) => (
+                <li key={idx} className="pl-1">{step}</li>
+              ))}
+            </ol>
+          ) : (
+            answer
+          )}
         </div>
       )}
     </div>

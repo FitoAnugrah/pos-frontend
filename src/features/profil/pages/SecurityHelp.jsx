@@ -4,19 +4,39 @@ import FAQItem from '../components/FAQItem';
 const securityFaqData = [
   {
     question: 'Cara ganti sandi akun',
-    answer: 'Untuk mengganti sandi akun Anda, buka menu Profil > Keamanan > Reset Password. Masukkan sandi lama Anda terlebih dahulu, kemudian masukkan sandi baru yang kuat (minimal 8 karakter, kombinasi huruf besar, kecil, angka, dan simbol). Konfirmasi sandi baru Anda dan klik "Simpan Perubahan".'
+    answer: [
+      'Buka menu Profil.',
+      'Pilih Keamanan, lalu klik Reset Password.',
+      'Masukkan sandi lama Anda terlebih dahulu.',
+      'Masukkan sandi baru yang kuat (minimal 8 karakter, kombinasi huruf besar, kecil, angka, dan simbol).',
+      'Konfirmasi sandi baru Anda dan klik "Simpan Perubahan".'
+    ]
   },
   {
     question: 'Lupa kata sandi login web',
-    answer: 'Jika lupa sandi login web, klik "Lupa Sandi?" pada halaman login. Masukkan email terdaftar Anda. Kami akan mengirimkan link reset password ke email Anda. Buka link tersebut dan ikuti instruksi untuk membuat sandi baru. Link reset berlaku selama 24 jam.'
+    answer: [
+      'Klik "Lupa Sandi?" pada halaman login.',
+      'Masukkan email terdaftar Anda.',
+      'Kami akan mengirimkan link reset password ke email Anda.',
+      'Buka link tersebut dan ikuti instruksi untuk membuat sandi baru. Link reset berlaku selama 24 jam.'
+    ]
   },
   {
     question: 'Keamanan sesi browser',
-    answer: 'Untuk menjaga keamanan sesi browser, pastikan Anda selalu logout setelah selesai menggunakan aplikasi, terutama di perangkat publik. Aktifkan fitur "Remember Device" hanya di perangkat pribadi. Jika mencurigai akun Anda telah diakses tanpa izin, segera ubah sandi dan hubungi support.'
+    answer: [
+      'Pastikan Anda selalu logout setelah selesai menggunakan aplikasi, terutama di perangkat publik.',
+      'Aktifkan fitur "Remember Device" hanya di perangkat pribadi.',
+      'Jika mencurigai akun Anda telah diakses tanpa izin, segera ubah sandi dan hubungi support.'
+    ]
   },
   {
     question: 'Keamanan akses multi-perangkat',
-    answer: 'Sistem POS kami mendukung akses dari multiple devices. Untuk keamanan, kami merekomendasikan menggunakan PIN atau Two-Factor Authentication (2FA) di setiap perangkat. Anda bisa mengelola perangkat yang terhubung di menu Keamanan > Perangkat Terpercaya untuk menonaktifkan akses dari perangkat lama.'
+    answer: [
+      'Gunakan PIN atau Two-Factor Authentication (2FA) di setiap perangkat untuk keamanan ekstra.',
+      'Buka menu Keamanan.',
+      'Pilih Perangkat Terpercaya untuk mengelola perangkat.',
+      'Nonaktifkan akses dari perangkat lama jika tidak lagi digunakan.'
+    ]
   }
 ];
 
@@ -34,10 +54,13 @@ export default function SecurityHelp({ onTabChange }) {
   };
 
   // Filter FAQ berdasarkan search query
-  const filteredFaq = securityFaqData.filter(faq => 
-    faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredFaq = securityFaqData.filter(faq => {
+    const qMatch = faq.question.toLowerCase().includes(searchQuery.toLowerCase());
+    const aMatch = Array.isArray(faq.answer) 
+      ? faq.answer.some(step => step.toLowerCase().includes(searchQuery.toLowerCase()))
+      : faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+    return qMatch || aMatch;
+  });
 
   return (
     <div className="flex-1 w-full bg-slate-50 h-full overflow-y-auto overflow-x-hidden">
@@ -102,7 +125,7 @@ export default function SecurityHelp({ onTabChange }) {
           {filteredFaq.length > 0 ? (
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
               {filteredFaq.map((faq, index) => (
-                <FAQItem key={index} question={faq.question} answer={faq.answer} />
+                <FAQItem key={index} question={faq.question} answer={faq.answer} isExpanded={searchQuery.length > 0} />
               ))}
             </div>
           ) : (

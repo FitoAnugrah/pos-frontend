@@ -2,19 +2,33 @@ import React, { useState } from 'react';
 import FAQItem from '../components/FAQItem';
 import CategoryCard from '../components/CategoryCard';
 import TransactionsHelp from './TransactionsHelp';
+import SecurityHelp from './SecurityHelp';
+import AccountHelp from './AccountHelp';
+import InventoryHelp from './InventoryHelp';
 
 const faqData = [
   {
     question: 'Bagaimana cara reset PIN?',
-    answer: 'Untuk mereset PIN Anda, pergi ke menu Pengaturan > Keamanan > Atur PIN. Ikuti langkah-langkah verifikasi identitas yang tersedia. Jika lupa PIN, Anda bisa menggunakan opsi "Lupa PIN" dan melakukan verifikasi melalui email atau nomor telepon terdaftar.'
+    answer: [
+      'Pergi ke menu Pengaturan > Keamanan > Atur PIN.',
+      'Ikuti langkah-langkah verifikasi identitas yang tersedia.',
+      'Jika lupa PIN, Anda bisa menggunakan opsi "Lupa PIN" dan melakukan verifikasi melalui email atau nomor telepon terdaftar.'
+    ]
   },
   {
     question: 'Cara tambah stok barang?',
-    answer: 'Untuk menambah stok barang, masuk ke menu Stok > Tambah Produk Baru atau Perbarui Stok. Anda bisa menambahkan produk secara manual atau menggunakan fitur import CSV untuk menambahkan dalam jumlah besar. Pastikan nama produk dan SKU sudah sesuai dengan sistem inventory Anda.'
+    answer: [
+      'Masuk ke menu Stok > Tambah Produk Baru atau Perbarui Stok.',
+      'Anda bisa menambahkan produk secara manual atau menggunakan fitur import CSV untuk menambahkan dalam jumlah besar.',
+      'Pastikan nama produk dan SKU sudah sesuai dengan sistem inventory Anda.'
+    ]
   },
   {
     question: 'Metode pembayaran apa saja?',
-    answer: 'Sistem POS kami mendukung berbagai metode pembayaran termasuk: Tunai, Transfer Bank, E-wallet (OVO, GoPay, DANA), Kartu Kredit/Debit, dan QRIS. Setiap metode dapat dikonfigurasi sesuai kebutuhan bisnis Anda di menu Pengaturan > Pembayaran.'
+    answer: [
+      'Sistem POS kami mendukung berbagai metode pembayaran termasuk: Tunai, Transfer Bank, E-wallet (OVO, GoPay, DANA), Kartu Kredit/Debit, dan QRIS.',
+      'Setiap metode dapat dikonfigurasi sesuai kebutuhan bisnis Anda di menu Pengaturan > Pembayaran.'
+    ]
   }
 ];
 
@@ -88,14 +102,30 @@ export default function PusatBantuan({ onTabChange }) {
   };
 
   // Filter FAQ berdasarkan search query
-  const filteredFaq = faqData.filter(faq => 
-    faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredFaq = faqData.filter(faq => {
+    const qMatch = faq.question.toLowerCase().includes(searchQuery.toLowerCase());
+    const aMatch = Array.isArray(faq.answer) 
+      ? faq.answer.some(step => step.toLowerCase().includes(searchQuery.toLowerCase()))
+      : faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+    return qMatch || aMatch;
+  });
+
 
   // Show TransactionsHelp jika kategori transactions dipilih
   if (selectedCategory === 'transactions') {
     return <TransactionsHelp onTabChange={handleBackFromCategory} />;
+  }
+  // Show SecurityHelp jika kategori security dipilih
+  if (selectedCategory === 'security') {
+    return <SecurityHelp onTabChange={handleBackFromCategory} />;
+  }
+  // Show AccountHelp jika kategori account dipilih
+  if (selectedCategory === 'account') {
+    return <AccountHelp onTabChange={handleBackFromCategory} />;
+  }
+  // Show InventoryHelp jika kategori inventory dipilih
+  if (selectedCategory === 'inventory') {
+    return <InventoryHelp onTabChange={handleBackFromCategory} />;
   }
 
   return (
@@ -184,7 +214,7 @@ export default function PusatBantuan({ onTabChange }) {
           {filteredFaq.length > 0 ? (
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
               {filteredFaq.map((faq, index) => (
-                <FAQItem key={index} question={faq.question} answer={faq.answer} />
+                <FAQItem key={index} question={faq.question} answer={faq.answer} isExpanded={searchQuery.length > 0} />
               ))}
             </div>
           ) : (
@@ -217,15 +247,6 @@ export default function PusatBantuan({ onTabChange }) {
               className="w-full md:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm md:text-[15px] font-bold rounded-xl transition-colors duration-200 shadow-md shadow-blue-200/50"
             >
               Hubungi Dukungan
-            </button>
-            <button
-              onClick={handleChatLangsung}
-              className="w-full md:w-auto px-8 py-3 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 text-slate-800 text-sm md:text-[15px] font-bold rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" fill="currentColor" />
-              </svg>
-              Chat Langsung
             </button>
           </div>
         </div>
