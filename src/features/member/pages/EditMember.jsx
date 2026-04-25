@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getMemberById, updateMember, deleteMember } from '../../../utils/memberStorage';
+import api from '../../../utils/api';
 import {
   ArrowLeftIcon,
   TrashIcon,
@@ -13,16 +13,42 @@ export default function EditMember() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const member = getMemberById(id);
+  const [member, setMember] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [formData, setFormData] = useState({
-    name: member?.name || '',
-    phone: member?.phone || '',
-    email: member?.email || '',
-    level: member?.level || 'BRONZE',
-    avatarUrl: member?.avatarUrl || null,
+    name: '',
+    phone: '',
+    email: '',
+    level: 'BRONZE',
+    avatarUrl: null,
   });
   const [errors, setErrors] = useState({});
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const fetchMember = async () => {
+      try {
+        const res = await api.get(`/members/${id}`);
+        const m = res.data;
+        setMember(m);
+        setFormData({
+          name: m.name || '',
+          phone: m.phone || '',
+          email: m.email || '',
+          level: m.level || 'BRONZE',
+          avatarUrl: m.avatar_url || null,
+        });
+      } catch (err) {
+        console.error('Gagal mengambil data member:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMember();
+  }, [id]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -34,6 +60,10 @@ export default function EditMember() {
       reader.readAsDataURL(file);
     }
   };
+
+  if (loading) {
+    return <div className="p-8 text-center font-sans text-slate-500 font-semibold">Memuat data member...</div>;
+  }
 
   if (!member) {
     return (
@@ -52,25 +82,37 @@ export default function EditMember() {
     return e;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
     
-    updateMember(id, {
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email,
-      level: formData.level,
-      avatarUrl: formData.avatarUrl,
-    });
-
-    navigate(-1);
+    setIsSaving(true);
+    try {
+      await api.put(`/members/${id}`, {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        level: formData.level,
+        avatar_url: formData.avatarUrl,
+      });
+      navigate(-1);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal menyimpan member');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (window.confirm('Apakah Anda yakin ingin menghapus member ini?')) {
-      deleteMember(id);
-      navigate('/member');
+      setIsDeleting(true);
+      try {
+        await api.delete(`/members/${id}`);
+        navigate('/member');
+      } catch (err) {
+        alert('Gagal menghapus member');
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -100,10 +142,11 @@ export default function EditMember() {
         <h1 className="text-lg font-bold text-slate-800">Edit Member</h1>
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm active:scale-95"
+          disabled={isSaving}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm active:scale-95 ${isSaving ? 'bg-slate-400 text-white cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
         >
           <UserPlusIcon className="w-4 h-4" />
-          Simpan Perubahan
+          {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
         </button>
       </div>
 
@@ -217,10 +260,11 @@ export default function EditMember() {
           <h3 className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-3">Zona Berbahaya</h3>
           <button
             onClick={handleDelete}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-red-200 text-red-500 font-bold text-sm hover:bg-red-50 transition-colors"
+            disabled={isDeleting}
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl border text-sm transition-colors font-bold ${isDeleting ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed' : 'border-red-200 text-red-500 hover:bg-red-50'}`}
           >
             <TrashIcon className="w-4 h-4" />
-            Hapus Member Ini
+            {isDeleting ? 'Menghapus...' : 'Hapus Member Ini'}
           </button>
         </div>
 
@@ -231,9 +275,10 @@ export default function EditMember() {
         <div className="w-full max-w-[440px] px-4 py-4 pointer-events-auto bg-gradient-to-t from-slate-50 via-slate-50/95 to-transparent">
           <button
             onClick={handleSave}
-            className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/30 text-sm"
+            disabled={isSaving}
+            className={`w-full active:scale-[0.98] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg text-sm ${isSaving ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/30'}`}
           >
-            Simpan Perubahan
+            {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
           </button>
         </div>
       </div>

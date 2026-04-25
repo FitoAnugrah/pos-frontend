@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { productCategories } from '../../../mock/stokData'
+const productCategories = ['Sembako', 'Minuman', 'Snack', 'Kebutuhan Rumah'];
 import ProductThumb from '../components/ProductThumb'
 import { ArrowLeftIcon, CheckIcon, EditIcon, PhotoIcon, ScanIcon, TrashIcon, WarnIcon } from '../../../components/ui/icons'
 import { calculateMargin, calculateMarginYield, formatCurrency, getStockInfo } from '../utils'

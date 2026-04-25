@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { initialProducts } from '../../mock/stokData'
+import api from '../../utils/api'
 import DetailProdukPage from './pages/DetailProdukPage'
 import EditProdukPage from './pages/EditProdukPage'
 import RiwayatAktivitasProdukPage from './pages/RiwayatAktivitasProdukPage'
@@ -44,23 +44,7 @@ function normalizeScanCode(value) {
     .replace(/[^A-Z0-9]/g, '')
 }
 
-function loadStoredProducts() {
-  if (typeof window === 'undefined') {
-    return initialProducts
-  }
-
-  try {
-    const storedProducts = window.localStorage.getItem(STOCK_PRODUCTS_STORAGE_KEY)
-    if (!storedProducts) {
-      return initialProducts
-    }
-
-    const parsedProducts = JSON.parse(storedProducts)
-    return Array.isArray(parsedProducts) && parsedProducts.length > 0 ? parsedProducts : initialProducts
-  } catch {
-    return initialProducts
-  }
-}
+// loadStoredProducts dihapus, diganti fetch API
 
 const routeThumbMap = {
   Sembako: 'rice',
@@ -136,7 +120,7 @@ function buildRoutedProduct(routeProduct) {
 export default function StokFeature({ onMainTabChange }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const [products, setProducts] = useState(() => loadStoredProducts())
+  const [products, setProducts] = useState([])
   const [selectedProductId, setSelectedProductId] = useState(null)
   const [page, setPage] = useState('list')
   const [createForm, setCreateForm] = useState(initialCreateForm)
@@ -162,12 +146,16 @@ export default function StokFeature({ onMainTabChange }) {
   }, [products, routedProduct])
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    window.localStorage.setItem(STOCK_PRODUCTS_STORAGE_KEY, JSON.stringify(products))
-  }, [products])
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get('/products');
+        setProducts(res.data);
+      } catch (err) {
+        console.error('Error fetching products', err);
+      }
+    };
+    fetchProducts();
+  }, [])
 
   useEffect(() => {
     const routeState = location.state
@@ -321,39 +309,40 @@ export default function StokFeature({ onMainTabChange }) {
     setPage('create')
   }
 
-  function handleSaveProduct(nextValues) {
+  async function handleSaveProduct(nextValues) {
     const { photoFile, ...persistedValues } = nextValues
-    void photoFile
 
     if (String(selectedProductId).startsWith('laporan-')) {
+      // Logic Laporan (Tidak usah di-API-kan karena Laporan bersifat read-only / simulasi)
       setRoutedProduct((currentProduct) =>
-        currentProduct
-          ? {
-              ...currentProduct,
-              ...persistedValues,
-            }
-          : currentProduct,
+        currentProduct ? { ...currentProduct, ...persistedValues } : currentProduct
       )
       setEditForm(null)
       setPage('detail')
       return
     }
 
-    setProducts((currentProducts) =>
-      currentProducts.map((product) =>
-        product.id === selectedProductId
-          ? {
-              ...product,
-              ...persistedValues,
-            }
-          : product,
-      ),
-    )
-    setEditForm(null)
-    setPage('detail')
+    try {
+      const payload = {
+        name: persistedValues.name,
+        sku: persistedValues.sku,
+        category: persistedValues.category,
+        stock: persistedValues.stock,
+        min_stock: persistedValues.minStock,
+        price: persistedValues.price,
+        capital_price: persistedValues.capitalPrice,
+        thumb: persistedValues.photo || routeThumbMap[persistedValues.category] || 'rice'
+      };
+      const res = await api.put(`/products/${selectedProductId}`, payload);
+      setProducts(currentProducts => currentProducts.map(p => p.id === selectedProductId ? res.data : p));
+      setEditForm(null)
+      setPage('detail')
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal menyimpan produk');
+    }
   }
 
-  function handleDeleteProduct() {
+  async function handleDeleteProduct() {
     const productToDelete = selectedProduct
     if (!productToDelete) return
 
@@ -362,98 +351,58 @@ export default function StokFeature({ onMainTabChange }) {
       return
     }
 
-    setProducts((currentProducts) => currentProducts.filter((product) => product.id !== selectedProductId))
-    setEditForm(null)
-    setPage('list')
-    setSelectedProductId(null)
+    try {
+      if (window.confirm(`Hapus produk ${productToDelete.name}?`)) {
+        await api.delete(`/products/${selectedProductId}`);
+        setProducts((currentProducts) => currentProducts.filter((product) => product.id !== selectedProductId))
+        setEditForm(null)
+        setPage('list')
+        setSelectedProductId(null)
+      }
+    } catch (err) {
+      alert('Gagal menghapus produk');
+    }
   }
 
-  function handleSaveStock({ mode, amount }) {
+  async function handleSaveStock({ mode, amount }) {
     if (String(selectedProductId).startsWith('laporan-')) {
-      setRoutedProduct((currentProduct) => {
-        if (!currentProduct) return currentProduct
-
-        const nextStock =
-          mode === 'add'
-            ? currentProduct.stock + amount
-            : clampStock(currentProduct.stock - amount)
-
-        return {
-          ...currentProduct,
-          stock: nextStock,
-        }
-      })
       setPage('detail')
       return
     }
 
-    setProducts((currentProducts) =>
-      currentProducts.map((product) => {
-        if (product.id !== selectedProductId) return product
-
-        const nextStock = mode === 'add' ? product.stock + amount : clampStock(product.stock - amount)
-
-        return {
-          ...product,
-          stock: nextStock,
-        }
-      }),
-    )
-    setPage('detail')
-  }
-
-  function buildProductPayload(formValues) {
-    const nextId = Math.max(...products.map((product) => product.id), 0) + 1
-    const categoryThumbMap = {
-      Sembako: 'rice',
-      Minuman: 'drink',
-      Snack: 'chips',
-    }
-    const accentMap = {
-      rice: {
-        shell: 'from-[#5b2f74] via-[#61307a] to-[#4c2866]',
-        glow: 'rgba(105,55,142,0.45)',
-      },
-      drink: {
-        shell: 'from-[#2f3441] via-[#20262f] to-[#141a22]',
-        glow: 'rgba(70,83,105,0.45)',
-      },
-      chips: {
-        shell: 'from-[#47240d] via-[#72350f] to-[#231107]',
-        glow: 'rgba(130,79,35,0.45)',
-      },
-    }
-    const thumb = categoryThumbMap[formValues.category] ?? 'rice'
-
-    return {
-      id: nextId,
-      category: formValues.category,
-      name: String(formValues.name ?? '').trim() || 'Produk Baru',
-      sku: String(formValues.sku ?? '').trim() || `AUTO-${String(nextId).padStart(5, '0')}`,
-      stock: Math.max(Number(formValues.stock), 0),
-      minStock: Math.max(Number(formValues.minStock), 0),
-      price: Math.max(Number(formValues.price), 0),
-      capitalPrice: Math.max(Number(formValues.capitalPrice), 0),
-      photo: String(formValues.photo ?? ''),
-      unitsPerSale: 0,
-      revenue: 'Rp 0',
-      revenueTarget: 'Target 0%',
-      thumb,
-      lastMonthGrowth: 0,
-      lastMonthLabel: 'vs lalu',
-      badge: 'Produk Baru',
-      title: 'Product Details',
-      accent: accentMap[thumb],
+    try {
+      const type = mode === 'add' ? 'add' : 'subtract';
+      const res = await api.patch(`/products/${selectedProductId}/stock`, {
+        type, amount, reason: `Penyesuaian stok manual (${mode})`
+      });
+      setProducts(currentProducts => currentProducts.map(p => p.id === selectedProductId ? res.data : p));
+      setPage('detail')
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal mengubah stok');
     }
   }
 
-  function handleCreateProduct(formValues) {
-    const newProduct = buildProductPayload(formValues)
-
-    setProducts((currentProducts) => [newProduct, ...currentProducts])
-    setSelectedProductId(newProduct.id)
-    setCreateForm(initialCreateForm)
-    setPage('detail')
+  async function handleCreateProduct(formValues) {
+    try {
+      const payload = {
+        name: formValues.name,
+        sku: formValues.sku || `SKU-${Date.now()}`,
+        category: formValues.category || 'Sembako',
+        stock: Number(formValues.stock || 0),
+        min_stock: Number(formValues.minStock || 0),
+        price: Number(formValues.price || 0),
+        capital_price: Number(formValues.capitalPrice || 0),
+        thumb: formValues.photo || routeThumbMap[formValues.category] || 'rice'
+      };
+      
+      const res = await api.post('/products', payload);
+      setProducts(currentProducts => [res.data, ...currentProducts]);
+      setSelectedProductId(res.data.id);
+      setCreateForm(initialCreateForm);
+      setPage('detail');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal menambah produk');
+    }
   }
 
   if (page !== 'list' && !selectedProduct) {

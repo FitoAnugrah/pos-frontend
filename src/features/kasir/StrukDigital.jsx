@@ -1,20 +1,32 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { X, Share2, Check, Store, Sparkles, Printer, Home } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { X, Share2, Check, Store, Sparkles, Printer, Home, Loader } from 'lucide-react';
+import api from '../../utils/api';
 
 const StrukDigital = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [transaction, setTransaction] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const dummyItems = [
-    { id: 1, name: 'Minyak Goreng 1L', qty: 2, price: 25000 },
-    { id: 2, name: 'Beras Premium 5kg', qty: 1, price: 68000 },
-    { id: 3, name: 'Kopi Arabika', qty: 1, price: 45000 },
-  ];
-
-  const totalBelanja = 163000;
-  const diskon = 8000;
-  const totalAkhir = 155000;
-  const poin = 155;
+  useEffect(() => {
+    const fetchTransaction = async () => {
+      try {
+        const id = location.state?.transactionId;
+        if (!id) {
+          navigate('/'); // redirect home if no ID
+          return;
+        }
+        const res = await api.get(`/transactions/${id}`);
+        setTransaction(res.data);
+      } catch (error) {
+        console.error("Gagal memuat struk", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTransaction();
+  }, [location.state, navigate]);
 
   // Format ke Rupiah
   const formatRupiah = (number) => {
@@ -24,6 +36,18 @@ const StrukDigital = () => {
       minimumFractionDigits: 0
     }).format(number);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-sky-50 flex justify-center items-center font-sans">
+        <Loader className="w-8 h-8 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!transaction) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-sky-50 flex justify-center font-sans">
@@ -58,7 +82,7 @@ const StrukDigital = () => {
               </div>
             </div>
             <p className="text-[11px] font-extrabold text-slate-400 tracking-[0.2em] mt-5 uppercase">Pembayaran Berhasil</p>
-            <p className="text-[40px] font-black text-slate-900 mt-1 tracking-tighter">Rp 155.000</p>
+            <p className="text-[40px] font-black text-slate-900 mt-1 tracking-tighter">{formatRupiah(transaction.total)}</p>
           </div>
 
           {/* Card Struk (Kertas Tiket) */}
@@ -82,13 +106,13 @@ const StrukDigital = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-[10px] font-bold text-slate-400 tracking-widest mb-1 uppercase">No. Referensi</p>
-                <p className="text-sm font-bold text-slate-700">#TRX-9981245</p>
+                <p className="text-sm font-bold text-slate-700">{transaction.invoice_number}</p>
                 <p className="text-[10px] font-bold text-slate-400 tracking-widest mb-1 uppercase mt-4">Waktu</p>
-                <p className="text-sm font-bold text-slate-700">24 Okt 2023, 14:30</p>
+                <p className="text-sm font-bold text-slate-700">{new Date(transaction.created_at).toLocaleString('id-ID')}</p>
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-bold text-slate-400 tracking-widest mb-1 uppercase">Pembayaran</p>
-                <p className="text-sm font-bold text-slate-700">SeaBank</p>
+                <p className="text-sm font-bold text-slate-700">{transaction.payment_method}</p>
               </div>
             </div>
 
@@ -101,16 +125,16 @@ const StrukDigital = () => {
 
             {/* Daftar Item */}
             <div className="flex flex-col gap-4">
-              {dummyItems.map((item) => (
-                <div key={item.id} className="flex justify-between items-start">
+              {transaction.items.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-start">
                   <div>
-                    <p className="font-bold text-slate-800 text-sm">{item.name}</p>
+                    <p className="font-bold text-slate-800 text-sm">{item.product_name}</p>
                     <p className="text-xs font-semibold text-slate-400 mt-1">
-                      {item.qty}x @ {formatRupiah(item.price)}
+                      {item.qty}x @ {formatRupiah(item.unit_price)}
                     </p>
                   </div>
                   <p className="font-bold text-slate-800 text-sm">
-                    {formatRupiah(item.qty * item.price)}
+                    {formatRupiah(item.subtotal)}
                   </p>
                 </div>
               ))}
@@ -121,25 +145,25 @@ const StrukDigital = () => {
             {/* Summary Akhir */}
             <div className="flex justify-between items-center mb-3">
               <span className="font-bold text-slate-500 text-sm">Total Belanja</span>
-              <span className="font-bold text-slate-800 text-sm">{formatRupiah(totalBelanja)}</span>
+              <span className="font-bold text-slate-800 text-sm">{formatRupiah(transaction.subtotal)}</span>
             </div>
             
-            <div className="flex justify-between items-center mb-5">
-              <span className="font-bold text-slate-500 text-sm">Total Diskon</span>
-              <span className="font-black text-red-500 text-sm">- {formatRupiah(diskon)}</span>
+            <div className="flex justify-between items-center mb-3">
+              <span className="font-bold text-slate-500 text-sm">Pajak (PPN)</span>
+              <span className="font-bold text-slate-800 text-sm">{formatRupiah(transaction.tax_amount)}</span>
             </div>
 
             <div className="flex justify-between items-center mb-6">
               <span className="font-bold text-slate-500 text-sm mt-0.5">Poin Diperoleh</span>
               <div className="bg-orange-50 text-orange-600 px-3 py-1.5 rounded-full text-xs font-black inline-flex items-center gap-1.5 border border-orange-100">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>+{poin} Poin</span>
+                <span>+{transaction.points_earned} Poin</span>
               </div>
             </div>
 
             <div className="flex justify-between items-center bg-sky-50 p-4 rounded-2xl border border-sky-100">
               <span className="font-black text-slate-800 text-[15px]">Total Akhir</span>
-              <span className="font-black text-xl text-blue-700 tracking-tight">{formatRupiah(totalAkhir)}</span>
+              <span className="font-black text-xl text-blue-700 tracking-tight">{formatRupiah(transaction.total)}</span>
             </div>
 
           </div>

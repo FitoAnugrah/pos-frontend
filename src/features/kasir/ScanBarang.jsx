@@ -5,23 +5,40 @@ import {
   Tag, Barcode, Home, Clock, Box, Settings, 
   Minus, Plus, Edit3, Check
 } from 'lucide-react';
-import { getProducts } from '../../utils/productStorage';
+import { useCart } from '../../contexts/CartContext';
+import api from '../../utils/api';
 
 const ScanBarang = () => {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  const [cartItems, setCartItems] = useState([]);
+  const { cart, cartCount, addToCart } = useCart();
   const [addedFeedback, setAddedFeedback] = useState(false);
-  const [scanStatus, setScanStatus] = useState('Position barcode within the frame');
+  const [scanStatus, setScanStatus] = useState('Memuat data produk...');
   const [scannedProduct, setScannedProduct] = useState(null);
   
-
+  // All products loaded once to allow rapid local searching without spamming API
+  const [allProducts, setAllProducts] = useState([]);
   
   // Ref & State untuk Native Scanner vs Fallback
   const videoRef = useRef(null);
   const scannerRef = useRef(null);
   const scannerId = 'kasir-scanner';
   const [useNative, setUseNative] = useState(true);
+
+  // Fetch all products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get('/products');
+        setAllProducts(res.data);
+        setScanStatus('Position barcode within the frame');
+      } catch (error) {
+        console.error("Gagal memuat produk:", error);
+        setScanStatus('Gagal memuat data gudang.');
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // Efek 1: Native BarcodeDetector API (Sangat cepat di HP, fokus otomatis sempurna)
   useEffect(() => {
@@ -66,7 +83,8 @@ const ScanBarang = () => {
                   const decodedText = barcodes[0].rawValue;
                   
                   // Cari apakah barcode persis ada di database
-                  const selectedProduct = getProducts().find(p => p.sku === decodedText);
+                  setAllProducts(prevProducts => {
+                    const selectedProduct = prevProducts.find(p => p.sku === decodedText);
                   
                   if (!selectedProduct) {
                     setScanStatus(`Produk dengan SKU ${decodedText} tidak ditemukan di database gudang.`);
@@ -75,6 +93,8 @@ const ScanBarang = () => {
                     setScannedProduct(selectedProduct);
                     setQuantity(1);
                   }
+                  return prevProducts;
+                });
                 }
               } catch (e) {
                 // Silent catch
@@ -125,15 +145,18 @@ const ScanBarang = () => {
           },
           (decodedText) => {
             if (isMounted) {
-              const selectedProduct = getProducts().find(p => p.sku === decodedText);
-              
-              if (!selectedProduct) {
-                setScanStatus(`Produk dengan SKU ${decodedText} tidak ditemukan di database gudang.`);
-              } else {
-                setScanStatus('Barcode terdeteksi: ' + decodedText);
-                setScannedProduct(selectedProduct);
-                setQuantity(1);
-              }
+              setAllProducts(prevProducts => {
+                const selectedProduct = prevProducts.find(p => p.sku === decodedText);
+                
+                if (!selectedProduct) {
+                  setScanStatus(`Produk dengan SKU ${decodedText} tidak ditemukan di database gudang.`);
+                } else {
+                  setScanStatus('Barcode terdeteksi: ' + decodedText);
+                  setScannedProduct(selectedProduct);
+                  setQuantity(1);
+                }
+                return prevProducts;
+              });
             }
           },
           () => {} // Silent on error
@@ -170,8 +193,6 @@ const ScanBarang = () => {
 
   // Variabel dummy produk (sudah diganti dengan state scannedProduct)
 
-  const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
-
   const handleDecrease = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
@@ -184,7 +205,7 @@ const ScanBarang = () => {
     if (!scannedProduct) return;
     
     // Hitung total di cart untuk validasi stok
-    const existing = cartItems.find(item => item.sku === scannedProduct.sku);
+    const existing = cart.find(item => item.id === scannedProduct.id);
     const existingQty = existing ? existing.qty : 0;
     const requestedQty = existingQty + quantity;
     
@@ -193,16 +214,7 @@ const ScanBarang = () => {
       return;
     }
 
-    setCartItems(prev => {
-      if (existing) {
-        return prev.map(item =>
-          item.sku === scannedProduct.sku
-            ? { ...item, qty: requestedQty }
-            : item
-        );
-      }
-      return [...prev, { ...scannedProduct, qty: quantity }];
-    });
+    addToCart(scannedProduct, quantity);
     // Visual feedback
     setAddedFeedback(true);
     setTimeout(() => setAddedFeedback(false), 1200);

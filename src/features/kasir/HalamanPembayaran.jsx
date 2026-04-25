@@ -14,13 +14,15 @@ import {
   Copy,
   Hourglass
 } from 'lucide-react';
+import { useCart } from '../../contexts/CartContext';
+import api from '../../utils/api';
 
 const HalamanPembayaran = () => {
   const navigate = useNavigate();
+  const { total: totalTagihan, cart, clearCart } = useCart();
   const [activeMethod, setActiveMethod] = useState('QRIS');
   const [uangDiterima, setUangDiterima] = useState('');
-  
-  const totalTagihan = 155000;
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const kembalian = parseInt(uangDiterima || '0', 10) - totalTagihan;
   const displayKembalian = kembalian > 0 ? kembalian : 0;
@@ -44,6 +46,41 @@ const HalamanPembayaran = () => {
 
   const handleQuickSelect = (val) => {
     setUangDiterima(val.toString());
+  };
+
+  const handleProsesPembayaran = async () => {
+    if (activeMethod === 'Tunai' && parseInt(uangDiterima || '0', 10) < totalTagihan) {
+      alert('Uang diterima kurang dari total tagihan.');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      // Siapkan payload untuk dikirim ke backend
+      const payload = {
+        payment_method: activeMethod,
+        cash_received: activeMethod === 'Tunai' ? parseInt(uangDiterima, 10) : null,
+        items: cart.map(item => ({
+          product_id: item.id,
+          qty: item.qty
+        }))
+      };
+
+      const res = await api.post('/transactions', payload);
+      const invoiceNumber = res.data.invoice_number;
+      const transactionId = res.data.transaction_id;
+      
+      // Kosongkan keranjang
+      clearCart();
+      
+      // Berpindah ke struk dengan bawa ID transaksi
+      navigate('/struk', { state: { transactionId, invoiceNumber } });
+    } catch (error) {
+      console.error('Gagal memproses transaksi:', error);
+      alert(error.response?.data?.message || 'Gagal memproses transaksi. Cek stok atau server.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -77,7 +114,7 @@ const HalamanPembayaran = () => {
             <p className="text-xs font-bold text-slate-500 tracking-widest mb-1 uppercase">Total Tagihan</p>
             <div className="flex items-start justify-center gap-1">
               <span className="text-3xl font-black text-blue-600 mt-1.5">Rp</span>
-              <span className="text-5xl font-black text-slate-900 tracking-tighter">155.000</span>
+              <span className="text-5xl font-black text-slate-900 tracking-tighter">{totalTagihan.toLocaleString('id-ID')}</span>
             </div>
             {['SeaBank', 'ShopeePay'].includes(activeMethod) ? (
               <div className="bg-sky-100/50 rounded-xl p-4 mt-4 text-left relative w-full">
@@ -96,7 +133,7 @@ const HalamanPembayaran = () => {
             ) : (
               <div className="bg-sky-50 text-blue-600 px-3 py-1.5 rounded-full text-xs font-semibold inline-flex items-center gap-1 mt-4">
                 <Receipt className="w-4 h-4" />
-                <span>#INV-20231027-0042</span>
+                <span>Transaksi Baru</span>
               </div>
             )}
           </div>
@@ -294,11 +331,12 @@ const HalamanPembayaran = () => {
 
           {/* Tombol Konfirmasi */}
           <button 
-            onClick={() => navigate('/struk')}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] flex justify-center items-center gap-2 mt-4 shadow-lg shadow-blue-600/30 active:scale-95 transition-transform"
+            onClick={handleProsesPembayaran}
+            disabled={isProcessing || (activeMethod === 'Tunai' && parseInt(uangDiterima || '0', 10) < totalTagihan)}
+            className={`w-full text-white py-4 rounded-xl font-bold text-[15px] flex justify-center items-center gap-2 mt-4 shadow-lg shadow-blue-600/30 transition-transform ${isProcessing ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:scale-95'}`}
           >
-            <Printer className="w-5 h-5" />
-            Selesaikan Transaksi & Cetak Struk
+            {isProcessing ? <Loader className="w-5 h-5 animate-spin" /> : <Printer className="w-5 h-5" />}
+            {isProcessing ? 'Memproses...' : 'Proses & Cetak Struk'}
           </button>
         </div>
         

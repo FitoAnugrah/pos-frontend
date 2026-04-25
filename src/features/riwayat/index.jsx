@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import riwayatData from '../../mock/riwayatData.json';
+import api from '../../utils/api';
 import {
   SearchIcon,
   BellIcon,
@@ -20,17 +20,33 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
   const [visibleCount, setVisibleCount] = useState(5);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Use 21 April 2026 as the mock "today" 
-  const today = new Date('2026-04-21T23:59:59');
+  const [transactions, setTransactions] = useState([]);
+
+  // Fetch transactions from API
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const res = await api.get('/transactions');
+        setTransactions(res.data.data);
+      } catch (error) {
+        console.error('Failed to fetch transactions:', error);
+      }
+    };
+    fetchTransactions();
+  }, []);
+
+  const today = new Date();
   
   const filteredData = useMemo(() => {
-    return riwayatData.filter(trx => {
+    return transactions.filter(trx => {
       // 1. Search Filter
-      const matchesSearch = trx.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            trx.paymentMethod.toLowerCase().includes(searchQuery.toLowerCase());
+      const invoiceNumber = trx.invoice_number || '';
+      const paymentMethod = trx.payment_method || '';
+      const matchesSearch = invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            paymentMethod.toLowerCase().includes(searchQuery.toLowerCase());
       
       // 2. Date Filter
-      const trxDate = new Date(trx.isoDate);
+      const trxDate = new Date(trx.created_at);
       const diffTime = today.getTime() - trxDate.getTime();
       const diffDays = diffTime / (1000 * 60 * 60 * 24);
       
@@ -41,7 +57,7 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
       
       return matchesSearch && matchesDate;
     });
-  }, [filter, searchQuery]);
+  }, [filter, searchQuery, transactions]);
 
   const visibleTransactions = filteredData.slice(0, visibleCount);
   const hasMore = visibleCount < filteredData.length;
@@ -142,37 +158,38 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
                 return (
                   <div 
                     key={idx} 
-                    onClick={() => navigate(`/riwayat/${trx.id.replace('#', '')}`)}
+                    onClick={() => navigate(`/riwayat/${trx.id}`)}
                     className="bg-white rounded-3xl p-5 flex items-center justify-between shadow-sm border border-slate-50 hover:shadow-md transition-shadow cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm ${isRefund ? 'bg-[#FEF2F2]' : 'bg-[#F0F5F9]'}`}>
-                        {getTrxIcon(trx.iconType)}
+                        {getTrxIcon('bag')}
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <span className="text-[15px] font-extrabold text-[#11263C] leading-none">{trx.id}</span>
-                        <span className="text-[11px] font-medium text-[#8FA5B8]">{trx.displayDate}, {trx.time}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-1.5 items-start px-2 w-[110px]">
-                      <span className={`text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded-[6px] ${isRefund ? 'bg-[#F1F5F9] text-[#8FA5B8]' : 'bg-[#D1FAE5] text-[#10B981]'}`}>
-                        {trx.status}
-                      </span>
-                      <div className="flex items-center gap-1.5 text-[#5C7C9E]">
-                        <span className="w-1 h-1 rounded-full bg-[#D1E4F5]"></span>
-                        {getPaymentIcon(trx.paymentIcon)}
-                        <span className="text-[11px] font-bold">{trx.paymentMethod}</span>
+                      <div className="flex flex-col">
+                        <span className="font-extrabold text-[15px] text-[#11263C]">{trx.invoice_number}</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[12px] font-bold text-[#8FA5B8]">
+                            {new Date(trx.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </span>
+                          <span className="w-1 h-1 rounded-full bg-[#D1E4F5]"></span>
+                          <span className="text-[12px] font-bold text-[#8FA5B8]">
+                            {new Date(trx.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
                       </div>
                     </div>
-
-                    <div className="flex flex-col items-end gap-1.5 min-w-[80px]">
-                      <span className={`text-[16px] font-extrabold leading-none ${isRefund ? 'text-[#EF4444]' : 'text-[#11263C]'}`}>
-                        {trx.amount}
+                    <div className="flex flex-col items-end">
+                      <span className={`font-black text-[15px] ${isRefund ? 'text-[#EF4444]' : 'text-[#11263C]'}`}>
+                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(trx.total)}
                       </span>
-                      <span className="text-[9px] font-bold text-[#8FA5B8] uppercase tracking-wider">
-                        {isRefund ? 'DANA KEMBALI' : 'LIHAT DETAIL'}
-                      </span>
+                      <div className="flex items-center gap-1.5 mt-1.5">
+                        <div className="text-[#8FA5B8]">
+                          {getPaymentIcon(trx.payment_method === 'Tunai' ? 'wallet' : 'qr')}
+                        </div>
+                        <span className="text-[11px] font-extrabold text-[#5C7C9E] uppercase tracking-wider">
+                          {trx.payment_method}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 );

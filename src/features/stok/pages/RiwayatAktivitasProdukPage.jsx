@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { productActivityHistory } from '../../../mock/stokData'
+import api from '../../../utils/api'
 import {
   ArrowLeftIcon,
   BoxIcon,
@@ -213,6 +213,22 @@ export default function RiwayatAktivitasProdukPage({ onBack }) {
   const [activeFilter, setActiveFilter] = useState('all')
   const [query, setQuery] = useState('')
   const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false)
+  const [productActivityHistory, setProductActivityHistory] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const res = await api.get('/products/activity-logs')
+        setProductActivityHistory(res.data)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchLogs()
+  }, [])
 
   const monthOptions = useMemo(() => {
     const monthsMap = new Map()
@@ -235,9 +251,15 @@ export default function RiwayatAktivitasProdukPage({ onBack }) {
       })
 
     return Array.from(monthsMap.values())
-  }, [])
+  }, [productActivityHistory])
 
-  const [selectedMonthId, setSelectedMonthId] = useState(monthOptions[0]?.id ?? '')
+  const [selectedMonthId, setSelectedMonthId] = useState('')
+
+  useEffect(() => {
+    if (!selectedMonthId && monthOptions.length > 0) {
+      setSelectedMonthId(monthOptions[0].id)
+    }
+  }, [monthOptions, selectedMonthId])
 
   const selectedMonth = useMemo(
     () => monthOptions.find((month) => month.id === selectedMonthId) ?? monthOptions[0] ?? null,
@@ -260,7 +282,7 @@ export default function RiwayatAktivitasProdukPage({ onBack }) {
         return matchesFilter && matchesQuery && matchesMonth
       })
       .sort((left, right) => buildActivityDate(right) - buildActivityDate(left))
-  }, [activeFilter, query, selectedMonthId])
+  }, [activeFilter, query, selectedMonthId, productActivityHistory])
 
   const groupedItems = useMemo(() => {
     const groupsMap = new Map()
@@ -364,7 +386,11 @@ export default function RiwayatAktivitasProdukPage({ onBack }) {
           </div>
         </div>
 
-        {groupedItems.length > 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <p className="text-base font-bold text-slate-600">Memuat aktivitas...</p>
+          </div>
+        ) : groupedItems.length > 0 ? (
           <div>
             {groupedItems.map((group) => (
               <section key={group.date} className="mb-6">

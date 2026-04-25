@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TukarPoinModal from '../components/TukarPoinModal';
-import { getMembers, updateMember } from '../../../utils/memberStorage';
+import api from '../../../utils/api';
 import {
   ArrowLeftIcon,
   PhoneIcon,
@@ -26,7 +26,31 @@ export default function MemberDetail() {
   const navigate = useNavigate();
   const [isTukarPoinModalOpen, setIsTukarPoinModalOpen] = useState(false);
 
-  const [member, setMember] = useState(() => getMembers().find(m => m.id === parseInt(id)));
+  const [member, setMember] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMemberData = async () => {
+      try {
+        const [memberRes, trxRes] = await Promise.all([
+          api.get(`/members/${id}`),
+          api.get(`/members/${id}/transactions`)
+        ]);
+        setMember(memberRes.data);
+        setTransactions(trxRes.data);
+      } catch (err) {
+        console.error('Failed to load member detail:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMemberData();
+  }, [id]);
+
+  if (loading) {
+    return <div className="p-8 text-center font-sans">Memuat data member...</div>;
+  }
 
   if (!member) {
     return (
@@ -98,10 +122,10 @@ export default function MemberDetail() {
               <div className="flex items-center gap-4">
                 <div className="relative flex-shrink-0">
                   <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden bg-[#C8E0F4] flex items-center justify-center border-2 border-white shadow-sm">
-                    {member.avatarUrl ? (
-                      <img src={member.avatarUrl} alt={member.name} className="w-full h-full object-cover" />
+                    {member.avatar_url ? (
+                      <img src={member.avatar_url} alt={member.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-[#0A6CBF] font-bold text-2xl">{member.initials}</span>
+                      <span className="text-[#0A6CBF] font-bold text-2xl">{member.initials ?? member.name.charAt(0)}</span>
                     )}
                   </div>
                   <div className="absolute -bottom-1 -right-1 bg-blue-600 rounded-full p-0.5 border-2 border-white">
@@ -111,7 +135,7 @@ export default function MemberDetail() {
 
                 <div className="flex-1 min-w-0">
                   <h2 className="text-lg font-extrabold text-slate-800 leading-tight truncate">{member.name}</h2>
-                  <p className="text-xs text-slate-400 font-medium mt-0.5">{member.memberId}</p>
+                  <p className="text-xs text-slate-400 font-medium mt-0.5">{member.member_id}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${getLevelStyle(member.level)}`}>
                       {member.level}
@@ -134,8 +158,8 @@ export default function MemberDetail() {
               </div>
               <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
                 <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Member Sejak</p>
-                <p className="text-base font-extrabold text-slate-800 leading-tight">{member.joinedDate}</p>
-                <p className="text-[10px] text-slate-400 font-medium mt-0.5">{member.transactions?.length ?? 0} transaksi</p>
+                <p className="text-base font-extrabold text-slate-800 leading-tight">{member.joined_date}</p>
+                <p className="text-[10px] text-slate-400 font-medium mt-0.5">{transactions.length} transaksi</p>
               </div>
             </div>
 
@@ -206,12 +230,12 @@ export default function MemberDetail() {
                 </button>
               </div>
 
-              {member.transactions && member.transactions.length > 0 ? (
+              {transactions && transactions.length > 0 ? (
                 <div className="flex flex-col gap-3">
-                  {member.transactions.slice(0, 3).map((trx, index) => (
+                  {transactions.slice(0, 3).map((trx, index) => (
                     <div
                       key={index}
-                      onClick={() => navigate(`/transaction/${trx.trxId || trx.id}`)}
+                      onClick={() => navigate(`/riwayat/${trx.id}`)}
                       className="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl cursor-pointer hover:bg-blue-50 transition-colors group"
                     >
                       <div className="flex items-center gap-3">
@@ -219,13 +243,17 @@ export default function MemberDetail() {
                           <ReceiptIcon className="w-4 h-4" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-slate-700">{trx.id}</p>
-                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">{trx.displayDate} · {trx.time}</p>
+                          <p className="text-xs font-bold text-slate-700">{trx.invoice_number}</p>
+                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                            {new Date(trx.created_at).toLocaleDateString('id-ID')} · {new Date(trx.created_at).toLocaleTimeString('id-ID')}
+                          </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-extrabold text-slate-800">{trx.amount}</p>
-                        <p className={`text-[9px] font-bold uppercase tracking-wide ${trx.status === 'SUCCESS' ? 'text-emerald-500' : 'text-red-500'}`}>
+                        <p className="text-sm font-extrabold text-slate-800">
+                          {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(trx.total)}
+                        </p>
+                        <p className={`text-[9px] font-bold uppercase tracking-wide ${trx.status === 'SUKSES' ? 'text-emerald-500' : 'text-red-500'}`}>
                           {trx.status}
                         </p>
                       </div>
@@ -276,10 +304,7 @@ export default function MemberDetail() {
           const formattedPoints = newPoints.toLocaleString('id-ID');
           
           // Perbarui state lokal agar UI terupdate
-          setMember(prev => ({ ...prev, points: formattedPoints }));
-          
-          // Simpan perubahan ke storage
-          updateMember(member.id, { points: formattedPoints });
+          setMember(prev => ({ ...prev, points: newPoints }));
           
           setIsTukarPoinModalOpen(false);
           

@@ -10,7 +10,6 @@ import ManualEntry from '../features/stok/pages/ManualEntry';
 import MemberPage from '../features/member';
 import MemberDetail from '../features/member/pages/MemberDetail';
 import MemberTransactions from '../features/member/pages/MemberTransactions';
-import TransactionDetail from '../features/member/pages/TransactionDetail';
 import EditMember from '../features/member/pages/EditMember';
 import AddMember from '../features/member/pages/AddMember';
 import RiwayatTransaksi from '../features/riwayat';
@@ -64,7 +63,6 @@ export default function AppRoutes() {
       <Route path="/member/:id" element={<MemberDetail />} />
       <Route path="/member/:id/edit" element={<EditMember />} />
       <Route path="/member/:id/transactions" element={<MemberTransactions />} />
-      <Route path="/transaction/:trxId" element={<TransactionDetail />} />
       <Route path="/laporan" element={<LaporanPenjualan />} />
       <Route path="/produk-terlaris" element={<ProdukTerlaris />} />
       <Route path="/profil" element={<ProfilFeature onTabChange={handleMainTabChange} />} />

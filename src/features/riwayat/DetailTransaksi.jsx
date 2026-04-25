@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import riwayatData from '../../mock/riwayatData.json';
+import api from '../../utils/api';
 import {
   ArrowLeftIcon,
   PrinterIcon,
@@ -9,52 +9,62 @@ import {
   BankIcon,
   QrCodeIcon
 } from '../../components/ui/icons';
+import { Loader } from 'lucide-react';
 
 export default function DetailTransaksi() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [transaction, setTransaction] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Find transaction
-  const transaction = riwayatData.find(t => t.id === id || t.id.replace('#', '') === id.replace('#', ''));
+  useEffect(() => {
+    const fetchTransaction = async () => {
+      try {
+        const res = await api.get(`/transactions/${id}`);
+        setTransaction(res.data);
+      } catch (error) {
+        console.error('Failed to fetch transaction details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTransaction();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F4F8FB] flex justify-center items-center w-full font-sans">
+        <Loader className="w-8 h-8 text-[#0D74C8] animate-spin" />
+      </div>
+    );
+  }
 
   if (!transaction) {
     return <div className="p-8 text-center font-sans">Transaksi tidak ditemukan</div>;
   }
-
-  const rawTotal = parseInt(String(transaction.amount).replace(/[^0-9]/g, '')) || 0;
-  
-  // Ambil nilai dari objek transaksi, dengan fallback jika data mock tidak lengkap
-  const subtotal = transaction.subtotal !== undefined ? transaction.subtotal : Math.floor(rawTotal / 1.10);
-  const pajak = transaction.tax !== undefined ? transaction.tax : Math.floor(subtotal * 0.10);
-  const diskon = transaction.discount || 0;
-  const uangDiterima = transaction.cashReceived !== undefined ? transaction.cashReceived : Math.ceil(rawTotal / 50000) * 50000;
-  const kembali = transaction.change !== undefined ? transaction.change : (uangDiterima - rawTotal);
   
   // Format mata uang
   const formatRp = (num) => `Rp ${num.toLocaleString('id-ID')}`;
   
-  const subtotalStr = transaction.summary?.subtotal || formatRp(subtotal);
-  const diskonStr = transaction.summary?.discount || (diskon > 0 ? `- ${formatRp(diskon)}` : '- Rp 0');
-  const pajakStr = transaction.summary?.tax || formatRp(pajak);
-  const totalAkhir = transaction.amount;
-  const uangDiterimaStr = transaction.payment?.cashReceived || formatRp(uangDiterima);
-  const kembaliStr = transaction.payment?.change || formatRp(Math.max(0, kembali));
+  const subtotalStr = formatRp(transaction.subtotal);
+  const diskonStr = formatRp(transaction.discount);
+  const pajakStr = formatRp(transaction.tax_amount);
+  const totalAkhir = formatRp(transaction.total);
+  const uangDiterimaStr = formatRp(transaction.cash_received || transaction.total);
+  const kembaliStr = formatRp(transaction.change || 0);
 
-  // Fallback untuk items
-  const items = transaction.items || [
-    { name: 'Item Pembelian', qty: 1, price: transaction.amount, total: transaction.amount }
-  ];
-
+  const items = transaction.items || [];
   const isRefund = transaction.status === 'REFUND';
-  const isMember = transaction.memberId ? true : false;
-  const memberName = transaction.memberName || 'Pelanggan';
+  const isMember = transaction.member ? true : false;
+  const memberName = transaction.member?.name || 'Pelanggan';
   const cashierName = transaction.cashier || 'Admin';
 
-  const getPaymentIcon = (iconStr) => {
-    switch(iconStr) {
-      case 'wallet': return <WalletIcon className="w-4 h-4" />;
-      case 'bank': return <BankIcon className="w-4 h-4" />;
-      case 'qr': return <QrCodeIcon className="w-4 h-4" />;
+  const getPaymentIcon = (paymentMethod) => {
+    switch(paymentMethod) {
+      case 'Tunai': return <WalletIcon className="w-4 h-4" />;
+      case 'SeaBank': return <BankIcon className="w-4 h-4" />;
+      case 'QRIS': 
+      case 'ShopeePay': return <QrCodeIcon className="w-4 h-4" />;
       default: return <WalletIcon className="w-4 h-4" />;
     }
   };
@@ -80,7 +90,7 @@ export default function DetailTransaksi() {
             <div className="flex justify-between items-start mb-6">
               <div>
                 <p className="text-[10px] font-bold text-[#8FA5B8] uppercase tracking-wider mb-1">NOMOR TRANSAKSI</p>
-                <p className="text-[20px] font-extrabold text-[#11263C] leading-none">{transaction.id}</p>
+                <p className="text-[20px] font-extrabold text-[#11263C] leading-none">{transaction.invoice_number}</p>
               </div>
               <span className={`text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full ${isRefund ? 'bg-[#F1F5F9] text-[#8FA5B8]' : 'bg-[#D1FAE5] text-[#10B981]'}`}>
                 {transaction.status}
@@ -90,7 +100,7 @@ export default function DetailTransaksi() {
             <div className="flex justify-between items-end">
               <div>
                 <p className="text-[10px] font-bold text-[#8FA5B8] uppercase tracking-wider mb-1">Tanggal & Waktu</p>
-                <p className="text-[13px] font-bold text-[#11263C]">{transaction.displayDate}, {transaction.time}</p>
+                <p className="text-[13px] font-bold text-[#11263C]">{new Date(transaction.created_at).toLocaleDateString('id-ID')}, {new Date(transaction.created_at).toLocaleTimeString('id-ID')}</p>
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-bold text-[#8FA5B8] uppercase tracking-wider mb-1">{isMember ? 'Nama Member' : 'Nama Kasir'}</p>
@@ -106,10 +116,10 @@ export default function DetailTransaksi() {
             {items.map((item, idx) => (
               <div key={idx} className="flex justify-between items-center">
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[14px] font-extrabold text-[#11263C]">{item.name}</span>
-                  <span className="text-[12px] font-medium text-[#8FA5B8]">x{item.qty} • {item.price}</span>
+                  <span className="text-[14px] font-extrabold text-[#11263C]">{item.product_name}</span>
+                  <span className="text-[12px] font-medium text-[#8FA5B8]">x{item.qty} • {formatRp(item.unit_price)}</span>
                 </div>
-                <span className="text-[14px] font-extrabold text-[#11263C]">{item.total}</span>
+                <span className="text-[14px] font-extrabold text-[#11263C]">{formatRp(item.subtotal)}</span>
               </div>
             ))}
           </div>
@@ -140,8 +150,8 @@ export default function DetailTransaksi() {
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold text-[#8FA5B8] uppercase tracking-wider">METODE PEMBAYARAN</span>
                 <div className="flex items-center gap-1.5 text-[#11263C] text-[11px] font-extrabold uppercase">
-                  {getPaymentIcon(transaction.paymentIcon)}
-                  <span>{transaction.paymentMethod}</span>
+                  {getPaymentIcon(transaction.payment_method)}
+                  <span>{transaction.payment_method}</span>
                 </div>
               </div>
               <div className="flex justify-between items-center text-[12px]">

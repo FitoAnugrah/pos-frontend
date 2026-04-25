@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { stockReasons } from '../../../mock/stokData'
+const stockReasons = ['Restock Bulanan', 'Barang Rusak', 'Audit/Penyesuaian', 'Lainnya'];
 import ProductThumb from '../components/ProductThumb'
 import { ArrowLeftIcon, MinusIcon, PlusIcon } from '../../../components/ui/icons'
 

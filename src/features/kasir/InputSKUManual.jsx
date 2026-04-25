@@ -15,7 +15,8 @@ import {
   Tag,
   Check
 } from 'lucide-react';
-import { getProducts } from '../../utils/productStorage';
+import { useCart } from '../../contexts/CartContext';
+import api from '../../utils/api';
 
 
 
@@ -24,7 +25,9 @@ const InputSKUManual = () => {
   const [foundProduct, setFoundProduct] = useState(null);
   const [searchError, setSearchError] = useState('');
   const [addedFeedback, setAddedFeedback] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const handleNumberClick = (num) => {
     // Membatasi panjang SKU jika perlu (misal max 15 karakter)
@@ -41,22 +44,25 @@ const InputSKUManual = () => {
     setSku('');
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!sku) return;
     setSearchError('');
     setFoundProduct(null);
     setAddedFeedback(false);
+    setLoading(true);
 
-    // Cari di database: exact match atau partial match
-    const normalized = sku.trim().toUpperCase();
-    const product = getProducts().find(p =>
-      p.sku === sku || p.sku === normalized || (p.sku && p.sku.toUpperCase().includes(normalized))
-    );
-
-    if (product) {
-      setFoundProduct(product);
-    } else {
-      setSearchError('Produk dengan SKU "' + sku + '" tidak ditemukan dalam sistem.');
+    try {
+      const normalized = sku.trim().toUpperCase();
+      const res = await api.get(`/products/sku/${normalized}`);
+      setFoundProduct(res.data);
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        setSearchError('Produk dengan SKU "' + sku + '" tidak ditemukan dalam sistem.');
+      } else {
+        setSearchError('Terjadi kesalahan saat mencari produk.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,6 +74,8 @@ const InputSKUManual = () => {
       alert(`Stok tidak mencukupi. Sisa stok: ${foundProduct.stock} unit`);
       return;
     }
+
+    addToCart(foundProduct, 1);
 
     // Show feedback, then navigate to cart (or back to scan)
     setAddedFeedback(true);
@@ -137,14 +145,20 @@ const InputSKUManual = () => {
           {/* Tombol Cari */}
           <button
             onClick={handleSearch}
-            disabled={!sku}
-            className={`w-full py-4.5 rounded-2xl font-bold text-[15px] flex justify-center items-center gap-2 mt-8 transition-all ${sku
+            disabled={!sku || loading}
+            className={`w-full py-4.5 rounded-2xl font-bold text-[15px] flex justify-center items-center gap-2 mt-8 transition-all ${(sku && !loading)
               ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 active:scale-95 hover:bg-blue-700'
               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
           >
-            <Search className="w-[18px] h-[18px] stroke-[2.5px]" />
-            Cari Produk
+            {loading ? (
+              'Mencari...'
+            ) : (
+              <>
+                <Search className="w-[18px] h-[18px] stroke-[2.5px]" />
+                Cari Produk
+              </>
+            )}
           </button>
 
           {/* Error Message */}

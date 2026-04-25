@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../../utils/api';
 import {
   BagIcon,
   ReceiptIcon,
@@ -10,26 +11,27 @@ import {
 
 export default function HalamanPengaturan() {
   const [settings, setSettings] = useState({
-    namaToko: 'Vault POS',
-    alamatToko: 'Jl. Contoh No. 123',
-    teleponToko: '08123456789',
-    pajakAktif: true,
-    nilaiPajak: 11,
-    pesanStruk: 'Terima kasih telah berbelanja di toko kami!'
+    nama_toko: "Vault POS A'i",
+    alamat_toko: 'Jl. Contoh No. 123',
+    telepon_toko: '08123456789',
+    pajak_aktif: true,
+    nilai_pajak: 11,
+    pesan_struk: 'Terima kasih telah berbelanja di toko kami!',
+    scanner_mode: 'camera',
   });
   const [activeTab, setActiveTab] = useState('toko');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('pos_settings');
-    if (saved) {
+    const fetchSettings = async () => {
       try {
-        setSettings(JSON.parse(saved));
+        const res = await api.get('/settings');
+        setSettings(res.data);
       } catch (err) {
-        console.error('Gagal membaca pengaturan', err);
+        console.error('Gagal memuat pengaturan', err);
       }
-    } else {
-      localStorage.setItem('pos_settings', JSON.stringify(settings));
-    }
+    };
+    fetchSettings();
   }, []);
 
   const handleChange = (e) => {
@@ -43,13 +45,20 @@ export default function HalamanPengaturan() {
   const handleTogglePajak = () => {
     setSettings((prev) => ({
       ...prev,
-      pajakAktif: !prev.pajakAktif
+      pajak_aktif: !prev.pajak_aktif
     }));
   };
 
-  const handleSave = () => {
-    localStorage.setItem('pos_settings', JSON.stringify(settings));
-    alert('Pengaturan berhasil disimpan!');
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await api.put('/settings', settings);
+      alert('Pengaturan berhasil disimpan!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal menyimpan pengaturan');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const tabs = [
@@ -101,8 +110,8 @@ export default function HalamanPengaturan() {
                       <label className="block text-sm font-bold text-slate-600 mb-2">Nama Toko</label>
                       <input
                         type="text"
-                        name="namaToko"
-                        value={settings.namaToko}
+                        name="nama_toko"
+                        value={settings.nama_toko}
                         onChange={handleChange}
                         className="w-full border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-3 text-slate-800 font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                       />
@@ -111,8 +120,8 @@ export default function HalamanPengaturan() {
                       <label className="block text-sm font-bold text-slate-600 mb-2">Nomor Telepon</label>
                       <input
                         type="text"
-                        name="teleponToko"
-                        value={settings.teleponToko}
+                        name="telepon_toko"
+                        value={settings.telepon_toko}
                         onChange={handleChange}
                         className="w-full border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-3 text-slate-800 font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                       />
@@ -120,8 +129,8 @@ export default function HalamanPengaturan() {
                     <div>
                       <label className="block text-sm font-bold text-slate-600 mb-2">Alamat Lengkap</label>
                       <textarea
-                        name="alamatToko"
-                        value={settings.alamatToko}
+                        name="alamat_toko"
+                        value={settings.alamat_toko}
                         onChange={handleChange}
                         rows={4}
                         className="w-full border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-3 text-slate-800 font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all resize-none"
@@ -144,23 +153,24 @@ export default function HalamanPengaturan() {
                       </div>
                       <button
                         onClick={handleTogglePajak}
-                        className={`relative w-12 h-6 rounded-full transition-colors duration-300 outline-none ${settings.pajakAktif ? 'bg-blue-600' : 'bg-slate-200'}`}
+                        className={`relative w-12 h-6 rounded-full transition-colors duration-300 outline-none ${settings.pajak_aktif ? 'bg-blue-600' : 'bg-slate-200'}`}
                       >
-                        <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${settings.pajakAktif ? 'translate-x-6' : 'translate-x-0'}`} />
+                        <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${settings.pajak_aktif ? 'translate-x-6' : 'translate-x-0'}`} />
                       </button>
                     </div>
 
                     {/* Persentase Pajak */}
-                    {settings.pajakAktif && (
+                    {settings.pajak_aktif && (
                       <div className="animate-in fade-in duration-300 slide-in-from-top-2">
                         <label className="block text-sm font-bold text-slate-600 mb-2">Persentase Pajak (%)</label>
                         <div className="relative">
                           <input
                             type="number"
-                            name="nilaiPajak"
-                            value={settings.nilaiPajak}
+                            name="nilai_pajak"
+                            value={settings.nilai_pajak}
                             onChange={handleChange}
-                            className="w-full border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-3 text-slate-800 font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                            disabled={!settings.pajak_aktif}
+                            className={`w-full border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-3 text-slate-800 font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all ${!settings.pajak_aktif && 'opacity-50 cursor-not-allowed'}`}
                           />
                           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
                         </div>
@@ -171,8 +181,8 @@ export default function HalamanPengaturan() {
                     <div>
                       <label className="block text-sm font-bold text-slate-600 mb-2">Pesan Bawah Struk</label>
                       <textarea
-                        name="pesanStruk"
-                        value={settings.pesanStruk}
+                        name="pesan_struk"
+                        value={settings.pesan_struk}
                         onChange={handleChange}
                         rows={3}
                         className="w-full border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-3 text-slate-800 font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all resize-none"
@@ -212,7 +222,12 @@ export default function HalamanPengaturan() {
                       <div className="flex-1">
                         <h3 className="font-bold text-slate-800 text-[15px]">Mode Scanner</h3>
                         <p className="text-sm text-slate-500 mt-1 mb-3">Sumber alat untuk membaca barcode / SKU.</p>
-                        <select className="w-full md:w-auto min-w-[200px] border border-slate-200 bg-slate-50 rounded-xl px-4 py-2.5 text-slate-700 font-bold outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none cursor-pointer">
+                        <select 
+                          name="scanner_mode"
+                          value={settings.scanner_mode}
+                          onChange={handleChange}
+                          className="w-full md:w-auto min-w-[200px] border border-slate-200 bg-slate-50 rounded-xl px-4 py-2.5 text-slate-700 font-bold outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none cursor-pointer"
+                        >
                           <option value="camera">Kamera Perangkat</option>
                           <option value="usb">Barcode Scanner USB</option>
                         </select>
@@ -228,9 +243,10 @@ export default function HalamanPengaturan() {
             <div className="mt-10 pt-6 border-t border-slate-100 flex justify-end">
               <button
                 onClick={handleSave}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-blue-600/30 transition-all active:scale-95"
+                disabled={isSaving}
+                className={`w-full py-4 rounded-xl text-white font-bold text-base transition-colors shadow-sm ${isSaving ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:scale-[0.98]'}`}
               >
-                Simpan Pengaturan
+                {isSaving ? 'Menyimpan...' : 'Simpan Pengaturan'}
               </button>
             </div>
           </div>

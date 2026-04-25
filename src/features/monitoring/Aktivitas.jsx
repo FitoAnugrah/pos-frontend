@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import aktivitasData from '../../mock/aktivitasData.json';
+import api from '../../utils/api';
 
 const ArrowLeftIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -27,11 +27,36 @@ const RefundIcon = (props) => (
 export default function AktivitasTerkini() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('Semua');
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const res = await api.get('/products/activity-logs');
+        // Map product logs to the format needed
+        const formatted = res.data.map(log => ({
+          id: log.id,
+          category: 'Stok',
+          type: log.type === 'stock' ? 'warning' : 'box',
+          title: log.productName,
+          desc: log.description,
+          time: `${log.date} ${log.time}`,
+        }));
+        setActivities(formatted);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchActivities();
+  }, []);
 
   const filteredData = useMemo(() => {
-    if (filter === 'Semua') return aktivitasData;
-    return aktivitasData.filter(item => item.category === filter);
-  }, [filter]);
+    if (filter === 'Semua') return activities;
+    return activities.filter(item => item.category === filter);
+  }, [filter, activities]);
 
   const getIcon = (type) => {
     switch(type) {
@@ -78,28 +103,32 @@ export default function AktivitasTerkini() {
 
           {/* Activity List */}
           <div className="flex flex-col gap-3">
-            {filteredData.map((item) => (
-              <div 
-                key={item.id} 
-                className="bg-white rounded-3xl p-5 shadow-sm border border-slate-50 flex gap-4 hover:shadow-md transition-shadow cursor-pointer"
-              >
-                {getIcon(item.type)}
-                <div className="flex flex-col gap-1 w-full">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-[15px] font-extrabold text-[#11263C] leading-none mt-1">{item.title}</h3>
-                    <span className="text-[11px] font-medium text-[#5C7C9E] mt-1">{item.time}</span>
-                  </div>
-                  <p className="text-[13px] font-medium text-[#5C7C9E] leading-relaxed mt-1">
-                    {item.desc}
-                  </p>
-                </div>
+            {loading ? (
+              <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-slate-200">
+                <p className="text-slate-500 font-medium text-[14px]">Memuat aktivitas...</p>
               </div>
-            ))}
-
-            {filteredData.length === 0 && (
+            ) : filteredData.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-slate-200">
                 <p className="text-slate-500 font-medium text-[14px]">Tidak ada aktivitas.</p>
               </div>
+            ) : (
+              filteredData.map((item) => (
+                <div 
+                  key={item.id} 
+                  className="bg-white rounded-3xl p-5 shadow-sm border border-slate-50 flex gap-4 hover:shadow-md transition-shadow cursor-pointer"
+                >
+                  {getIcon(item.type)}
+                  <div className="flex flex-col gap-1 w-full">
+                    <div className="flex justify-between items-start">
+                      <h3 className="text-[15px] font-extrabold text-[#11263C] leading-none mt-1">{item.title}</h3>
+                      <span className="text-[11px] font-medium text-[#5C7C9E] mt-1">{item.time}</span>
+                    </div>
+                    <p className="text-[13px] font-medium text-[#5C7C9E] leading-relaxed mt-1">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              ))
             )}
           </div>
 

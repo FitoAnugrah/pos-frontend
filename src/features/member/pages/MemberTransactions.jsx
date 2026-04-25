@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getMembers } from '../../../utils/memberStorage';
+import api from '../../../utils/api';
 import {
   ArrowLeftIcon,
   SearchIcon,
@@ -19,24 +19,43 @@ export default function MemberTransactions() {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  const member = getMembers().find(m => m.id === parseInt(id));
-  
+  const [member, setMember] = useState(null);
+  const [transactions, setTransactions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(''); // Format: 'YYYY-MM'
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [memberRes, trxRes] = await Promise.all([
+          api.get(`/members/${id}`),
+          api.get(`/members/${id}/transactions`)
+        ]);
+        setMember(memberRes.data);
+        setTransactions(trxRes.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id]);
 
   // Determine available months from user's transactions
   const availableMonths = useMemo(() => {
-    if (!member || !member.transactions) return [];
+    if (!transactions.length) return [];
     const months = new Set();
-    member.transactions.forEach(trx => {
-      if (trx.isoDate) {
-        const d = new Date(trx.isoDate);
+    transactions.forEach(trx => {
+      if (trx.created_at) {
+        const d = new Date(trx.created_at);
         const yyyy_mm = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
         months.add(yyyy_mm);
       }
     });
     return Array.from(months).sort((a, b) => b.localeCompare(a)); // Descending
-  }, [member]);
+  }, [transactions]);
 
   // Initially set selectedMonth to the latest available month
   React.useEffect(() => {
@@ -47,14 +66,14 @@ export default function MemberTransactions() {
 
   // Filter transactions based on selectedMonth and searchQuery
   const filteredTransactions = useMemo(() => {
-    if (!member || !member.transactions) return [];
-    let result = member.transactions;
+    if (!transactions.length) return {};
+    let result = transactions;
 
     // Filter by Month
     if (selectedMonth) {
       result = result.filter(trx => {
-        if (!trx.isoDate) return false;
-        const d = new Date(trx.isoDate);
+        if (!trx.created_at) return false;
+        const d = new Date(trx.created_at);
         const yyyy_mm = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
         return yyyy_mm === selectedMonth;
       });
@@ -63,20 +82,24 @@ export default function MemberTransactions() {
     // Filter by Search Query
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(trx => trx.id.toLowerCase().includes(q));
+      result = result.filter(trx => String(trx.invoice_number).toLowerCase().includes(q));
     }
 
     // Group by month label for display (even if we filter by month, grouping is nice)
     const grouped = {};
     result.forEach(trx => {
-      const d = new Date(trx.isoDate);
+      const d = new Date(trx.created_at);
       const monthLabel = `${getMonthName(d.getMonth()).toUpperCase()} ${d.getFullYear()}`;
       if (!grouped[monthLabel]) grouped[monthLabel] = [];
       grouped[monthLabel].push(trx);
     });
 
     return grouped;
-  }, [member, selectedMonth, searchQuery]);
+  }, [transactions, selectedMonth, searchQuery]);
+
+  if (loading) {
+    return <div className="p-8 text-center font-sans text-slate-500 font-semibold">Memuat riwayat...</div>;
+  }
 
   if (!member) {
     return <div className="p-8 text-center font-sans">Member not found</div>;
@@ -118,7 +141,7 @@ export default function MemberTransactions() {
                 <div>
                   <p className="text-[10px] font-bold text-white/80 tracking-wider uppercase mb-1">MEMBER PROFILE</p>
                   <h2 className="text-[22px] font-extrabold tracking-tight leading-none">{member.name}</h2>
-                  <p className="text-[12px] text-white/80 mt-1">{member.memberId}</p>
+                  <p className="text-[12px] text-white/80 mt-1">{member.member_id}</p>
                 </div>
                 <div className="bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
                   <span className="text-[10px] font-bold text-white tracking-widest uppercase">{member.level} TIER</span>
@@ -128,7 +151,7 @@ export default function MemberTransactions() {
               <div className="flex justify-between items-end mt-8">
                 <div>
                   <p className="text-[9px] font-bold text-white/80 tracking-wider uppercase mb-0.5">ACTIVE SINCE</p>
-                  <p className="text-[13px] font-bold">{member.joinedDate}</p>
+                  <p className="text-[13px] font-bold">{member.joined_date}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-[9px] font-bold text-white/80 tracking-wider uppercase mb-0.5">TOTAL POINTS</p>
@@ -186,25 +209,25 @@ export default function MemberTransactions() {
                     {filteredTransactions[monthLabel].map((trx, index) => (
                       <div 
                         key={index} 
-                        onClick={() => navigate(`/transaction/${trx.trxId || trx.id}`)}
+                        onClick={() => navigate(`/riwayat/${trx.id}`)}
                         className="bg-white rounded-2xl p-4 shadow-sm border border-slate-50 flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow"
                       >
                         <div className="flex flex-col gap-1.5">
-                          <span className="text-[11px] font-bold text-[#0D74C8]">{trx.id}</span>
-                          <span className="text-[14px] font-extrabold text-[#11263C]">{trx.displayDate}, {trx.time}</span>
+                          <span className="text-[11px] font-bold text-[#0D74C8]">{trx.invoice_number}</span>
+                          <span className="text-[14px] font-extrabold text-[#11263C]">{new Date(trx.created_at).toLocaleDateString('id-ID')}, {new Date(trx.created_at).toLocaleTimeString('id-ID')}</span>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500">
-                              {trx.paymentMethod === 'Cash' ? <MoneyIcon className="w-3 h-3" /> : <QrCodeIcon className="w-3 h-3" />}
-                              {trx.paymentMethod}
+                              {trx.payment_method === 'Tunai' ? <MoneyIcon className="w-3 h-3" /> : <QrCodeIcon className="w-3 h-3" />}
+                              {trx.payment_method}
                             </span>
                             <span className="text-[8px] text-slate-300">•</span>
-                            <span className={`text-[10px] font-bold tracking-wider uppercase ${trx.status === 'SUCCESS' ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+                            <span className={`text-[10px] font-bold tracking-wider uppercase ${trx.status === 'SUKSES' ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
                               {trx.status}
                             </span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[16px] font-extrabold text-[#11263C]">{trx.amount}</span>
+                          <span className="text-[16px] font-extrabold text-[#11263C]">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(trx.total)}</span>
                           <ChevronRightIcon className="w-4 h-4 text-slate-300" />
                         </div>
                       </div>

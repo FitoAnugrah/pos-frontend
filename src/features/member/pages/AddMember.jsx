@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { saveMember } from '../../../utils/memberStorage';
+import api from '../../../utils/api';
 import {
   ArrowLeftIcon,
   UserIcon,
@@ -43,26 +43,27 @@ export default function AddMember() {
     return e;
   };
 
-  const handleSave = () => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
     
-    const d = new Date();
-    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-
-    saveMember({
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email,
-      level: formData.level,
-      avatarUrl: formData.avatarUrl,
-      points: 0,
-      status: 'Active Account',
-      joinedDate: `${months[d.getMonth()]} ${d.getFullYear()}`,
-      transactions: []
-    });
-
-    navigate('/member');
+    setIsSaving(true);
+    try {
+      await api.post('/members', {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        level: formData.level,
+        avatar_url: formData.avatarUrl,
+      });
+      navigate('/member');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal menyimpan member.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const set = (field) => (e) => {
@@ -91,10 +92,11 @@ export default function AddMember() {
         <h1 className="text-lg font-bold text-slate-800">Tambah Member Baru</h1>
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm active:scale-95"
+          disabled={isSaving}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm active:scale-95 ${isSaving ? 'bg-slate-400 text-white cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
         >
           <UserPlusIcon className="w-4 h-4" />
-          Simpan Member
+          {isSaving ? 'Menyimpan...' : 'Simpan Member'}
         </button>
       </div>
 
@@ -222,10 +224,11 @@ export default function AddMember() {
         <div className="w-full max-w-[440px] px-4 py-4 pointer-events-auto bg-gradient-to-t from-slate-50 via-slate-50/95 to-transparent">
           <button
             onClick={handleSave}
-            className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/30 text-sm"
+            disabled={isSaving}
+            className={`w-full active:scale-[0.98] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg text-sm ${isSaving ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/30'}`}
           >
             <UserPlusIcon className="w-5 h-5" />
-            Simpan Member
+            {isSaving ? 'Menyimpan...' : 'Simpan Member'}
           </button>
         </div>
       </div>

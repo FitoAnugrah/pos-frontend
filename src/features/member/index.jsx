@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMembers } from '../../utils/memberStorage';
+import api from '../../utils/api';
 import {
   PlusIcon,
   SearchIcon,
@@ -58,9 +58,9 @@ function MemberCard({ member, onClick }) {
         <div
           className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center text-lg font-bold group-hover:scale-105 transition-transform ${config.avatar} ring-2 ${config.ring}`}
         >
-          {member.avatarUrl ? (
+          {member.avatar_url ? (
             <img
-              src={member.avatarUrl}
+              src={member.avatar_url}
               alt={member.name}
               className="w-full h-full object-cover"
             />
@@ -75,7 +75,7 @@ function MemberCard({ member, onClick }) {
               {member.name}
             </h3>
           </div>
-          <p className="text-xs text-slate-400 font-medium truncate">{member.memberId}</p>
+          <p className="text-xs text-slate-400 font-medium truncate">{member.member_id}</p>
           <div className="flex items-center gap-1.5 mt-1.5">
             <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide ${config.badge}`}>
               {member.level}
@@ -100,7 +100,7 @@ function MemberCard({ member, onClick }) {
           <span className="text-xs text-slate-400 font-medium">transaksi</span>
         </div>
         <div className="h-3.5 w-px bg-slate-100" />
-        <span className="text-xs font-semibold text-slate-400">Sejak {member.joinedDate}</span>
+        <span className="text-xs font-semibold text-slate-400">Sejak {member.joined_date}</span>
       </div>
     </article>
   );
@@ -114,9 +114,17 @@ export default function MemberPage() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('newest');
 
-  // Load from localStorage on mount (always fresh data)
+  // Load from API on mount
   useEffect(() => {
-    setMembersData(getMembers());
+    const fetchMembers = async () => {
+      try {
+        const res = await api.get('/members');
+        setMembersData(res.data);
+      } catch (err) {
+        console.error('Failed to load members:', err);
+      }
+    };
+    fetchMembers();
   }, []);
 
   const totalMembers = membersData.length;
@@ -126,7 +134,7 @@ export default function MemberPage() {
   const filtered = useMemo(() => {
     let result = membersData.filter((m) =>
       m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.memberId?.toLowerCase().includes(search.toLowerCase())
+      m.member_id?.toLowerCase().includes(search.toLowerCase())
     );
 
     if (sort === 'name') {

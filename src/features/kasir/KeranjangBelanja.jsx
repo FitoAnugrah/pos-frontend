@@ -1,73 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  User, 
-  CreditCard, 
-  Search, 
-  Minus, 
-  Plus, 
-  Banknote,
-  ImageIcon,
-  Trash2
-} from 'lucide-react';
+import { ArrowLeft, User, CreditCard, Search, Minus, Plus, Banknote, ImageIcon, Trash2 } from 'lucide-react';
+import { useCart } from '../../contexts/CartContext';
 
 const KeranjangBelanja = () => {
   const navigate = useNavigate();
 
-  // State untuk data dummy keranjang
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      name: "Minyak Goreng 1L",
-      price: 25000,
-      qty: 2,
-      image: "/images/products/cooking_oil.png"
-    },
-    {
-      id: 2,
-      name: "Beras Premium 5kg",
-      price: 68000,
-      qty: 1,
-      image: "/images/products/premium_rice.png"
-    },
-    {
-      id: 3,
-      name: "Kopi Arabika 250g",
-      price: 45000,
-      qty: 1,
-      image: "/images/products/arabica_coffee.png"
-    }
-  ]);
+  // Ambil state dan fungsi dari Global CartContext
+  const { cart, removeFromCart, updateQuantity, subtotal, total, taxAmount } = useCart();
 
-  // Fungsi hapus item
+  // Fungsi hapus item menggunakan Context
   const handleRemoveItem = (id) => {
-    setCart((prev) => prev.filter(item => item.id !== id));
+    removeFromCart(id);
   };
 
-  // Fungsi untuk update kuantitas
-  const updateQuantity = (id, increment) => {
-    const item = cart.find(i => i.id === id);
-    if (item && item.qty + increment < 1) {
-      if (window.confirm("Hapus barang dari pesanan?")) {
-        handleRemoveItem(id);
-      }
-      return;
-    }
-    
-    setCart((prevCart) =>
-      prevCart.map((item) => {
-        if (item.id === id) {
-          return { ...item, qty: item.qty + increment };
-        }
-        return item;
-      })
-    );
-  };
-
-  // Kalkulasi dinamis
-  const totalTagihan = cart.reduce((total, item) => total + (item.price * item.qty), 0);
-  const totalPoin = Math.floor(totalTagihan / 1000);
+  // Kalkulasi poin
+  const totalPoin = Math.floor(total / 1000);
 
   // Format ke Rupiah
   const formatRupiah = (number) => {
@@ -141,9 +89,17 @@ const KeranjangBelanja = () => {
                     placeholder="Contoh: Budi Santoso"
                     className="w-full bg-slate-100/50 border border-slate-200 rounded-xl py-3 pl-4 pr-10 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
-                    <User className="w-5 h-5 text-slate-400" />
-                  </div>
+                  <p className="text-slate-600 font-medium">Subtotal</p>
+                  <p className="font-bold text-slate-800">{formatRupiah(subtotal)}</p>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <p className="text-slate-500">Pajak / PPN</p>
+                  <p className="font-semibold text-slate-700">{formatRupiah(taxAmount)}</p>
+                </div>
+                <div className="h-px bg-slate-200 my-2 w-full" />
+                <div className="flex justify-between items-center mb-1">
+                  <p className="text-slate-800 font-bold text-base">Total Tagihan</p>
+                  <p className="text-2xl font-black text-blue-700">{formatRupiah(total)}</p>
                 </div>
               </div>
             </div>
@@ -178,10 +134,14 @@ const KeranjangBelanja = () => {
                   <div key={item.id} className="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100 flex items-center gap-3 md:gap-4 transition-all hover:shadow-md">
                     {/* Gambar Produk */}
                     <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200/50 overflow-hidden">
-                      {item.image ? (
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      {item.thumb ? (
+                        <div className={`w-full h-full bg-slate-100 flex items-center justify-center`}>
+                           <img src={`/images/categories/${item.thumb}.png`} alt={item.name} className="w-8 h-8 opacity-50" onError={(e) => {e.target.onerror = null; e.target.src = ''}}/>
+                        </div>
                       ) : (
-                        <ImageIcon className="w-6 h-6 text-slate-300" />
+                        <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                          <ImageIcon className="w-6 h-6 text-slate-300" />
+                        </div>
                       )}
                     </div>
 
@@ -229,7 +189,6 @@ const KeranjangBelanja = () => {
         </div>
 
         {/* Kolom Kanan: Ringkasan Pembayaran */}
-        {/* Posisinya fixed di bawah untuk mobile, tapi relative/sticky untuk desktop */}
         <div className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-100 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.08)] p-5 z-40 md:relative md:border-none md:rounded-3xl md:shadow-lg md:p-6 md:sticky md:top-24 md:flex md:flex-col md:bg-white md:z-10">
           
           {/* Header Ringkasan (Hanya Desktop) */}
@@ -242,7 +201,7 @@ const KeranjangBelanja = () => {
             <div>
               <p className="text-xs font-bold text-slate-500 tracking-wider mb-1">TOTAL TAGIHAN</p>
               <p className="font-black text-3xl text-slate-800 tracking-tighter">
-                {formatRupiah(totalTagihan)}
+                {formatRupiah(total)}
               </p>
             </div>
             <div className="text-right">

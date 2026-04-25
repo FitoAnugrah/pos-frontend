@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { categories } from '../../../mock/stokData'
+const categories = ['Semua', 'Sembako', 'Minuman', 'Snack', 'Kebutuhan Rumah'];
 import ProductCard from '../components/ProductCard'
 import { SearchIcon } from '../../../components/ui/icons'
 

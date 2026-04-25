@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
 import {
   ArrowLeftIcon,
   WarningIcon,
@@ -11,6 +12,66 @@ import {
 
 export default function Notifications() {
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNotifs = async () => {
+      try {
+        const res = await api.get('/notifications');
+        setNotifications(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNotifs();
+  }, []);
+
+  const markAllRead = async () => {
+    try {
+      await api.patch('/notifications/read-all');
+      setNotifications(notifications.map(n => ({ ...n, is_read: true })));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const markRead = async (id) => {
+    try {
+      await api.patch(`/notifications/${id}/read`);
+      setNotifications(notifications.map(n => n.id === id ? { ...n, is_read: true } : n));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getIconAndStyle = (type) => {
+    switch (type) {
+      case 'warning':
+        return {
+          bg: 'bg-[#FDE6D5]', text: 'text-[#D97706]',
+          icon: <WarningIcon className="w-6 h-6" />
+        };
+      case 'success':
+        return {
+          bg: 'bg-[#D1E4F5]', text: 'text-[#0A6CBF]',
+          icon: <CheckCircleSolidIcon className="w-6 h-6" />
+        };
+      case 'insight':
+        return {
+          bg: 'bg-[#0A6CBF]', text: 'text-white',
+          icon: <ChartIcon className="w-5 h-5 text-white" />
+        };
+      case 'info':
+      default:
+        return {
+          bg: 'bg-[#D1E4F5]', text: 'text-[#5C7C9E]',
+          icon: <InfoIcon className="w-6 h-6" />
+        };
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F4F8FB] flex justify-center w-full font-sans">
@@ -24,101 +85,83 @@ export default function Notifications() {
             </button>
             <h1 className="text-[18px] font-extrabold text-[#0A6CBF]">Notifications</h1>
           </div>
-          <button className="text-[14px] font-bold text-[#0A6CBF] hover:opacity-80 transition-opacity">
+          <button 
+            onClick={markAllRead}
+            className="text-[14px] font-bold text-[#0A6CBF] hover:opacity-80 transition-opacity"
+          >
             Clear All
           </button>
         </div>
 
         <div className="px-5 pt-2">
           
-          {/* Section: HARI INI */}
-          <div className="mb-6">
-            <h2 className="text-[12px] font-extrabold text-[#5C7C9E] tracking-wider uppercase mb-3 px-1">HARI INI</h2>
-            <div className="flex flex-col gap-3">
-              
-              {/* Warning Card */}
-              <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex gap-4">
-                <div className="bg-[#FDE6D5] text-[#D97706] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <WarningIcon className="w-6 h-6" />
-                </div>
-                <div className="flex flex-col gap-1 w-full">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-[15px] font-extrabold text-[#11263C]">Peringatan Stok Rendah</h3>
-                    <span className="text-[11px] font-medium text-[#5C7C9E] mt-0.5">14:02</span>
-                  </div>
-                  <p className="text-[13px] font-medium text-[#5C7C9E] leading-relaxed">
-                    Minyak Goreng 1L sisa 2 unit. Segera lakukan restock untuk menghindari kehabisan barang.
-                  </p>
-                </div>
-              </div>
+          {loading ? (
+            <div className="text-center py-8 text-slate-500 font-medium">Memuat notifikasi...</div>
+          ) : notifications.length === 0 ? (
+            <div className="text-center py-8 text-slate-500 font-medium">Belum ada notifikasi.</div>
+          ) : (
+            <div className="mb-6">
+              <div className="flex flex-col gap-3">
+                {notifications.map(notif => {
+                  const style = getIconAndStyle(notif.type);
+                  
+                  if (notif.type === 'insight') {
+                    return (
+                      <div 
+                        key={notif.id}
+                        onClick={() => !notif.is_read && markRead(notif.id)}
+                        className={`bg-[#0A6CBF] rounded-[28px] p-6 shadow-lg shadow-[#0A6CBF]/20 flex flex-col mt-2 cursor-pointer ${notif.is_read ? 'opacity-80' : ''}`}
+                      >
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center">
+                            {style.icon}
+                          </div>
+                          <span className="text-[10px] font-bold text-[#D1E4F5] tracking-widest uppercase">INSIGHT HARIAN</span>
+                        </div>
+                        <h3 className="text-[18px] font-extrabold text-white mb-2 leading-tight">
+                          {notif.title}
+                        </h3>
+                        <p className="text-[13px] font-medium text-[#D1E4F5] leading-relaxed mb-6">
+                          {notif.body}
+                        </p>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); navigate('/laporan'); }}
+                          className="bg-white text-[#0A6CBF] rounded-full py-3 px-6 text-[12px] font-extrabold tracking-wider w-fit hover:bg-[#F4F8FB] transition-colors"
+                        >
+                          LIHAT LAPORAN
+                        </button>
+                      </div>
+                    );
+                  }
 
-              {/* Success Card */}
-              <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex gap-4">
-                <div className="bg-[#D1E4F5] text-[#0A6CBF] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <CheckCircleSolidIcon className="w-6 h-6" />
-                </div>
-                <div className="flex flex-col gap-1 w-full">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-[15px] font-extrabold text-[#11263C]">Transaksi Berhasil</h3>
-                    <span className="text-[11px] font-medium text-[#5C7C9E] mt-0.5">10:30</span>
-                  </div>
-                  <p className="text-[13px] font-medium text-[#5C7C9E] leading-relaxed">
-                    Pembayaran #TRX-9981 selesai diproses. Total Rp 450.000 telah masuk ke saldo.
-                  </p>
-                </div>
+                  return (
+                    <div 
+                      key={notif.id}
+                      onClick={() => !notif.is_read && markRead(notif.id)}
+                      className={`bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex gap-4 cursor-pointer hover:bg-slate-50 transition-colors ${notif.is_read ? 'opacity-60' : ''}`}
+                    >
+                      <div className={`${style.bg} ${style.text} w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0`}>
+                        {style.icon}
+                      </div>
+                      <div className="flex flex-col gap-1 w-full">
+                        <div className="flex justify-between items-start">
+                          <h3 className={`text-[15px] font-extrabold ${notif.is_read ? 'text-slate-500' : 'text-[#11263C]'}`}>
+                            {notif.title}
+                          </h3>
+                          <span className="text-[11px] font-medium text-[#5C7C9E] mt-0.5">
+                            {new Date(notif.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}
+                          </span>
+                        </div>
+                        <p className="text-[13px] font-medium text-[#5C7C9E] leading-relaxed">
+                          {notif.body}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-
             </div>
-          </div>
-
-          {/* Section: KEMARIN */}
-          <div className="mb-6">
-            <h2 className="text-[12px] font-extrabold text-[#5C7C9E] tracking-wider uppercase mb-3 px-1">KEMARIN</h2>
-            <div className="flex flex-col gap-3">
-              
-              {/* Info Card */}
-              <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex gap-4">
-                <div className="bg-[#D1E4F5] text-[#5C7C9E] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <InfoIcon className="w-6 h-6" />
-                </div>
-                <div className="flex flex-col gap-1 w-full">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-[15px] font-extrabold text-[#11263C]">Pembaruan Sistem</h3>
-                    <span className="text-[11px] font-medium text-[#5C7C9E] mt-0.5">Yesterday</span>
-                  </div>
-                  <p className="text-[13px] font-medium text-[#5C7C9E] leading-relaxed">
-                    Versi 2.1 tersedia dengan fitur integrasi e-wallet baru. Perbarui aplikasi sekarang.
-                  </p>
-                </div>
-              </div>
-
-              {/* Insight Card */}
-              <div className="bg-[#0A6CBF] rounded-[28px] p-6 shadow-lg shadow-[#0A6CBF]/20 flex flex-col mt-2">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center">
-                    <ChartIcon className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-[10px] font-bold text-[#D1E4F5] tracking-widest uppercase">INSIGHT HARIAN</span>
-                </div>
-                
-                <h3 className="text-[18px] font-extrabold text-white mb-2 leading-tight">
-                  Performa Penjualan Naik 12%
-                </h3>
-                
-                <p className="text-[13px] font-medium text-[#D1E4F5] leading-relaxed mb-6">
-                  Analisis data menunjukkan peningkatan transaksi di kategori sembako selama 24 jam terakhir.
-                </p>
-
-                <button 
-                  onClick={() => navigate('/laporan')}
-                  className="bg-white text-[#0A6CBF] rounded-full py-3 px-6 text-[12px] font-extrabold tracking-wider w-fit hover:bg-[#F4F8FB] transition-colors"
-                >
-                  LIHAT LAPORAN
-                </button>
-              </div>
-
-            </div>
-          </div>
+          )}
 
         </div>
       </div>
