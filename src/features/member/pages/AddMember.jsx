@@ -90,14 +90,7 @@ export default function AddMember() {
           Kembali
         </button>
         <h1 className="text-lg font-bold text-slate-800">Tambah Member Baru</h1>
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm active:scale-95 ${isSaving ? 'bg-slate-400 text-white cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
-        >
-          <UserPlusIcon className="w-4 h-4" />
-          {isSaving ? 'Menyimpan...' : 'Simpan Member'}
-        </button>
+        <div className="w-4 h-4" /> {/* Spacer to align title center */}
       </div>
 
       {/* ── Mobile Header ── */}
@@ -215,22 +208,18 @@ export default function AddMember() {
               );
             })}
           </div>
+          <div className="mt-8 mb-4">
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className={`w-full active:scale-[0.98] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-md text-sm ${isSaving ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/30'}`}
+            >
+              <UserPlusIcon className="w-5 h-5" />
+              {isSaving ? 'Menyimpan...' : 'Simpan Member'}
+            </button>
+          </div>
         </div>
 
-      </div>
-
-      {/* ── Mobile Fixed Save Button ── */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 flex justify-center pointer-events-none">
-        <div className="w-full max-w-[440px] px-4 py-4 pointer-events-auto bg-gradient-to-t from-slate-50 via-slate-50/95 to-transparent">
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className={`w-full active:scale-[0.98] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg text-sm ${isSaving ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/30'}`}
-          >
-            <UserPlusIcon className="w-5 h-5" />
-            {isSaving ? 'Menyimpan...' : 'Simpan Member'}
-          </button>
-        </div>
       </div>
 
     </div>

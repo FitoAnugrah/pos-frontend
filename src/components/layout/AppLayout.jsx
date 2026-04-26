@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import BottomNav from './BottomNav';
@@ -50,6 +51,15 @@ export default function AppLayout({ children }) {
   const navigate = useNavigate();
   const activeTab = getActiveTab(location.pathname);
   const subPage = isSubPage(location.pathname);
+  const [user, setUser] = useState({ name: 'Memuat...', role: '' });
+
+  useEffect(() => {
+    if (!location.pathname.startsWith('/login')) {
+      api.get('/auth/me')
+        .then(res => setUser(res.data))
+        .catch(err => console.error('Failed to load user', err));
+    }
+  }, [location.pathname]);
 
   const handleTabChange = (nextTab) => {
     navigate(tabToPath(nextTab));
@@ -63,7 +73,7 @@ export default function AppLayout({ children }) {
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 font-sans w-full justify-center md:justify-start">
       {/* Desktop Sidebar — hidden on sub-pages on mobile */}
-      <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
+      <Sidebar activeTab={activeTab} onTabChange={handleTabChange} user={user} />
 
       {/* Main Content Area */}
       <div className="flex-1 w-full max-w-[440px] md:max-w-none bg-[#F4F8FA] md:bg-transparent overflow-y-auto overflow-x-hidden flex flex-col shadow-2xl md:shadow-none relative">
@@ -71,7 +81,7 @@ export default function AppLayout({ children }) {
         {/* Mobile App Header — hidden on sub-pages (they have their own) */}
         {!subPage && (
           <div className="md:hidden">
-            <Header onProfileClick={() => handleTabChange('profil')} />
+            <Header onProfileClick={() => handleTabChange('profil')} user={user} />
           </div>
         )}
         

@@ -114,16 +114,7 @@ export default function TambahStokBaruPage({ form, onBack, onFieldChange, onPhot
               </svg>
               Tambah Stok Baru
             </button>
-            
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!canSave}
-              className="bg-blue-600 text-white rounded-xl py-2.5 px-6 font-semibold shadow-sm hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
-            >
-              <CheckIcon className="h-4 w-4" />
-              Save Stok
-            </button>
+            <div className="w-8" />
           </div>
 
           <h1 className="text-3xl font-semibold text-slate-800 mb-8 hidden md:block">Tambah Stok Baru</h1>
@@ -264,6 +255,17 @@ export default function TambahStokBaruPage({ form, onBack, onFieldChange, onPhot
                   type="number"
                 />
               </div>
+            </div>
+
+            <div className="pt-4 mt-8 border-t border-slate-100">
+              <button
+                type="submit"
+                disabled={!canSave}
+                className="w-full bg-blue-600 text-white rounded-2xl py-4 font-bold shadow-md hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none mt-4 text-sm"
+              >
+                <CheckIcon className="h-5 w-5" />
+                Simpan Produk
+              </button>
             </div>
           </form>
 

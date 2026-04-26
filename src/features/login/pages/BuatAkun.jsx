@@ -20,15 +20,37 @@ const BuatAkun = ({ onNavigate, onSuccess }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.agree) {
       alert('Anda harus menyetujui Ketentuan Layanan dan Kebijakan Privasi.');
       return;
     }
-    // TODO: Implementasi logika registrasi
-    alert(`Mendaftarkan bisnis: ${formData.bisnis}`);
-    if (onSuccess) onSuccess(formData.email);
+    
+    setIsSubmitting(true);
+    try {
+      // Import api at the top if not there
+      const api = (await import('../../../utils/api')).default;
+      
+      const res = await api.post('/auth/register', {
+        name: formData.nama,
+        email: formData.email,
+        password: formData.password
+      });
+      
+      // Store token automatically
+      if (res.data && res.data.token) {
+        localStorage.setItem('pos_token', res.data.token);
+      }
+      
+      if (onSuccess) onSuccess(formData.email);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal mendaftar. Silakan periksa kembali data Anda.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -207,7 +229,7 @@ const BuatAkun = ({ onNavigate, onSuccess }) => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••••••" 
-                  className="w-full bg-slate-50 rounded-xl pl-11 pr-11 py-3 text-sm font-semibold outline-none text-slate-800 placeholder:text-slate-400 placeholder:font-medium focus:ring-2 focus:ring-blue-500/20 transition-all tracking-widest border border-slate-200 focus:border-blue-500" 
+                  className={`w-full bg-slate-50 rounded-xl pl-11 pr-11 py-3 text-sm font-semibold outline-none text-slate-800 placeholder:text-slate-400 placeholder:font-medium focus:ring-2 focus:ring-blue-500/20 transition-all border border-slate-200 focus:border-blue-500 ${!showPassword ? 'tracking-widest' : ''}`} 
                   required
                 />
                 <button 

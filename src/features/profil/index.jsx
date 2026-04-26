@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
 import profilText from './text';
 import EditInformasiAkun from './pages/EditInformasiAkun';
 import AturKeamanan from './pages/AturKeamanan';
@@ -18,16 +19,45 @@ const Profil = ({ activeTab, onTabChange }) => {
   const navigate = useNavigate();
   
   const [profileData, setProfileData] = useState({
-    namaLengkap: profilText.sections.informasiAkun.items.namaLengkap.value,
-    email: profilText.sections.informasiAkun.items.email.value,
-    noTelepon: profilText.sections.informasiAkun.items.noTelepon.value,
-    avatarUrl: profilText.profile.avatarUrl,
-    role: profilText.profile.role,
+    namaLengkap: 'Memuat...',
+    email: 'Memuat...',
+    noTelepon: 'Memuat...',
+    avatarUrl: null,
+    role: 'Memuat...',
   });
 
-  const handleSaveProfile = (newData) => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get('/auth/me');
+        setProfileData({
+          namaLengkap: res.data.name,
+          email: res.data.email,
+          noTelepon: res.data.phone || '-', // Defaulting to - if backend doesn't have phone
+          avatarUrl: res.data.avatar_url || profilText.profile.avatarUrl,
+          role: res.data.role === 'admin' ? 'Pemilik Toko' : 'Kasir',
+        });
+      } catch (err) {
+        console.error('Failed to fetch profile', err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleSaveProfile = async (newData) => {
+    // In a full implementation we would put to backend: await api.put('/auth/me', newData)
     setProfileData(newData);
     setIsEditing(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (e) {
+      // Ignore if token already expired
+    }
+    localStorage.removeItem('pos_token');
+    navigate('/login');
   };
 
   if (isBahasaOpen) {
@@ -256,7 +286,7 @@ const Profil = ({ activeTab, onTabChange }) => {
               {/* Logout Button */}
               <div className="mt-8 mb-6 md:mt-10 md:mb-0">
                 <button 
-                  onClick={() => navigate('/login')}
+                  onClick={handleLogout}
                   className="w-full bg-red-50 text-red-600 font-semibold py-3.5 md:py-4 rounded-xl border border-red-200 transition-all shadow-sm hover:bg-red-100 active:scale-[0.98] text-sm md:text-base"
                 >
                   {profilText.logout}

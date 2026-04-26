@@ -204,14 +204,7 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
               <ArrowLeftIcon className="h-6 w-6 text-blue-600" />
               <span className="text-2xl font-bold">Edit Produk</span>
             </button>
-
-            <button 
-              type="submit" 
-              disabled={!canSave}
-              className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 hover:shadow-lg active:scale-95 transition-all disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
-            >
-              Simpan
-            </button>
+            <div className="w-8" />
           </header>
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-6 mb-8">
@@ -320,11 +313,18 @@ export default function EditProdukPage({ product, form, onBack, onFieldChange, o
             </div>
           </FormCard>
 
-          <div className="mt-10 flex justify-center">
+          <div className="mt-10 flex flex-col items-center gap-4">
+            <button 
+              type="submit" 
+              disabled={!canSave}
+              className="w-full bg-blue-600 text-white px-8 py-4 rounded-xl font-bold shadow-md hover:bg-blue-700 hover:shadow-lg active:scale-95 transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none text-sm"
+            >
+              Simpan Perubahan
+            </button>
             <button 
               type="button" 
               onClick={() => setIsDeleteDialogOpen(true)}
-              className="flex items-center gap-2 px-8 py-4 rounded-xl font-bold border border-red-500 bg-red-50 text-red-600 shadow-sm hover:bg-red-100 hover:shadow-md transition-all active:scale-95"
+              className="w-full flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold border border-red-500 bg-red-50 text-red-600 shadow-sm hover:bg-red-100 hover:shadow-md transition-all active:scale-95"
             >
               <TrashIcon className="h-5 w-5" />
               Hapus Produk

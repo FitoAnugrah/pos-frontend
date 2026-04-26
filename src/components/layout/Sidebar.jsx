@@ -19,7 +19,7 @@ const NavIcon = ({ name, active }) => {
   }
 }
 
-export default function Sidebar({ activeTab = 'terminal', onTabChange }) {
+export default function Sidebar({ activeTab = 'terminal', onTabChange, user }) {
   return (
     <aside className="hidden md:flex flex-col w-72 h-screen bg-white border-r border-slate-100 flex-shrink-0 p-6 pt-8 z-30">
       {/* Brand / Logo Area */}
@@ -28,12 +28,12 @@ export default function Sidebar({ activeTab = 'terminal', onTabChange }) {
         className="flex items-center gap-3 text-left transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] mb-10"
       >
         <div className="flex-shrink-0 h-10 w-10 bg-gradient-to-tr from-slate-800 to-slate-700 rounded-xl shadow-sm flex items-center justify-center text-white font-bold text-lg">
-          {appText.brand.charAt(0)}
+          {user?.name ? user.name.charAt(0).toUpperCase() : appText.brand.charAt(0)}
         </div>
         <div>
-          <h2 className="text-slate-800 font-bold text-sm leading-tight">{appText.brand}</h2>
+          <h2 className="text-slate-800 font-bold text-sm leading-tight truncate w-32">{user?.name || appText.brand}</h2>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{appText.brandSub}</span>
+            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{user?.role === 'admin' ? 'Pemilik Toko' : (user?.role || appText.brandSub)}</span>
           </div>
         </div>
       </button>

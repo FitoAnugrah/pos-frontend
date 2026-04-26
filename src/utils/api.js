@@ -31,7 +31,9 @@ api.interceptors.response.use(
       // Clear token and redirect to login if needed
       localStorage.removeItem('pos_token');
       localStorage.removeItem('pos_user');
-      // window.location.href = '/login'; // Optional: Redirect to login
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
