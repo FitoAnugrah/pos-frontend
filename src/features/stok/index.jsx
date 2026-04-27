@@ -117,6 +117,23 @@ function buildRoutedProduct(routeProduct) {
   }
 }
 
+function mapApiProductToFrontend(apiProduct) {
+  const thumb = apiProduct.thumb || routeThumbMap[apiProduct.category] || 'rice';
+  return {
+    ...apiProduct,
+    minStock: apiProduct.min_stock || 0,
+    capitalPrice: apiProduct.capital_price || 0,
+    unitsPerSale: apiProduct.sold || 0,
+    revenue: formatCompactRevenue(apiProduct.revenue || 0),
+    revenueTarget: 'Target 10%',
+    lastMonthGrowth: 0,
+    lastMonthLabel: 'Bulan ini',
+    badge: apiProduct.badge || 'New',
+    thumb: thumb,
+    accent: routeAccentMap[thumb] ?? routeAccentMap.rice,
+  };
+}
+
 export default function StokFeature({ onMainTabChange }) {
   const location = useLocation()
   const navigate = useNavigate()
@@ -149,7 +166,7 @@ export default function StokFeature({ onMainTabChange }) {
     const fetchProducts = async () => {
       try {
         const res = await api.get('/products');
-        setProducts(res.data);
+        setProducts((res.data || []).map(mapApiProductToFrontend));
       } catch (err) {
         console.error('Error fetching products', err);
       }
@@ -334,7 +351,8 @@ export default function StokFeature({ onMainTabChange }) {
         thumb: persistedValues.photo || routeThumbMap[persistedValues.category] || 'rice'
       };
       const res = await api.put(`/products/${selectedProductId}`, payload);
-      setProducts(currentProducts => currentProducts.map(p => p.id === selectedProductId ? res.data : p));
+      const mapped = mapApiProductToFrontend(res.data);
+      setProducts(currentProducts => currentProducts.map(p => p.id === selectedProductId ? mapped : p));
       setEditForm(null)
       setPage('detail')
     } catch (err) {
@@ -375,7 +393,8 @@ export default function StokFeature({ onMainTabChange }) {
       const res = await api.patch(`/products/${selectedProductId}/stock`, {
         type, amount, reason: `Penyesuaian stok manual (${mode})`
       });
-      setProducts(currentProducts => currentProducts.map(p => p.id === selectedProductId ? res.data : p));
+      const mapped = mapApiProductToFrontend(res.data);
+      setProducts(currentProducts => currentProducts.map(p => p.id === selectedProductId ? mapped : p));
       setPage('detail')
     } catch (err) {
       alert(err.response?.data?.message || 'Gagal mengubah stok');
@@ -396,7 +415,8 @@ export default function StokFeature({ onMainTabChange }) {
       };
       
       const res = await api.post('/products', payload);
-      setProducts(currentProducts => [res.data, ...currentProducts]);
+      const mapped = mapApiProductToFrontend(res.data);
+      setProducts(currentProducts => [mapped, ...currentProducts]);
       setSelectedProductId(res.data.id);
       setCreateForm(initialCreateForm);
       setPage('detail');
