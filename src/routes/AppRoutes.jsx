@@ -25,6 +25,14 @@ import LoginFeature from '../features/login';
 import PlaceholderPage from '../components/layout/PlaceholderPage';
 import HalamanPengaturan from '../features/pengaturan/HalamanPengaturan';
 
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('pos_token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
 export default function AppRoutes() {
   const navigate = useNavigate();
 
@@ -46,28 +54,28 @@ export default function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<Dashboard onQuickAccess={handleQuickAccess} />} />
-      <Route path="/scan" element={<ScanBarang />} />
-      <Route path="/input-sku" element={<InputSKUManual />} />
-      <Route path="/keranjang" element={<KeranjangBelanja />} />
-      <Route path="/pembayaran" element={<HalamanPembayaran />} />
-      <Route path="/struk" element={<StrukDigital />} />
-      <Route path="/stok" element={<StokFeature onMainTabChange={handleMainTabChange} />} />
-      <Route path="/stok/manual-entry" element={<ManualEntry />} />
-      <Route path="/riwayat" element={<RiwayatTransaksi onMainTabChange={handleMainTabChange} />} />
-      <Route path="/riwayat/:id" element={<DetailTransaksi />} />
-      <Route path="/notifikasi" element={<Notifications />} />
-      <Route path="/aktivitas" element={<AktivitasTerkini />} />
-      <Route path="/member" element={<MemberPage />} />
-      <Route path="/member/add" element={<AddMember />} />
-      <Route path="/member/:id" element={<MemberDetail />} />
-      <Route path="/member/:id/edit" element={<EditMember />} />
-      <Route path="/member/:id/transactions" element={<MemberTransactions />} />
-      <Route path="/laporan" element={<LaporanPenjualan />} />
-      <Route path="/produk-terlaris" element={<ProdukTerlaris />} />
-      <Route path="/profil" element={<ProfilFeature onTabChange={handleMainTabChange} />} />
       <Route path="/login" element={<LoginFeature onLoginSuccess={() => navigate('/')} />} />
-      <Route path="/pengaturan" element={<HalamanPengaturan />} />
+      <Route path="/" element={<ProtectedRoute><Dashboard onQuickAccess={handleQuickAccess} /></ProtectedRoute>} />
+      <Route path="/scan" element={<ProtectedRoute><ScanBarang /></ProtectedRoute>} />
+      <Route path="/input-sku" element={<ProtectedRoute><InputSKUManual /></ProtectedRoute>} />
+      <Route path="/keranjang" element={<ProtectedRoute><KeranjangBelanja /></ProtectedRoute>} />
+      <Route path="/pembayaran" element={<ProtectedRoute><HalamanPembayaran /></ProtectedRoute>} />
+      <Route path="/struk" element={<ProtectedRoute><StrukDigital /></ProtectedRoute>} />
+      <Route path="/stok" element={<ProtectedRoute><StokFeature onMainTabChange={handleMainTabChange} /></ProtectedRoute>} />
+      <Route path="/stok/manual-entry" element={<ProtectedRoute><ManualEntry /></ProtectedRoute>} />
+      <Route path="/riwayat" element={<ProtectedRoute><RiwayatTransaksi onMainTabChange={handleMainTabChange} /></ProtectedRoute>} />
+      <Route path="/riwayat/:id" element={<ProtectedRoute><DetailTransaksi /></ProtectedRoute>} />
+      <Route path="/notifikasi" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+      <Route path="/aktivitas" element={<ProtectedRoute><AktivitasTerkini /></ProtectedRoute>} />
+      <Route path="/member" element={<ProtectedRoute><MemberPage /></ProtectedRoute>} />
+      <Route path="/member/add" element={<ProtectedRoute><AddMember /></ProtectedRoute>} />
+      <Route path="/member/:id" element={<ProtectedRoute><MemberDetail /></ProtectedRoute>} />
+      <Route path="/member/:id/edit" element={<ProtectedRoute><EditMember /></ProtectedRoute>} />
+      <Route path="/member/:id/transactions" element={<ProtectedRoute><MemberTransactions /></ProtectedRoute>} />
+      <Route path="/laporan" element={<ProtectedRoute><LaporanPenjualan /></ProtectedRoute>} />
+      <Route path="/produk-terlaris" element={<ProtectedRoute><ProdukTerlaris /></ProtectedRoute>} />
+      <Route path="/profil" element={<ProtectedRoute><ProfilFeature onTabChange={handleMainTabChange} /></ProtectedRoute>} />
+      <Route path="/pengaturan" element={<ProtectedRoute><HalamanPengaturan /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
