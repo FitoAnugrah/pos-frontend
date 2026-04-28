@@ -64,7 +64,7 @@ export default function MemberDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F0F5F9] font-sans">
+    <div className="min-h-screen bg-slate-50 font-sans">
 
       {/* ── Desktop Top Bar ── */}
       <div className="hidden md:flex items-center justify-between px-8 py-5 bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-20">
@@ -94,7 +94,7 @@ export default function MemberDetail() {
       </div>
 
       {/* ── Mobile Header ── */}
-      <div className="md:hidden flex items-center justify-between px-5 py-4 bg-[#F0F5F9] sticky top-0 z-20 border-b border-slate-200/50">
+      <div className="md:hidden flex items-center justify-between px-5 py-4 bg-slate-50 sticky top-0 z-20 border-b border-slate-200/50">
         <button
           onClick={() => navigate(-1)}
           className="text-blue-600 p-2 rounded-full hover:bg-blue-50 transition-colors -ml-2"
@@ -121,7 +121,7 @@ export default function MemberDetail() {
             <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-slate-100">
               <div className="flex items-center gap-4">
                 <div className="relative flex-shrink-0">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden bg-[#C8E0F4] flex items-center justify-center border-2 border-white shadow-sm">
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden bg-blue-100 flex items-center justify-center border-2 border-white shadow-sm">
                     {member.avatar_url ? (
                       <img src={member.avatar_url} alt={member.name} className="w-full h-full object-cover" />
                     ) : (

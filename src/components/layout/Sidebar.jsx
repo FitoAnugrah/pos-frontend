@@ -1,6 +1,7 @@
 import React from 'react';
 import appText from '../../constants/appText';
 import { IconTerminal, IconRiwayat, IconStok, IconPengaturan } from '../ui/icons';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 // Helper component for nav icons
 const NavIcon = ({ name, active }) => {
@@ -20,6 +21,7 @@ const NavIcon = ({ name, active }) => {
 }
 
 export default function Sidebar({ activeTab = 'terminal', onTabChange, user }) {
+  const { t } = useLanguage();
   return (
     <aside className="hidden md:flex flex-col w-72 h-screen bg-white border-r border-slate-100 flex-shrink-0 p-6 pt-8 z-30">
       {/* Brand / Logo Area */}
@@ -33,14 +35,14 @@ export default function Sidebar({ activeTab = 'terminal', onTabChange, user }) {
         <div>
           <h2 className="text-slate-800 font-bold text-sm leading-tight truncate w-32">{user?.name || appText.brand}</h2>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{user?.role === 'admin' ? 'Pemilik Toko' : (user?.role || appText.brandSub)}</span>
+            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{user?.role === 'admin' ? t('sidebar.owner') : (user?.role || appText.brandSub)}</span>
           </div>
         </div>
       </button>
 
       {/* Navigation Menu */}
       <nav className="flex flex-col gap-2 flex-grow">
-        <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-2 pl-3">Menu Utama</p>
+        <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-2 pl-3">{t('sidebar.mainMenu')}</p>
         
         {appText.bottomNav.map((item) => {
           const isActive = activeTab === item.id;
@@ -60,7 +62,7 @@ export default function Sidebar({ activeTab = 'terminal', onTabChange, user }) {
                   isActive ? 'text-blue-600' : 'text-slate-500'
                 }`}
               >
-                {item.label}
+                {t(`dashboard.${item.id}`)}
               </span>
             </button>
           );
@@ -71,7 +73,7 @@ export default function Sidebar({ activeTab = 'terminal', onTabChange, user }) {
       <div className="mt-auto">
         <button onClick={() => onTabChange && onTabChange('profil')} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors duration-200 border border-transparent hover:border-slate-100">
           <IconPengaturan className="w-5 h-5 text-slate-400" />
-          <span className="text-sm font-semibold text-slate-600">Pengaturan Akun</span>
+          <span className="text-sm font-semibold text-slate-600">{t('sidebar.accountSettings')}</span>
         </button>
       </div>
     </aside>

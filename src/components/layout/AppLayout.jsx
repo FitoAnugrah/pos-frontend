@@ -76,7 +76,7 @@ export default function AppLayout({ children }) {
       <Sidebar activeTab={activeTab} onTabChange={handleTabChange} user={user} />
 
       {/* Main Content Area */}
-      <div className="flex-1 w-full max-w-[440px] md:max-w-none bg-[#F4F8FA] md:bg-transparent overflow-y-auto overflow-x-hidden flex flex-col shadow-2xl md:shadow-none relative">
+      <div className="flex-1 w-full max-w-[440px] md:max-w-none bg-slate-50 md:bg-transparent overflow-y-auto overflow-x-hidden flex flex-col shadow-2xl md:shadow-none relative">
         
         {/* Mobile App Header — hidden on sub-pages (they have their own) */}
         {!subPage && (

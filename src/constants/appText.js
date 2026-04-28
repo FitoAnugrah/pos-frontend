@@ -19,15 +19,15 @@ const dashboardText = {
     },
   },
 
-  quickAccess: {
-    title: 'QUICK ACCESS',
-    items: [
-      { id: 'member', label: 'Member' },
-      { id: 'stok', label: 'Stok' },
-      { id: 'laporan', label: 'Laporan' },
-      { id: 'panel', label: 'Panel' },
-    ],
-  },
+    quickAccess: {
+      title: 'QUICK ACCESS',
+      items: [
+        { id: 'member', label: 'Member' },
+        { id: 'stok', label: 'Stok' },
+        { id: 'laporan', label: 'Laporan' },
+        { id: 'pengaturan', label: 'Pengaturan' },
+      ],
+    },
 
   activity: {
     title: 'AKTIVITAS TERKINI',

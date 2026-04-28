@@ -68,11 +68,11 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
 
   const getTrxIcon = (type) => {
     switch(type) {
-      case 'bag': return <BagIcon className="w-5 h-5 text-[#0A6CBF]" />;
-      case 'receipt': return <ReceiptSheetIcon className="w-5 h-5 text-[#0A6CBF]" />;
-      case 'qr': return <QrCodeIcon className="w-5 h-5 text-[#0A6CBF]" />;
+      case 'bag': return <BagIcon className="w-5 h-5 text-blue-600" />;
+      case 'receipt': return <ReceiptSheetIcon className="w-5 h-5 text-blue-600" />;
+      case 'qr': return <QrCodeIcon className="w-5 h-5 text-blue-600" />;
       case 'refund': return <RefundIcon className="w-5 h-5 text-[#EF4444]" />;
-      default: return <BagIcon className="w-5 h-5 text-[#0A6CBF]" />;
+      default: return <BagIcon className="w-5 h-5 text-blue-600" />;
     }
   };
 
@@ -86,25 +86,25 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto overflow-x-hidden relative flex flex-col w-full bg-[#F4F8FB]">
+    <div className="flex-1 overflow-y-auto overflow-x-hidden relative flex flex-col w-full bg-slate-50">
         <div className="w-full max-w-[440px] md:max-w-3xl lg:max-w-4xl mx-auto flex flex-col pb-24 md:pb-10">
           
           {/* Top Bar (Mobile/Desktop) */}
-          <div className="flex items-center justify-between px-6 pt-8 pb-4 bg-[#F4F8FB] sticky top-0 z-20">
-            <div className="flex items-center gap-2 text-[#0A6CBF]">
+          <div className="flex items-center justify-between px-6 pt-8 pb-4 bg-slate-50 sticky top-0 z-20">
+            <div className="flex items-center gap-2 text-blue-600">
               <VaultLogoIcon className="w-6 h-6" />
               <span className="font-extrabold text-[15px] tracking-tight">The Digital Vault</span>
             </div>
-            <div className="flex items-center gap-4 text-[#5C7C9E]">
+            <div className="flex items-center gap-4 text-slate-500">
               <button 
                 onClick={() => navigate('/notifikasi')}
-                className="hover:text-[#0A6CBF] transition-colors"
+                className="hover:text-blue-600 transition-colors"
               >
                 <BellIcon className="w-5 h-5" />
               </button>
               <div 
                 onClick={() => navigate('/profil')}
-                className="w-8 h-8 rounded-full overflow-hidden bg-[#D1E4F5] border border-white shadow-sm cursor-pointer hover:ring-2 hover:ring-[#0A6CBF] transition-all"
+                className="w-8 h-8 rounded-full overflow-hidden bg-blue-100 border border-white shadow-sm cursor-pointer hover:ring-2 hover:ring-[#0A6CBF] transition-all"
               >
                 <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" className="w-full h-full object-cover" />
               </div>
@@ -112,17 +112,17 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
           </div>
 
           <div className="px-5">
-            <h1 className="text-2xl md:text-[26px] font-extrabold text-[#11263C] mb-5">Riwayat Transaksi</h1>
+            <h1 className="text-2xl md:text-[26px] font-extrabold text-slate-800 mb-5">Riwayat Transaksi</h1>
 
             {/* Search Bar */}
-            <div className="flex items-center gap-3 w-full bg-[#E3EAF2] rounded-[14px] px-4 py-3 mb-4 text-[#5C7C9E]">
+            <div className="flex items-center gap-3 w-full bg-slate-100 rounded-[14px] px-4 py-3 mb-4 text-slate-500">
               <SearchIcon className="w-5 h-5" />
               <input
                 type="text"
                 placeholder="Cari ID transaksi atau pelanggan..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent outline-none text-[13px] font-medium placeholder:text-[#5C7C9E]/70"
+                className="w-full bg-transparent outline-none text-[13px] font-medium placeholder:text-slate-500/70"
               />
             </div>
 
@@ -137,8 +137,8 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
                   }}
                   className={`whitespace-nowrap px-4 py-2.5 rounded-full text-[13px] font-bold transition-all shadow-sm ${
                     filter === f 
-                      ? 'bg-[#0A6CBF] text-white' 
-                      : 'bg-[#E3EAF2] text-[#5C7C9E] hover:bg-[#D1E4F5]'
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-slate-100 text-slate-500 hover:bg-blue-100'
                   }`}
                 >
                   {f}
@@ -148,7 +148,7 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
 
             <div className="flex justify-between items-center mb-4 px-1">
               <span className="text-[10px] font-bold text-[#8FA5B8] uppercase tracking-wider">SEMUA TRANSAKSI</span>
-              <span className="text-[12px] font-bold text-[#0A6CBF]">{filteredData.length} Transaksi</span>
+              <span className="text-[12px] font-bold text-blue-600">{filteredData.length} Transaksi</span>
             </div>
 
             {/* Transaction List */}
@@ -162,16 +162,16 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
                     className="bg-white rounded-3xl p-5 flex items-center justify-between shadow-sm border border-slate-50 hover:shadow-md transition-shadow cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm ${isRefund ? 'bg-[#FEF2F2]' : 'bg-[#F0F5F9]'}`}>
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm ${isRefund ? 'bg-red-50' : 'bg-slate-50'}`}>
                         {getTrxIcon('bag')}
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-extrabold text-[15px] text-[#11263C]">{trx.invoice_number}</span>
+                        <span className="font-extrabold text-[15px] text-slate-800">{trx.invoice_number}</span>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-[12px] font-bold text-[#8FA5B8]">
                             {new Date(trx.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
                           </span>
-                          <span className="w-1 h-1 rounded-full bg-[#D1E4F5]"></span>
+                          <span className="w-1 h-1 rounded-full bg-blue-100"></span>
                           <span className="text-[12px] font-bold text-[#8FA5B8]">
                             {new Date(trx.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                           </span>
@@ -179,14 +179,14 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
                       </div>
                     </div>
                     <div className="flex flex-col items-end">
-                      <span className={`font-black text-[15px] ${isRefund ? 'text-[#EF4444]' : 'text-[#11263C]'}`}>
+                      <span className={`font-black text-[15px] ${isRefund ? 'text-[#EF4444]' : 'text-slate-800'}`}>
                         {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(trx.total)}
                       </span>
                       <div className="flex items-center gap-1.5 mt-1.5">
                         <div className="text-[#8FA5B8]">
                           {getPaymentIcon(trx.payment_method === 'Tunai' ? 'wallet' : 'qr')}
                         </div>
-                        <span className="text-[11px] font-extrabold text-[#5C7C9E] uppercase tracking-wider">
+                        <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
                           {trx.payment_method}
                         </span>
                       </div>
@@ -207,7 +207,7 @@ export default function RiwayatTransaksi({ onMainTabChange }) {
               <div className="mt-6 mb-8 flex justify-center">
                 <button 
                   onClick={handleLoadMore}
-                  className="bg-[#E3EAF2] hover:bg-[#D1E4F5] text-[#0A6CBF] px-6 py-3.5 rounded-full text-[13px] font-bold transition-colors flex items-center justify-center gap-2 w-[220px]"
+                  className="bg-slate-100 hover:bg-blue-100 text-blue-600 px-6 py-3.5 rounded-full text-[13px] font-bold transition-colors flex items-center justify-center gap-2 w-[220px]"
                 >
                   Muat Lebih Banyak
                   <ChevronDownIcon className="w-4 h-4" />

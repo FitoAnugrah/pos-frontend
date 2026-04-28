@@ -60,26 +60,26 @@ export default function AktivitasTerkini() {
 
   const getIcon = (type) => {
     switch(type) {
-      case 'warning': return <div className="bg-[#FDE6D5] text-[#D97706] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><WarningIcon className="w-6 h-6" /></div>;
-      case 'member': return <div className="bg-[#D1E4F5] text-[#0A6CBF] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><UserIcon className="w-6 h-6" /></div>;
-      case 'receipt': return <div className="bg-[#D1E4F5] text-[#0A6CBF] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><ReceiptIcon className="w-6 h-6" /></div>;
-      case 'box': return <div className="bg-[#D1E4F5] text-[#0A6CBF] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><BoxIcon className="w-6 h-6" /></div>;
-      case 'promo': return <div className="bg-[#FDE6D5] text-[#D97706] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><PromoIcon className="w-6 h-6" /></div>;
-      case 'refund': return <div className="bg-[#FEF2F2] text-[#EF4444] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><RefundIcon className="w-6 h-6" /></div>;
-      default: return <div className="bg-[#D1E4F5] text-[#0A6CBF] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><UserIcon className="w-6 h-6" /></div>;
+      case 'warning': return <div className="bg-orange-100 text-orange-600 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><WarningIcon className="w-6 h-6" /></div>;
+      case 'member': return <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><UserIcon className="w-6 h-6" /></div>;
+      case 'receipt': return <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><ReceiptIcon className="w-6 h-6" /></div>;
+      case 'box': return <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><BoxIcon className="w-6 h-6" /></div>;
+      case 'promo': return <div className="bg-orange-100 text-orange-600 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><PromoIcon className="w-6 h-6" /></div>;
+      case 'refund': return <div className="bg-red-50 text-red-500 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><RefundIcon className="w-6 h-6" /></div>;
+      default: return <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"><UserIcon className="w-6 h-6" /></div>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F8FB] flex justify-center w-full font-sans">
-      <div className="w-full max-w-[440px] md:max-w-3xl lg:max-w-4xl bg-[#F4F8FB] min-h-screen relative shadow-2xl overflow-y-auto overflow-x-hidden flex flex-col pb-10">
+    <div className="min-h-screen bg-slate-50 flex justify-center w-full font-sans">
+      <div className="w-full max-w-[440px] md:max-w-3xl lg:max-w-4xl bg-slate-50 min-h-screen relative shadow-2xl overflow-y-auto overflow-x-hidden flex flex-col pb-10">
         
         {/* Header */}
-        <div className="flex items-center gap-4 px-6 py-5 sticky top-0 z-20 bg-[#F4F8FB]/90 backdrop-blur-sm">
-          <button onClick={() => navigate(-1)} className="text-[#0A6CBF] hover:bg-[#D1E4F5] p-2 rounded-full transition-colors -ml-2">
+        <div className="flex items-center gap-4 px-6 py-5 sticky top-0 z-20 bg-slate-50/90 backdrop-blur-sm">
+          <button onClick={() => navigate(-1)} className="text-blue-600 hover:bg-blue-100 p-2 rounded-full transition-colors -ml-2">
             <ArrowLeftIcon className="w-6 h-6" />
           </button>
-          <h1 className="text-[18px] font-extrabold text-[#11263C]">Aktivitas Terkini</h1>
+          <h1 className="text-[18px] font-extrabold text-slate-800">Aktivitas Terkini</h1>
         </div>
 
         <div className="px-5 pt-2">
@@ -93,7 +93,7 @@ export default function AktivitasTerkini() {
                 className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[13px] font-bold transition-all shadow-sm ${
                   filter === f 
                     ? 'bg-[#0A6CBF] text-white shadow-[#0A6CBF]/30' 
-                    : 'bg-[#E3EAF2] text-[#5C7C9E] hover:bg-[#D1E4F5]'
+                    : 'bg-slate-100 text-slate-500 hover:bg-blue-100'
                 }`}
               >
                 {f}
@@ -120,10 +120,10 @@ export default function AktivitasTerkini() {
                   {getIcon(item.type)}
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex justify-between items-start">
-                      <h3 className="text-[15px] font-extrabold text-[#11263C] leading-none mt-1">{item.title}</h3>
-                      <span className="text-[11px] font-medium text-[#5C7C9E] mt-1">{item.time}</span>
+                      <h3 className="text-[15px] font-extrabold text-slate-800 leading-none mt-1">{item.title}</h3>
+                      <span className="text-[11px] font-medium text-slate-500 mt-1">{item.time}</span>
                     </div>
-                    <p className="text-[13px] font-medium text-[#5C7C9E] leading-relaxed mt-1">
+                    <p className="text-[13px] font-medium text-slate-500 leading-relaxed mt-1">
                       {item.desc}
                     </p>
                   </div>

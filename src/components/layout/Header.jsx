@@ -1,8 +1,10 @@
 import React from 'react';
 import appText from '../../constants/appText';
 import { IconUserCircle, IconBell } from '../ui/icons';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function Header({ onProfileClick, user }) {
+  const { t } = useLanguage();
   return (
     <header className="flex items-center justify-between px-6 pt-6 pb-4">
       <button 
@@ -22,7 +24,7 @@ export default function Header({ onProfileClick, user }) {
           <h2 className="text-slate-800 font-bold text-base leading-tight truncate w-36">{user?.name || appText.brand}</h2>
           <div className="flex items-center gap-1.5 mt-0.5">
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-[0_0_4px_rgba(16,185,129,0.5)]"></span>
-            <span className="text-slate-500 text-xs uppercase font-bold tracking-wider">{user?.role === 'admin' ? 'Pemilik Toko' : (user?.role || appText.brandSub)}</span>
+            <span className="text-slate-500 text-xs uppercase font-bold tracking-wider">{user?.role === 'admin' ? t('sidebar.owner') : (user?.role || appText.brandSub)}</span>
           </div>
         </div>
       </button>

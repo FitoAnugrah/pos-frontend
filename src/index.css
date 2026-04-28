@@ -9,6 +9,42 @@
   font-family: 'Outfit', sans-serif;
 }
 
+.dark {
+  color-scheme: dark;
+  /* Backgrounds */
+  --color-white: var(--color-slate-900);
+  --color-slate-50: var(--color-slate-800);
+  --color-slate-100: var(--color-slate-700);
+  --color-slate-200: var(--color-slate-600);
+  
+  /* Text and Borders */
+  --color-slate-800: var(--color-slate-100);
+  --color-slate-700: var(--color-slate-200);
+  --color-slate-600: var(--color-slate-300);
+  --color-slate-500: var(--color-slate-400);
+  --color-slate-400: var(--color-slate-500);
+  --color-slate-300: var(--color-slate-600);
+  
+  /* Primary Accents */
+  --color-blue-50: var(--color-blue-950);
+  --color-blue-100: var(--color-blue-900);
+  --color-blue-600: var(--color-blue-500);
+  --color-blue-700: var(--color-blue-400);
+  
+  /* Secondary / States */
+  --color-red-50: var(--color-red-950);
+  --color-red-100: var(--color-red-900);
+  --color-red-600: var(--color-red-500);
+  
+  --color-emerald-50: var(--color-emerald-950);
+  --color-emerald-100: var(--color-emerald-900);
+  --color-emerald-500: var(--color-emerald-400);
+
+  --color-indigo-50: var(--color-indigo-950);
+  --color-indigo-100: var(--color-indigo-900);
+  --color-indigo-600: var(--color-indigo-400);
+}
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;

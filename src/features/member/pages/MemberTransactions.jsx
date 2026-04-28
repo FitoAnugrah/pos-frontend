@@ -106,7 +106,7 @@ export default function MemberTransactions() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans">
+    <div className="min-h-screen bg-slate-50 font-sans">
 
       {/* Desktop Top Bar */}
       <div className="hidden md:flex items-center justify-between px-8 py-5 bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-20">
@@ -122,7 +122,7 @@ export default function MemberTransactions() {
       </div>
 
       {/* Mobile Header */}
-      <div className="md:hidden flex items-center gap-3 px-4 py-4 bg-[#F8FAFC] sticky top-0 z-20 border-b border-slate-200/50">
+      <div className="md:hidden flex items-center gap-3 px-4 py-4 bg-slate-50 sticky top-0 z-20 border-b border-slate-200/50">
         <button onClick={() => navigate(-1)} className="text-blue-600 p-2 -ml-2 rounded-full hover:bg-blue-50 flex-shrink-0">
           <ArrowLeftIcon className="w-5 h-5" />
         </button>
@@ -132,7 +132,7 @@ export default function MemberTransactions() {
       <div className="max-w-3xl mx-auto px-4 md:px-8 py-5 md:py-8">
           
           {/* Member Profile Card */}
-          <div className="bg-[#0A6CBF] rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
+          <div className="bg-blue-600 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
             {/* Background design accents */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
             
@@ -172,7 +172,7 @@ export default function MemberTransactions() {
                 placeholder="Cari ID transaksi..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-[#EEF2F6] border-none rounded-xl text-[13px] font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0D74C8]/20 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-100 border-none rounded-xl text-[13px] font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0D74C8]/20 transition-all"
               />
             </div>
             
@@ -187,7 +187,7 @@ export default function MemberTransactions() {
                   return <option key={m} value={m}>{getMonthName(parseInt(month)-1)} {year}</option>
                 })}
               </select>
-              <button className="flex items-center gap-2 bg-[#EEF2F6] px-4 py-2.5 rounded-xl text-[#0D74C8] hover:bg-[#E3F0FA] transition-colors h-full">
+              <button className="flex items-center gap-2 bg-slate-100 px-4 py-2.5 rounded-xl text-[#0D74C8] hover:bg-blue-100 transition-colors h-full">
                 <CalendarIcon className="w-4 h-4" />
                 <span className="text-[13px] font-bold whitespace-nowrap">
                   {selectedMonth ? (() => {
@@ -214,7 +214,7 @@ export default function MemberTransactions() {
                       >
                         <div className="flex flex-col gap-1.5">
                           <span className="text-[11px] font-bold text-[#0D74C8]">{trx.invoice_number}</span>
-                          <span className="text-[14px] font-extrabold text-[#11263C]">{new Date(trx.created_at).toLocaleDateString('id-ID')}, {new Date(trx.created_at).toLocaleTimeString('id-ID')}</span>
+                          <span className="text-[14px] font-extrabold text-slate-800">{new Date(trx.created_at).toLocaleDateString('id-ID')}, {new Date(trx.created_at).toLocaleTimeString('id-ID')}</span>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500">
                               {trx.payment_method === 'Tunai' ? <MoneyIcon className="w-3 h-3" /> : <QrCodeIcon className="w-3 h-3" />}
@@ -227,7 +227,7 @@ export default function MemberTransactions() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[16px] font-extrabold text-[#11263C]">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(trx.total)}</span>
+                          <span className="text-[16px] font-extrabold text-slate-800">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(trx.total)}</span>
                           <ChevronRightIcon className="w-4 h-4 text-slate-300" />
                         </div>
                       </div>
@@ -244,7 +244,7 @@ export default function MemberTransactions() {
             {/* End of History Label */}
             {Object.keys(filteredTransactions).length > 0 && (
               <div className="flex flex-col items-center justify-center gap-3 mt-6 mb-4 opacity-60">
-                <div className="w-10 h-1 bg-[#D1E0ED] rounded-full"></div>
+                <div className="w-10 h-1 bg-slate-200 rounded-full"></div>
                 <span className="text-[10px] font-bold text-[#5C7C9E] uppercase tracking-widest">END OF HISTORY</span>
               </div>
             )}

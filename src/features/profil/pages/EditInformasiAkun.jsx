@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InputRow from '../components/InputRow';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, initialData }) {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialData || {
-    namaLengkap: 'Budi Santoso',
-    email: 'budi@posai.com',
-    noTelepon: '+62 812 3456 7890',
-    avatarUrl: 'https://i.pravatar.cc/150?img=11',
-    role: 'Store Manager • POS Terminal #04'
+    namaLengkap: '',
+    email: '',
+    noTelepon: '',
+    avatarUrl: null,
+    role: ''
   });
 
   // State baru untuk nyimpen pesan error email
@@ -61,7 +63,7 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, init
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Edit Account
+            {t('profil.editAccount')}
           </button>
 
           <button 
@@ -75,7 +77,7 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, init
                 : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
             }`}
           >
-            Save Changes
+            {t('profil.saveChanges')}
           </button>
         </div>
 
@@ -112,7 +114,7 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, init
         <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <InputRow
-              label="Nama Lengkap"
+              label={t('profil.fullName')}
               value={formData.namaLengkap}
               onChange={(e) => handleChange('namaLengkap', e.target.value)}
               icon={
@@ -123,7 +125,7 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, init
             />
 
             <InputRow
-              label="Email"
+              label={t('profil.email')}
               type="email"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
@@ -137,7 +139,7 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, init
             />
 
             <InputRow
-              label="No. Telepon"
+              label={t('profil.phone')}
               type="tel"
               value={formData.noTelepon}
               onChange={(e) => handleChange('noTelepon', e.target.value)}
@@ -160,8 +162,8 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, init
                 </svg>
               </div>
               <div>
-                <p className="text-[15px] font-bold">Atur Keamanan</p>
-                <p className="mt-0.5 text-xs font-medium text-blue-600/80">Ganti PIN & Autentikasi</p>
+                <p className="text-[15px] font-bold">{t('profil.securitySettings')}</p>
+                <p className="mt-0.5 text-xs font-medium text-blue-600/80">{t('profil.securitySettingsSub')}</p>
               </div>
             </div>
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100/50 text-blue-600">
@@ -179,8 +181,8 @@ export default function EditInformasiAkun({ onBack, onSave, onOpenSecurity, init
                 </svg>
               </div>
               <div>
-                <p className="text-[15px] font-bold">Reset Password</p>
-                <p className="mt-0.5 text-xs font-medium text-red-600/80">Ubah kata sandi akun</p>
+                <p className="text-[15px] font-bold">{t('profil.resetPassword')}</p>
+                <p className="mt-0.5 text-xs font-medium text-red-600/80">{t('profil.resetPasswordSub')}</p>
               </div>
             </div>
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100/50 text-red-600">

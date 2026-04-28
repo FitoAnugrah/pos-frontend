@@ -1,21 +1,23 @@
 import React from 'react';
 import appText from '../../../constants/appText';
-import { IconDefault, IconStok, IconPanel } from '../../../components/ui/icons';
+import { IconDefault, IconStok, IconPengaturan } from '../../../components/ui/icons';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 const Icon = ({ name }) => {
   switch (name) {
     case 'member': return <IconDefault className="w-5 h-5 text-blue-600" />;
     case 'stok': return <IconStok className="w-5 h-5 text-blue-600" />;
     case 'laporan': return <IconDefault className="w-5 h-5 text-blue-600" />;
-    case 'panel': return <IconPanel className="w-5 h-5 text-blue-600" />;
+    case 'pengaturan': return <IconPengaturan className="w-5 h-5 text-blue-600" />;
     default: return null;
   }
 }
 
 export default function QuickAccess({ onItemClick }) {
+  const { t } = useLanguage();
   return (
     <section>
-      <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase mb-3 px-1">{appText.quickAccess.title}</p>
+      <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase mb-3 px-1">{t('dashboard.quickAccess')}</p>
       <div className="grid grid-cols-2 gap-4">
         {appText.quickAccess.items.map((item) => (
           <button 
@@ -27,7 +29,7 @@ export default function QuickAccess({ onItemClick }) {
             <div className="bg-blue-50 p-2.5 rounded-lg">
               <Icon name={item.id} />
             </div>
-            <span className="text-sm font-semibold text-slate-800">{item.label}</span>
+            <span className="text-sm font-semibold text-slate-800">{t(`dashboard.${item.id}`)}</span>
           </button>
         ))}
       </div>

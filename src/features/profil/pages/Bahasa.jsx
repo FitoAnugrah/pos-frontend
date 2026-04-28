@@ -7,8 +7,11 @@ const languages = [
   { id: 'zh', name: 'Chinese', nativeName: 'MANDARIN', flag: '🇨🇳' },
 ];
 
+import { useLanguage } from '../../../contexts/LanguageContext';
+
 export default function Bahasa({ onBack, onSave, currentLang = 'id' }) {
   const [selectedLang, setSelectedLang] = useState(currentLang);
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen w-full bg-slate-50 font-sans flex items-center justify-center p-4 md:p-8">
@@ -23,14 +26,14 @@ export default function Bahasa({ onBack, onSave, currentLang = 'id' }) {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              Select Language
+              {t('profil.selectLanguage')}
             </button>
             <button 
               type="button" 
               onClick={() => onSave && onSave(selectedLang)} 
               className="text-sm font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-blue-100"
             >
-              Save
+              {t('profil.save')}
             </button>
           </div>
 
@@ -40,7 +43,7 @@ export default function Bahasa({ onBack, onSave, currentLang = 'id' }) {
               <path d="M2 12H22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22C9.49872 19.2616 8.07725 15.708 8 12C8.07725 8.29203 9.49872 4.73835 12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="text-xs font-semibold">Choose your preferred system language</span>
+            <span className="text-xs font-semibold">{t('profil.chooseLanguageDesc')}</span>
           </div>
 
           <div className="mt-6 flex flex-col gap-3">
@@ -81,16 +84,16 @@ export default function Bahasa({ onBack, onSave, currentLang = 'id' }) {
               <svg className="mb-3 text-blue-600" width="24" height="24" viewBox="0 0 24 24" fill="none">
                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 5h7M9 3v2c0 4.418-2.239 8-5 8"/><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 9c-.066.27-.123.543-.17.818C4.55 11.455 5.253 13 6.5 13c1.785 0 2.946-1.579 3.256-3M19 11l-4.5 9m0 0l-4.5-9m4.5 9V11"/>
               </svg>
-              <h4 className="text-sm font-bold text-slate-800">Auto-Translation</h4>
-              <p className="mt-1 text-xs leading-5 text-slate-500 font-medium">Transactions and receipts will be automatically formatted based on your selection.</p>
+              <h4 className="text-sm font-bold text-slate-800">{t('profil.autoTranslation')}</h4>
+              <p className="mt-1 text-xs leading-5 text-slate-500 font-medium">{t('profil.autoTranslationDesc')}</p>
             </div>
 
             <div className="rounded-xl bg-slate-50 border border-slate-100 p-5">
               <svg className="mb-3 text-blue-600" width="24" height="24" viewBox="0 0 24 24" fill="none">
                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
-              <h4 className="text-sm font-bold text-slate-800">Cloud Sync</h4>
-              <p className="mt-1 text-xs leading-5 text-slate-500 font-medium">Language preferences are synced across all your POS terminals instantly.</p>
+              <h4 className="text-sm font-bold text-slate-800">{t('profil.cloudSync')}</h4>
+              <p className="mt-1 text-xs leading-5 text-slate-500 font-medium">{t('profil.cloudSyncDesc')}</p>
             </div>
           </div>
 

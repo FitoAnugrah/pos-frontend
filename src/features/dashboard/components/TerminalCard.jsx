@@ -1,9 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import appText from '../../../constants/appText';
 import { IconPanel } from '../../../components/ui/icons';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 export default function TerminalCard() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   return (
@@ -20,8 +21,8 @@ export default function TerminalCard() {
           <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 flex items-center justify-center mb-5 shadow-inner">
             <IconPanel className="w-6 h-6" color="#ffffff" />
           </div>
-          <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] mb-1.5">{appText.terminal.badge}</p>
-          <h3 className="text-white text-lg font-bold tracking-tight">{appText.terminal.cta}</h3>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] mb-1.5">{t('dashboard.terminalReady')}</p>
+          <h3 className="text-white text-lg font-bold tracking-tight">{t('dashboard.openCashier')}</h3>
         </div>
       </button>
     </div>

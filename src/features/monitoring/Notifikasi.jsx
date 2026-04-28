@@ -51,12 +51,12 @@ export default function Notifications() {
     switch (type) {
       case 'warning':
         return {
-          bg: 'bg-[#FDE6D5]', text: 'text-[#D97706]',
+          bg: 'bg-orange-100', text: 'text-orange-600',
           icon: <WarningIcon className="w-6 h-6" />
         };
       case 'success':
         return {
-          bg: 'bg-[#D1E4F5]', text: 'text-[#0A6CBF]',
+          bg: 'bg-blue-100', text: 'text-blue-600',
           icon: <CheckCircleSolidIcon className="w-6 h-6" />
         };
       case 'insight':
@@ -67,27 +67,27 @@ export default function Notifications() {
       case 'info':
       default:
         return {
-          bg: 'bg-[#D1E4F5]', text: 'text-[#5C7C9E]',
+          bg: 'bg-blue-100', text: 'text-slate-500',
           icon: <InfoIcon className="w-6 h-6" />
         };
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F8FB] flex justify-center w-full font-sans">
-      <div className="w-full max-w-[440px] md:max-w-3xl lg:max-w-4xl bg-[#F4F8FB] min-h-screen relative shadow-2xl overflow-y-auto overflow-x-hidden flex flex-col pb-10">
+    <div className="min-h-screen bg-slate-50 flex justify-center w-full font-sans">
+      <div className="w-full max-w-[440px] md:max-w-3xl lg:max-w-4xl bg-slate-50 min-h-screen relative shadow-2xl overflow-y-auto overflow-x-hidden flex flex-col pb-10">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 sticky top-0 z-20 bg-[#F4F8FB]/90 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-6 py-5 sticky top-0 z-20 bg-slate-50/90 backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)} className="text-[#0A6CBF] hover:bg-[#D1E4F5] p-2 rounded-full transition-colors -ml-2">
+            <button onClick={() => navigate(-1)} className="text-blue-600 hover:bg-blue-100 p-2 rounded-full transition-colors -ml-2">
               <ArrowLeftIcon className="w-6 h-6" />
             </button>
-            <h1 className="text-[18px] font-extrabold text-[#0A6CBF]">Notifications</h1>
+            <h1 className="text-[18px] font-extrabold text-blue-600">Notifications</h1>
           </div>
           <button 
             onClick={markAllRead}
-            className="text-[14px] font-bold text-[#0A6CBF] hover:opacity-80 transition-opacity"
+            className="text-[14px] font-bold text-blue-600 hover:opacity-80 transition-opacity"
           >
             Clear All
           </button>
@@ -126,7 +126,7 @@ export default function Notifications() {
                         </p>
                         <button 
                           onClick={(e) => { e.stopPropagation(); navigate('/laporan'); }}
-                          className="bg-white text-[#0A6CBF] rounded-full py-3 px-6 text-[12px] font-extrabold tracking-wider w-fit hover:bg-[#F4F8FB] transition-colors"
+                          className="bg-white text-blue-600 rounded-full py-3 px-6 text-[12px] font-extrabold tracking-wider w-fit hover:bg-slate-50 transition-colors"
                         >
                           LIHAT LAPORAN
                         </button>
@@ -145,14 +145,14 @@ export default function Notifications() {
                       </div>
                       <div className="flex flex-col gap-1 w-full">
                         <div className="flex justify-between items-start">
-                          <h3 className={`text-[15px] font-extrabold ${notif.is_read ? 'text-slate-500' : 'text-[#11263C]'}`}>
+                          <h3 className={`text-[15px] font-extrabold ${notif.is_read ? 'text-slate-500' : 'text-slate-800'}`}>
                             {notif.title}
                           </h3>
-                          <span className="text-[11px] font-medium text-[#5C7C9E] mt-0.5">
+                          <span className="text-[11px] font-medium text-slate-500 mt-0.5">
                             {new Date(notif.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}
                           </span>
                         </div>
-                        <p className="text-[13px] font-medium text-[#5C7C9E] leading-relaxed">
+                        <p className="text-[13px] font-medium text-slate-500 leading-relaxed">
                           {notif.body}
                         </p>
                       </div>
